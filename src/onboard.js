@@ -34,6 +34,7 @@ After reviewing configuration changes:
 
 An incomplete starter is expected to fail readiness; it is not an application test.
 Supervised transitions need an authorized signed decision (help work / help sign).
+Agent commands: read .agenthouse/agent-commands.md; invoke ah-help or ah-review-change through your host skill/command picker.
 Explore: help evaluate, help dependencies, doctor, or demo in a NEW empty directory.
 Native agent loading/hooks still require host-specific verification.`;
 }
@@ -54,7 +55,7 @@ export async function onboard(root,options={}) {
   return nextSteps(root);
 }
 export async function demo(root) {
-  assert(!fs.existsSync(root) || fs.readdirSync(root).length===0,'Demo requires a new or empty directory; use --root ./agenthouse-demo');
+  assert(!fs.existsSync(root) || fs.readdirSync(root).length===0,'Demo requires a new or empty directory; use --root ./ah-demo');
   install(root,{agents:[],autonomy:'bounded'});
   write(inside(root,'story.md'),'Demonstration: greet a visitor by name. Acceptance: greet("Ada") returns "Hello, Ada!". This fixture does not validate your application.\n');
   write(inside(root,'greet.mjs'),'export const greet = name => `Hello!`;\n');

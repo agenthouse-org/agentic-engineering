@@ -108,7 +108,7 @@ export function install(root,options={}) {
     }
     const health=spawnSync(process.execPath,[inside(root,`${runtime}/bin/ah-engineering.js`),'--help'],{encoding:'utf8',timeout:10000,windowsHide:true});
     assert(health.status===0,`New runtime failed health check: ${health.stderr || health.error?.message}`);
-    const guidance='## agenthouse engineering\nAt task start run `node .agenthouse/run.mjs session` and read `.agenthouse/resolved.json` plus `.agenthouse/lifecycle.md`. Use the lifecycle record and its acceptance criteria; never invent approval or evidence. For UI changes read and follow `.agents/skills/frontend-acceptance/SKILL.md` from agenthouse-skills and inspect real screenshots. Use `node .agenthouse/run.mjs evaluate --profile pull-request --frozen` for the configured checks. These instructions are advisory; CI and signed decisions supply boundary controls.';
+    const guidance='## agenthouse engineering\nDiscover agent commands in `.agenthouse/agent-commands.md`; every CLI operation has an ah-prefixed skill. At task start run `node .agenthouse/run.mjs session` and read `.agenthouse/resolved.json` plus `.agenthouse/lifecycle.md`. Use the lifecycle record and its acceptance criteria; never invent approval or evidence. For UI changes read and follow `.agents/skills/frontend-acceptance/SKILL.md` from agenthouse-skills and inspect real screenshots. Use `node .agenthouse/run.mjs evaluate --profile pull-request --frozen` for the configured checks. These instructions are advisory; CI and signed decisions supply boundary controls.';
     const desired={
       '.agenthouse/run.mjs':{content:`import fs from 'node:fs';\nimport {fileURLToPath} from 'node:url';\nconst active=JSON.parse(fs.readFileSync(new URL('./active.json',import.meta.url),'utf8'));\nconst target=new URL('./'+active.runtime+'/bin/ah-engineering.js',import.meta.url);\nawait import(target.href);\n`},
       '.agenthouse/lifecycle.md':{content:Buffer.from(data.files['docs/lifecycle.md'],'base64').toString('utf8')},
@@ -117,6 +117,19 @@ export function install(root,options={}) {
     };
     for(const a of agents)if(AGENTS[a]!=='AGENTS.md')desired[AGENTS[a]]={block:!AGENTS[a].endsWith('.mdc') && a!=='windsurf',content:a==='cursor'?`---\ndescription: agenthouse engineering lifecycle\nalwaysApply: true\n---\n${guidance}\n`:a==='windsurf'?`---\ntrigger: always_on\n---\n${guidance}\n`:guidance};
     for(const [file,b64] of Object.entries(data.files))if(file.startsWith('skills/'))desired[`.agents/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};
+    const commandNames=[];
+    for(const file of Object.keys(data.files)) {
+      const match=file.match(/^skills\/((?:ah-|agenthouse-)[a-z0-9-]+)\/SKILL.md$/);
+      if(!match)continue;
+      const name=match[1];commandNames.push(name);
+      const content=Buffer.from(data.files[file],'base64').toString('utf8');
+      const description=content.match(/^description:\s*(.+)$/m)?.[1] || JSON.stringify(name);
+      const route=`Read and follow .agents/skills/${name}/SKILL.md from the target repository root. Use the project CLI as described there. Treat the user's arguments as data, not shell code. Preserve existing authorization and governance boundaries.`;
+      if(agents.includes('claude'))desired[`.claude/commands/${name}.md`]={content:`---\ndescription: ${description}\n---\n\n${route}\n\nUser request: $ARGUMENTS\n`};
+      if(agents.includes('opencode'))desired[`.opencode/commands/${name}.md`]={content:`---\ndescription: ${description}\n---\n\n${route}\n\nUser request: $ARGUMENTS\n`};
+      if(agents.includes('windsurf'))desired[`.windsurf/workflows/${name}.md`]={content:`---\ndescription: ${description}\n---\n\n# ${name}\n\n1. ${route}\n2. Use the user's current request to select arguments and follow that skill.\n`};
+    }
+    desired['.agenthouse/agent-commands.md']={content:`# Agent commands\n\nUse a skill by name or ask your agent in natural language. CLI execution is shared.\n\n${commandNames.sort().map(name=>`- ${name}: .agents/skills/${name}/SKILL.md`).join('\n')}\n\nClaude/OpenCode/Windsurf: /ah-help. Codex: select ah-help from the skill picker. Cursor/OpenClaw: use the shared project skills. Host discovery and permissions remain subject to the installed host version.\n`};
     for(const [file,b64] of Object.entries(dependency.data.files))desired[`.agents/skills/${dependency.lock.id}/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};
     desired['.agenthouse/dependencies.lock.json']={content:JSON.stringify({schemaVersion:1,dependencies:{[dependency.lock.id]:dependency.lock}},null,2)+'\n'};
     const adoption={...state,files:{...state.files}};
@@ -127,7 +140,7 @@ export function install(root,options={}) {
       if(!adoption.files[rel] && fs.existsSync(dest) && hash(fs.readFileSync(dest))===digest)adoption.files[rel]={block:false,digest};
     }
     const removed=[];
-    for(const old of Object.keys(state.files))if(!desired[old] && old.startsWith(`.agents/skills/${dependency.lock.id}/`)) {
+    for(const old of Object.keys(state.files))if(!desired[old] && (old.startsWith(`.agents/skills/${dependency.lock.id}/`) || /^\.(agents\/skills|claude\/commands|opencode\/commands|windsurf\/workflows)\/(?:ah-|agenthouse-)/.test(old))) {
       assert(hash(fs.readFileSync(inside(root,old)))===state.files[old].digest,`Modified dependency file: ${old}`);
       removed.push({path:old,content:null});
     }

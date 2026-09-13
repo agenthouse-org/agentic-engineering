@@ -29,7 +29,7 @@ test('enrollment preserves existing instructions and idempotently installs all s
   install(root,{agents,project:'pilot'});const first=fs.readFileSync(path.join(root,'AGENTS.md'),'utf8');
   install(root,{agents});assert.equal(fs.readFileSync(path.join(root,'AGENTS.md'),'utf8'),first);
   assert.match(first,/Existing project instruction/);
-  for(const file of ['CLAUDE.md','.cursor/rules/agenthouse.mdc','.windsurf/rules/agenthouse.md','.agents/skills/agenthouse-lifecycle/SKILL.md'])assert.ok(fs.existsSync(path.join(root,file)));
+  for(const file of ['CLAUDE.md','.cursor/rules/agenthouse.mdc','.windsurf/rules/agenthouse.md','.agents/skills/ah-lifecycle/SKILL.md'])assert.ok(fs.existsSync(path.join(root,file)));
   const cli=spawnSync(process.execPath,[path.join(root,'.agenthouse/run.mjs'),'doctor','--root',root],{encoding:'utf8'});assert.equal(cli.status,0,cli.stderr);
 });
 test('uninstall preserves unrelated content and all consumer configuration',t=>{
@@ -99,9 +99,9 @@ test('lifecycle records require real fields and signed high-impact transitions',
   assert.equal(advance(root,'change','define').stage,'define');assert.throws(()=>advance(root,'change','release'),/follow/);
 });
 test('offline bundle verifies checksum, rejects tampering, updates and rolls back',t=>{
-  const root=setup(t),data=payload();data.version='0.1.3';const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');
+  const root=setup(t),data=payload();data.version='0.1.4';const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');
   const bundle=path.join(temp(t),'update.json');write(bundle,data);const digest=hash(fs.readFileSync(bundle));
-  assert.throws(()=>update(root,{bundle,sha256:'bad'}),/trusted/);assert.equal(update(root,{bundle,sha256:digest}).version,'0.1.3');assert.equal(rollback(root).version,'0.1.2');
+  assert.throws(()=>update(root,{bundle,sha256:'bad'}),/trusted/);assert.equal(update(root,{bundle,sha256:digest}).version,'0.1.4');assert.equal(rollback(root).version,'0.1.3');
   data.files['src/../../outside']=Buffer.from('bad').toString('base64');write(bundle,data);assert.throws(()=>update(root,{bundle,sha256:hash(fs.readFileSync(bundle))}),/Unsafe/);
 });
 test('transaction recovery restores interrupted managed files',t=>{
@@ -124,7 +124,7 @@ test('signed update, pinning and breaking-version checks enforce declared trust'
   data.version='0.2.0';const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');
   const file=path.join(dir,'signed.json'),key=path.join(dir,'release.pub');write(file,signed(data,pair.privateKey));write(key,pair.publicKey.export({type:'spki',format:'pem'}));
   assert.throws(()=>update(root,{bundle:file,publicKey:key}),/Breaking/);
-  write(path.join(root,'.agenthouse/update.json'),{pin:'0.1.2'});assert.throws(()=>update(root,{bundle:file,publicKey:key,allowBreaking:true}),/pinned/);
+  write(path.join(root,'.agenthouse/update.json'),{pin:'0.1.3'});assert.throws(()=>update(root,{bundle:file,publicKey:key,allowBreaking:true}),/pinned/);
   write(path.join(root,'.agenthouse/update.json'),{pin:'0.2.0'});assert.equal(update(root,{bundle:file,publicKey:key,allowBreaking:true}).version,'0.2.0');
   const cli=spawnSync(process.execPath,[path.join(root,'.agenthouse/run.mjs'),'doctor','--root',root],{encoding:'utf8'});assert.equal(cli.status,0,cli.stdout+cli.stderr);
   const tampered=read(file);tampered.payload.files['README.md']=Buffer.from('changed').toString('base64');write(file,tampered);assert.throws(()=>update(root,{bundle:file,publicKey:key,allowBreaking:true}),/signature/);

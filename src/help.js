@@ -1,6 +1,6 @@
 import {assert,VERSION} from './io.js';
 
-const topics={
+export const topics={
   onboard:'onboard [--root PATH] [--agents claude,codex,cursor] [--policy FILE] [--autonomy supervised|bounded|delegated]\nGuided setup in a terminal. Supply --agents (or --non-interactive) for scripts.\nExisting installations receive a read-only next-step guide; configuration is preserved.',
   demo:'demo --root NEW_EMPTY_DIRECTORY\nRun an isolated example: a failing acceptance check, a fix, then a passing check.\nPrints the HTML report path. The demonstration does not validate your application.',
   init:'init [--agents claude,codex,cursor,windsurf,opencode,openclaw] [--policy FILE]\n     [--project NAME] [--autonomy supervised|bounded|delegated] [--scope project|user]\nInstall the runtime, lifecycle skill, and required frontend-acceptance dependency.\nDefault autonomy: supervised. User scope creates a separate defaults workspace.',
@@ -45,10 +45,11 @@ Installation and maintenance
   module        Discover stack-specific check templates
   keygen, sign  Create keys and sign authorized decisions
 
+Agents: see .agenthouse/agent-commands.md for ah-prefixed skills.
 npm installs one executable: ah-engineering. These are its subcommands.
 Enrollment also creates node .agenthouse/run.mjs for the project's pinned runtime.
 Use --root PATH to target a repository. No paid account is required.
 
-Try: ah-engineering demo --root ./agenthouse-demo
+Try: ah-engineering demo --root ./ah-demo
 Then: ah-engineering onboard --root /path/to/your/project`;
 }

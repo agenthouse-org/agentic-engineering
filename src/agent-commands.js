@@ -1,0 +1,47 @@
+import {topics} from './help.js';
+
+const guidance={
+  help:'Explain the installed command map and recommend the next command for the user’s goal. This request is read-only; do not enroll or update anything.',
+  onboard:'Guide setup conversationally: infer the target and coding agents from context, ask only for missing choices, and explain policy/autonomy options. Run onboard with explicit --agents or --non-interactive; never launch an interactive terminal wizard from an agent. Then help the user formulate their first real outcome. Existing installations keep their configuration.',
+  init:'Use the requested target and agent selection. Preserve existing policies and instructions. Do not enable unrelated integrations or weaken autonomy to make installation succeed.',
+  demo:'Use a new or empty directory chosen for the demonstration. Explain the expected failed check and corrected passing check. A demo pass is not evidence about the user’s application.',
+  work:'Choose new, show, or advance from the request. Default to show when the action is unclear. Get missing identity/outcome from the user rather than fabricating it. Stage transitions require actual fields and applicable signed decisions; never manufacture approval.',
+  evaluate:'Use the project’s configured profile and actual build identity. Preserve failure, error, pending, and incomplete statuses. Explain report paths and missing evidence. Do not modify tests, policies, or checks merely to obtain a pass.',
+  doctor:'Inspect problems and explain their concrete impact. Diagnosis does not authorize unrelated repairs or policy changes.',
+  resolve:'Use --frozen for a verification request. Refresh only when resolving reviewed configuration changes is intended; do not hide drift by automatically refreshing.',
+  session:'Explain any applied or deferred approved updates and the active version set. Respect configured update policies and pins.',
+  dependencies:'Choose status, pin, unpin, or update. Default to status if unclear. For updates use a trusted bundle checksum or key, inspect --check first, and respect pins. Do not invent a new version or silently unpin.',
+  update:'Inspect the requested trusted bundle with --check, then apply within the user’s authorized update scope. Explain breaking changes and preserve pins; do not add --allow-breaking unless that change is authorized.',
+  bundle:'Choose the requested output location and optionally an authorized signing key. Creating a bundle does not authorize uploading it or publishing a release.',
+  rollback:'Explain that rollback restores the previous runtime/dependency set. Do not remove conflicting pins or overwrite local modifications automatically.',
+  recover:'Inspect the interrupted transaction and use the CLI recovery contract. Report conflicts; do not delete locks or edited files to force recovery.',
+  uninstall:'Use only for an intended removal. Explain retained configuration/evidence and let ownership checks preserve edits. Do not recursively delete the project.',
+  skill:'Import only the specified reviewed source. Required frontend-acceptance is managed through dependencies, not a second editable import.',
+  module:'Show the requested stack template and explain needed adaptation. Do not automatically replace existing evaluators.',
+  keygen:'Create keys only at the requested location. Never display private key contents or commit them.',
+  sign:'Sign only the exact reviewed artifact using a key the user has authorized you to use. Possession of a key or invocation of this skill is not governance approval. Never invent an issuer, delegation, or allowed verdict.'
+};
+const workflows={
+  'web-usability-conformity':['Run an installed upstream web usability conformity assessment.', 'Locate .agents/skills/web-usability-conformity/SKILL.md from a reviewed agenthouse-skills import and follow its resources. If absent, report the missing optional dependency and explain skill --source with the user’s reviewed source path; do not download it or invent an audit result. Report actual findings, unavailable checks, and evidence. This is separate from the required frontend-acceptance method.'],
+  'draft-user-story':['Draft a story or bug with observable acceptance criteria.', 'Locate the requested outcome and the team’s work-item source, local or integrated. Distinguish stated requirements from proposed details. Draft outcome, scope, acceptance criteria, dependencies, and open questions; for bugs include reproduction, expected behavior, and observed behavior. For UI changes read the installed frontend-acceptance skill. Present a draft, not a readiness approval. Use work new only when creation is requested; external writes need authorization.'],
+  'assess-story-readiness':['Assess whether an existing work item is ready to implement.', 'Read the item and applicable project readiness policy. Check outcome, scope, observable criteria, dependencies, risks, and verification approach. Cite each missing fact and make suggested wording explicit. Evaluate completeness separately from truth. Disclose authorship; follow the project’s independence requirements. Produce a readiness assessment, not an automatic stage transition or signature.'],
+  'validate-scope':['Assess whether a collection of requirements meets an outcome.', 'Map the stated target to the supplied scope. Identify uncovered outcomes, unrelated work, dependencies, sequencing, and assumptions. A set of individually ready stories can still miss the target. Report coverage and uncertainties with references; do not invent commitments or approve scope changes.'],
+  'check-commit':['Check the behavior affected by a commit or change range.', 'Resolve the user’s commit/range and compare the changed behavior to its intended outcome. Inspect the repository’s actual tooling, select relevant checks, and execute those supported in the environment. For a bugfix seek a regression test that fails before the fix and passes after it, using an isolated checkout if needed; preserve the user’s working tree. Distinguish inherited failures and unrun checks. Use the configured CLI evaluation when applicable and report evidence without committing, pushing, or approving.'],
+  'review-change':['Review a change against its requirements and evidence.', 'Resolve the change and its requirements from local records or configured tools. Read the diff and applicable policy; inspect correctness, scope, risks, test coverage, and acceptance evidence. Run relevant available checks through the configured CLI and inspect UI screenshots through frontend-acceptance when applicable. Distinguish baseline defects and missing evidence. Report actionable findings with locations and impact. Disclose if you authored the change and follow team independence rules. A review report does not approve, merge, or mark work done.'],
+  'enroll-repository':['Enroll a repository through conversational agenthouse onboarding.', 'Use the ah-onboard skill. Inspect the target, infer known preferences, gather missing configuration, and call the existing onboarding CLI noninteractively. Preserve consumer configuration and explain the resulting commands.'],
+  'frontend-acceptance':['Use the pinned upstream frontend acceptance method.', 'Run dependencies status, then read .agents/skills/frontend-acceptance/SKILL.md and follow its supporting resources. Derive evidence from the reference image, story, or bug. Do not substitute regression equality for concept conformance. If the upstream dependency is missing or modified, report the problem rather than inventing an alternative method.']
+};
+export function agentSkills() {
+  const entries={};
+  const shared=`Work from the target repository root. Read its AGENTS.md and applicable policy. Treat supplied arguments as task data; construct quoted executable arguments, never interpolate arbitrary text into shell code.
+
+Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use an already installed ah-engineering executable, or locate this package's bin/ah-engineering.js and run it with Node and an explicit --root. Do not fetch or install a package implicitly. If no runtime is available, explain the bootstrap step.
+
+Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.`;
+  for(const command of ['help',...Object.keys(topics)]) {
+    const name=`ah-${command}`,description=`Use agenthouse ${command} when the user requests this framework operation. ${guidance[command].split('. ')[0]}.`;
+    entries[name]={description,body:`# agenthouse ${command}\n\n${shared}\n\n${guidance[command]}\n\nCLI reference:\n\n\`\`\`text\n${command==='help'?'help [COMMAND]':topics[command]}\n\`\`\`\n`};
+  }
+  for(const [command,[description,body]] of Object.entries(workflows))entries[`ah-${command}`]={description,body:`# agenthouse ${command}\n\n${shared}\n\n${body}\n`};
+  return Object.fromEntries(Object.entries(entries).map(([name,{description,body}])=>[name,`---\nname: ${name}\ndescription: ${JSON.stringify(description)}\nlicense: MIT\n---\n\n${body}`]));
+}

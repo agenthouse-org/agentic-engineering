@@ -1,9 +1,10 @@
 # Implementation and verification status
 
-Version: 0.1.2 developer preview. Date: 2026-09-13.
+Version: 0.1.3 developer preview. Date: 2026-09-13.
 
 | Capability | Implemented | Verified here |
 | --- | --- | --- |
+| Agent commands for every CLI operation and generic review/story workflows | Yes (0.1.3) | Shared skills and selected host aliases; ownership/conflict/removal tests; native UI certification pending |
 | Guided onboarding, command help, isolated acceptance demo | Yes (0.1.2) | Scripted setup, existing project preservation, failure/fix reports |
 | Standalone CLI, no core runtime dependencies | Yes | Windows / Node 22.20 |
 | Organization/project policy composition and frozen snapshots | Yes | Mandatory conflicts, protected evaluator definitions, drift and omitted checks |

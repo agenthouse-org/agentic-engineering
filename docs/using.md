@@ -100,6 +100,10 @@ Use `capture(page, testInfo)` from the Playwright adapter. Baseline comparison u
 
 `npm run test:browser` exercises a real local fixture, establishes a test-only baseline under work/, deliberately breaks the layout, asserts failure, restores it, and verifies the evidence. Set `AH_BROWSER_EXECUTABLE` for an already installed Chrome/Chromium, or provision the pinned Playwright browser first. This test script's baseline generation is not a production pipeline pattern.
 
+## Agent-facing commands
+
+Every CLI command has an ah-prefixed skill. Enrollment also creates native command/workflow aliases for selected hosts. Read [agent commands](agent-commands.md) for the full command map, workflow skills, invocation syntax, and bootstrap limitations.
+
 ## Discover commands and onboarding
 
 Run `ah-engineering help` for the command map and `ah-engineering help evaluate` for command-specific options. `ah-engineering onboard --root /path/to/project` guides terminal setup; supply `--agents codex` for noninteractive setup. Existing installations receive a read-only guide. `ah-engineering demo --root ./new-demo-directory` runs an isolated failure/fix example and prints report paths. See the README for the full walkthrough.
@@ -110,7 +114,7 @@ Frontend acceptance is installed automatically from agenthouse-skills as a requi
 
 Import another reviewed skill with `skill --source /path/to/another-reviewed-skill`. The source is copied intact, and its file hashes, version and source are recorded in `.agenthouse/skills.json`. Optional `--sha256` checks a precomputed manifest digest. The framework does not fork the skill method. Existing changed imports are refused, rather than overwritten. Automatic updates for the required frontend dependency are supported through approved bundles; updates of other manually imported skills remain separate.
 
-The lifecycle skill is installed into `.agents/skills/agenthouse-lifecycle`; agent instructions link the method. Hosts with other skill discovery conventions can read these files through the common entry point. Native plugin/skill-loader behavior is not yet host-certified. `agenthouse-hooks` remains independent; invoke a reviewed `scan` command through an exit-code evaluator if needed. Its malformed-input `run --vendor ci` behavior still needs upstream correction before that path is authoritative.
+The lifecycle skill is installed into `.agents/skills/ah-lifecycle`; agent instructions link the method. Hosts with other skill discovery conventions can read these files through the common entry point. Native plugin/skill-loader behavior is not yet host-certified. `agenthouse-hooks` remains independent; invoke a reviewed `scan` command through an exit-code evaluator if needed. Its malformed-input `run --vendor ci` behavior still needs upstream correction before that path is authoritative.
 
 ## Updates, offline bundles and rollback
 

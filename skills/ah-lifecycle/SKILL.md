@@ -1,5 +1,5 @@
 ---
-name: agenthouse-lifecycle
+name: ah-lifecycle
 description: Guide a software change through the enrolled agenthouse lifecycle, linking its intended outcome, decisions, verification, release, operation, and learning. Use in repositories enrolled with agenthouse engineering when planning, implementing, reviewing, or delivering work.
 license: MIT
 metadata:

@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**0.1.2 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Native agent hooks and marketplace packages are not yet certified. See [implementation status](docs/implementation-status.md).
+**0.1.3 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Native agent hooks and marketplace packages are not yet certified. See [implementation status](docs/implementation-status.md).
 
 ## Try it in ten minutes
 
@@ -13,9 +13,9 @@ Requires **Node.js 22 or newer**. From a source checkout:
 ```text
 npm ci --ignore-scripts
 npm pack
-npm install --global ./agenthouse-org-engineering-0.1.2.tgz --ignore-scripts
+npm install --global ./agenthouse-org-engineering-0.1.3.tgz --ignore-scripts
 ah-engineering help
-ah-engineering demo --root ./agenthouse-demo
+ah-engineering demo --root ./ah-demo
 ```
 
 If you received the release tarball, start at `npm install --global` using its actual path. No public npm registry release is assumed. Installation from the tarball needs no third-party runtime packages. To avoid a global installation, use `node bin/ah-engineering.js` from this checkout in place of `ah-engineering`.
@@ -30,7 +30,7 @@ The demo creates an isolated project and demonstrates:
 The command prints both HTML report paths. Open them in your browser. Read `story.md`, `greet.mjs`, and `acceptance.mjs` in the demo directory, change the implementation, and rerun:
 
 ```text
-cd agenthouse-demo
+cd ah-demo
 node .agenthouse/run.mjs evaluate --ci --subject demo-your-change
 ```
 
@@ -51,6 +51,51 @@ ah-engineering onboard --root /path/to/your/project --agents claude,codex,cursor
 ```
 
 Enterprise teams can add `--policy /path/to/approved-policy.json`. Teams retain ownership of their policies and approval process. Local setup uses a project policy and creates a private signing key under the Git-ignored `.agenthouse/local/` directory.
+
+## Agent commands
+
+Every CLI operation is also available as an `ah-` agent skill. Try `/ah-help`, `/ah-onboard`, or `/ah-review-change` in hosts with slash commands; in Codex select the named skill or use `$ah-help`. Project enrollment installs the appropriate entry points.
+
+Story drafting, readiness, scope validation, commit checking, and review workflows are included. See [all agent commands and host-specific usage](docs/agent-commands.md). CLI-only global installation does not register project commands before enrollment.
+
+### Included skills
+
+The framework ships **28 agent-facing skills**, plus the required upstream **frontend-acceptance 0.2.0** dependency.
+
+| Skill | Purpose |
+| --- | --- |
+| `ah-help` | Discover commands and features |
+| `ah-onboard` | Guided project setup |
+| `ah-enroll-repository` | Enroll an existing repository |
+| `ah-init` | Install framework assets |
+| `ah-demo` | Run the failure/fix example |
+| `ah-lifecycle` | Guide work through the SDLC |
+| `ah-work` | Create, inspect, and advance work records |
+| `ah-draft-user-story` | Draft outcomes and acceptance criteria |
+| `ah-assess-story-readiness` | Assess whether work is ready to implement |
+| `ah-validate-scope` | Check scope against the intended outcome |
+| `ah-check-commit` | Verify behavior affected by a commit |
+| `ah-review-change` | Review requirements, changes, and evidence |
+| `ah-frontend-acceptance` | Invoke the pinned upstream frontend skill |
+| `ah-web-usability-conformity` | Invoke an optional upstream usability skill |
+| `ah-evaluate` | Run configured checks and produce reports |
+| `ah-doctor` | Diagnose installation and dependency problems |
+| `ah-resolve` | Resolve or verify policy configuration |
+| `ah-session` | Start a session and process approved updates |
+| `ah-dependencies` | Inspect, pin, unpin, and update dependencies |
+| `ah-update` | Update the framework |
+| `ah-bundle` | Create an offline distribution bundle |
+| `ah-rollback` | Restore the previous version set |
+| `ah-recover` | Recover an interrupted installation |
+| `ah-uninstall` | Remove managed framework assets |
+| `ah-skill` | Import another reviewed skill |
+| `ah-module` | Explore stack-specific check templates |
+| `ah-keygen` | Generate signing keys |
+| `ah-sign` | Sign authorized decisions or bundles |
+
+`ah-frontend-acceptance` routes to `frontend-acceptance`, installed unchanged from agenthouse-skills. The optional `web-usability-conformity` skill must be imported from a reviewed source before its wrapper can perform an assessment. Skill invocation does not bypass project governance or host permissions.
+
+Existing projects can install these entry points by rerunning `init` from the new package with their chosen agents. Unchanged old managed command names are removed; edited files cause a conflict instead of being overwritten. Reload the host if its command menu has not refreshed.
 
 ## Start working
 
