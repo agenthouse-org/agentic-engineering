@@ -1,3 +1,5 @@
+import {updateDependency} from './dependency-update.js';
+import {dependencyStatus,bundledDependency,checkDependencyPin} from './dependencies.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {assert,read,write,inside,hash,VERSION} from './io.js';
@@ -11,6 +13,7 @@ export function update(root,options) {
   if(options.publicKey) data=verifyEnvelope(bundle,fs.readFileSync(path.resolve(options.publicKey),'utf8'));
   else {assert(options.sha256 && hash(raw)===options.sha256,'Supply a trusted SHA-256 or public key for bundle verification');data=bundle;}
   verifyPayload(data);
+  checkDependencyPin(root,bundledDependency(data).lock);
   const installed=read(inside(root,'.agenthouse/installation.json'));
   const current=installed.version.split('.').map(Number),next=data.version.split('.').map(Number);
   const compatible=next[0]===current[0] && (current[0]!==0 || next[1]===current[1]);
@@ -49,11 +52,21 @@ export function session(root) {
       catch(error) {updateResult={status:'deferred',reason:error.message};}
     }
   }
+  let dependencyUpdate={status:'not-configured'};
+  const policy=inside(root,'.agenthouse/dependency-policy.json');
+  if(fs.existsSync(policy)) {
+    const settings=read(policy);
+    if(settings.automatic && settings.bundle) {
+      try {dependencyUpdate=updateDependency(root,{bundle:inside(root,settings.bundle),sha256:settings.sha256,publicKey:settings.publicKey?inside(root,settings.publicKey):undefined});}
+      catch(error){dependencyUpdate={status:'deferred',reason:error.message};}
+    }
+  }
+  const dependencies=dependencyStatus(root);
   const id=new Date().toISOString().replaceAll(':','-');
   const active=read(inside(root,'.agenthouse/active.json'));
   // A subsequent launcher invocation selects a newly activated runtime. The
   // current process never loads newly downloaded code midway through a task.
-  const result={id,active,executingVersion:VERSION,update:updateResult};
+  const result={id,active,executingVersion:VERSION,update:updateResult,dependencyUpdate,dependencies};
   write(inside(root,`.agenthouse/sessions/${id}.json`),result);
   return result;
 }

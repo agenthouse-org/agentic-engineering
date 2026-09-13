@@ -1,6 +1,6 @@
 {
   "name": "@agenthouse-org/engineering",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Portable agentic SDLC, policy and evidence evaluation for developers and CI/CD",
   "type": "module",
   "license": "MIT",
@@ -24,7 +24,8 @@
     "adapters",
     "docs",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "dependencies"
   ],
   "scripts": {
     "test": "node --test tests/*.test.js",

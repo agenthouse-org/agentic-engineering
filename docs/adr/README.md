@@ -10,4 +10,6 @@ The following product decisions were confirmed by the repository owner on 2026-0
 | [0004](0004-authority-and-integrations.md) | Group-selected sources of truth and optional platform/services |
 | [0005](0005-visual-acceptance-and-cli.md) | Visual acceptance from images or written requirements and a primary evaluation CLI |
 
+| [0006](0006-versioned-frontend-dependency.md) | Required upstream frontend dependency with versioned updates and pins |
+
 Proposed implementation details live in the linked design documents until implemented or promoted to an accepted technical ADR.

@@ -1,9 +1,10 @@
 # Implementation and verification status
 
-Version: 0.1.0 developer preview. Date: 2026-09-13.
+Version: 0.1.2 developer preview. Date: 2026-09-13.
 
 | Capability | Implemented | Verified here |
 | --- | --- | --- |
+| Guided onboarding, command help, isolated acceptance demo | Yes (0.1.2) | Scripted setup, existing project preservation, failure/fix reports |
 | Standalone CLI, no core runtime dependencies | Yes | Windows / Node 22.20 |
 | Organization/project policy composition and frozen snapshots | Yes | Mandatory conflicts, protected evaluator definitions, drift and omitted checks |
 | Central signed decisions and direct delegation | Yes | Ed25519 signatures, scope, subject, expiry and delegation |
@@ -17,7 +18,8 @@ Version: 0.1.0 developer preview. Date: 2026-09-13.
 | Managed install/removal and recovery journal | Yes | User content preservation, conflicts, interrupted transaction recovery |
 | Offline framework bundle, signed/checksummed imports, rollback | Yes | Checksum, tampering, upgrade and rollback tests |
 | Between-session updates from a configured local/mirrored bundle | Yes | Session entry point; no network daemon/native hook |
-| Specialist skill import and digest tracking | Yes | Source-preserving import and conflict checks |
+| Required frontend dependency and updates | Yes (0.1.1) | Bundled upstream 0.2.0; pins, hashes, signed/checksummed updates, session activation and rollback |
+| Other specialist skill imports | Yes | Source-preserving import and conflict checks; no automatic updates |
 | PHP/Laravel and Node.js/TypeScript modules | Command templates | Adapt to consuming repository tools before use |
 | GitHub Actions/GitLab CI templates | Yes | Templates supplied; platform runs not executed in this repository |
 | macOS/Linux runtime validation | CI matrix supplied | Not executed on this Windows host |
@@ -25,7 +27,7 @@ Version: 0.1.0 developer preview. Date: 2026-09-13.
 | Paid/self-hosted REST/MCP decision providers | Open command/result boundary | No hosted service or MCP server built |
 | Enterprise live-repository and independent user pilots | Not performed | Isolated local policy, lifecycle and browser pilots only |
 
-This build is useful for local/CI evaluation and controlled pilot adoption. It is not a claim that every requirement in the original full-framework roadmap is complete. Private registry/proxy deployment, full offline closure including browsers/skills, native host behavior, configurable action-level autonomy, rule waivers, remote synchronization, and live pilot rollout remain open.
+This build is useful for local/CI evaluation and controlled pilot adoption. It is not a claim that every requirement in the original full-framework roadmap is complete. Private registry/proxy deployment, full offline closure including browsers and optional skills, native host behavior, configurable action-level autonomy, rule waivers, remote synchronization, and live pilot rollout remain open.
 
 ## Instruction adapter sources
 

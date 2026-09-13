@@ -1,3 +1,5 @@
+import {help} from './help.js';
+import {onboard,demo} from './onboard.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -9,8 +11,10 @@ import {evaluate} from './evaluate.js';
 import {newItem,advance,STAGES} from './lifecycle.js';
 import {update,rollback,session} from './update.js';
 import {importSkill} from './skills.js';
+import {dependencyStatus} from './dependencies.js';
+import {pinDependency,updateDependency} from './dependency-update.js';
 
-const boolean=new Set(['ci','frozen','check','allow-breaking','help']);
+const boolean=new Set(['ci','frozen','check','allow-breaking','help','non-interactive']);
 function parse(args) {
   const o={},pos=[];
   for(let i=0;i<args.length;i++) {
@@ -20,24 +24,22 @@ function parse(args) {
   }
   return {o,pos};
 }
-const allowed={init:['agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking'],rollback:[],session:[],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output']};
+const allowed={onboard:['agents','policy','project','autonomy','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking'],rollback:[],session:[],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output']};
 export async function main(args) {
   const {o,pos}=parse(args),command=pos.shift();
-  if(!command || o.help || command==='help') {console.log(`agenthouse engineering ${VERSION}
-Commands: init, resolve, evaluate, doctor, work new|advance|show, bundle,
-          update, rollback, session, uninstall, recover, keygen, sign, skill, module
-Use --root PATH for a repository. All operations are noninteractive.
-Examples:
-  ah-engineering init --agents claude,codex,cursor
-  ah-engineering work new --id first-change --title "Deliver the first outcome"
-  ah-engineering evaluate --profile pull-request --ci --frozen --subject BUILD_ID
-See docs/using.md for command contracts and governance trust boundaries.`);return 0;}
+  if(!command || o.help || command==='help') {
+    const topic=command==='help'?pos.shift():command;
+    assert(pos.length===0,'Use help COMMAND or COMMAND --help');
+    console.log(help(topic));return 0;
+  }
   assert(Object.hasOwn(allowed,command),`Unknown command ${command}`);
-  assert(command==='work' ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
+  assert(['work','dependencies'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
   for(const key of Object.keys(o))assert(['root','help',...allowed[command]].includes(key),`Unknown option --${key} for ${command}`);
   const root=path.resolve(o.root || process.cwd());
   let result;
   switch(command) {
+    case 'onboard':console.log(await onboard(root,{agents:o.agents,policy:o.policy,autonomy:o.autonomy,project:o.project,nonInteractive:o['non-interactive']}));return 0;
+    case 'demo':assert(o.root,'Specify --root NEW_EMPTY_DIRECTORY for the demo');console.log(await demo(root));return 0;
     case 'init': {
       assert(!o.scope || ['project','user'].includes(o.scope),'Scope must be project or user');
       const target=o.scope==='user'?path.join(os.homedir(),'.agenthouse-defaults'):root;
@@ -50,6 +52,7 @@ See docs/using.md for command contracts and governance trust boundaries.`);retur
     }
     case 'doctor': {
       const problems=[];let config;
+      try {dependencyStatus(root);}catch(e){problems.push(e.message);}
       try {config=resolve(root,{frozen:true}).config;}catch(e){problems.push(e.message);}
       if(fs.existsSync(inside(root,'.agenthouse/transaction.json')))problems.push('Interrupted installation: run recover');
       const state=fs.existsSync(inside(root,'.agenthouse/installation.json'))?read(inside(root,'.agenthouse/installation.json')):null;
@@ -83,6 +86,14 @@ See docs/using.md for command contracts and governance trust boundaries.`);retur
       const envelope=signed(read(path.resolve(o.input)),fs.readFileSync(path.resolve(o.key),'utf8'));
       if(o.delegation)envelope.delegation=read(path.resolve(o.delegation));
       create(path.resolve(o.output),envelope);result={signed:path.resolve(o.output)};break;
+    }
+    case 'dependencies': {
+      const action=pos.shift();
+      if(action==='status')result=dependencyStatus(root);
+      else if(action==='pin' || action==='unpin')result=pinDependency(root,action==='unpin');
+      else if(action==='update'){assert(o.bundle,'--bundle required');result=updateDependency(root,{bundle:o.bundle,sha256:o.sha256,publicKey:o['public-key'],check:o.check,allowBreaking:o['allow-breaking']});}
+      else throw new Error('Choose dependencies status, update, pin, or unpin');
+      break;
     }
     case 'skill':assert(o.source,'--source required');result=importSkill(root,o.source,{name:o.name,expectedDigest:o.sha256});break;
     case 'module': {

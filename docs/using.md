@@ -100,9 +100,15 @@ Use `capture(page, testInfo)` from the Playwright adapter. Baseline comparison u
 
 `npm run test:browser` exercises a real local fixture, establishes a test-only baseline under work/, deliberately breaks the layout, asserts failure, restores it, and verifies the evidence. Set `AH_BROWSER_EXECUTABLE` for an already installed Chrome/Chromium, or provision the pinned Playwright browser first. This test script's baseline generation is not a production pipeline pattern.
 
+## Discover commands and onboarding
+
+Run `ah-engineering help` for the command map and `ah-engineering help evaluate` for command-specific options. `ah-engineering onboard --root /path/to/project` guides terminal setup; supply `--agents codex` for noninteractive setup. Existing installations receive a read-only guide. `ah-engineering demo --root ./new-demo-directory` runs an isolated failure/fix example and prints report paths. See the README for the full walkthrough.
+
 ## Shared specialist skills and hooks
 
-Import an existing reviewed skill with `skill --source /path/to/agenthouse-skills/engineering/frontend-acceptance`. The source is copied intact, and its file hashes, version and source are recorded in `.agenthouse/skills.json`. Optional `--sha256` checks a precomputed manifest digest. The framework does not fork the skill method. Existing changed imports are refused, rather than overwritten. Automatic upgrades of imported specialist skills are not yet implemented.
+Frontend acceptance is installed automatically from agenthouse-skills as a required versioned dependency. See [dependency operations](dependencies.md) for updates, pins, offline bundles, and rollback.
+
+Import another reviewed skill with `skill --source /path/to/another-reviewed-skill`. The source is copied intact, and its file hashes, version and source are recorded in `.agenthouse/skills.json`. Optional `--sha256` checks a precomputed manifest digest. The framework does not fork the skill method. Existing changed imports are refused, rather than overwritten. Automatic updates for the required frontend dependency are supported through approved bundles; updates of other manually imported skills remain separate.
 
 The lifecycle skill is installed into `.agents/skills/agenthouse-lifecycle`; agent instructions link the method. Hosts with other skill discovery conventions can read these files through the common entry point. Native plugin/skill-loader behavior is not yet host-certified. `agenthouse-hooks` remains independent; invoke a reviewed `scan` command through an exit-code evaluator if needed. Its malformed-input `run --vendor ci` behavior still needs upstream correction before that path is authoritative.
 

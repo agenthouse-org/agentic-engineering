@@ -1,3 +1,4 @@
+import {dependencyStatus} from './dependencies.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {randomUUID} from 'node:crypto';
@@ -73,7 +74,8 @@ export async function evaluate(root,options={}) {
   const result={schemaVersion:1,frameworkVersion:VERSION,runId,profile:options.profile || 'pull-request',subject:options.subject || '',startedAt:new Date().toISOString(),checks:[]};
   try {
     const {config,snapshot}=resolve(root,{frozen:!!options.frozen,policyFile:options.policyFile});
-    result.subject=subject(root,options.subject);result.policyDigest=snapshot.digest;
+    result.dependencies=dependencyStatus(root);
+      result.subject=subject(root,options.subject);result.policyDigest=snapshot.digest;
     const profile=config.profiles[result.profile];assert(profile,`Unknown profile: ${result.profile}`);
     assert(profile.checks.length>0,'Empty evaluation profile is not a gate');
     const selected=new Set(profile.checks.map(c=>c.evaluator));

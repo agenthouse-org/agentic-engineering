@@ -5,6 +5,7 @@ import {generateKeyPairSync} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {assert,read,write,create,hash,inside,walk,exclusive,PACKAGE,VERSION,canonical,validated,safeId} from './io.js';
 import {resolve} from './policy.js';
+import {bundledDependency,checkDependencyPin} from './dependencies.js';
 
 export const AGENTS={claude:'CLAUDE.md',codex:'AGENTS.md',opencode:'AGENTS.md',cursor:'.cursor/rules/agenthouse.mdc',windsurf:'.windsurf/rules/agenthouse.md',openclaw:'AGENTS.md'};
 const START='<!-- agenthouse:start -->',END='<!-- agenthouse:end -->';
@@ -15,7 +16,7 @@ export function detect(root) {
 export function payload(source=PACKAGE) {
   const metadata=read(path.join(source,'package.json'));
   const files={};
-  for(const name of ['bin','src','schemas','skills','modules','templates','adapters','docs']) {
+  for(const name of ['bin','src','schemas','skills','modules','templates','adapters','docs','dependencies']) {
     if(fs.existsSync(path.join(source,name)))for(const file of walk(path.join(source,name)))files[`${name}/${file}`]=fs.readFileSync(path.join(source,name,file)).toString('base64');
   }
   for(const file of ['package.json','README.md','LICENSE']) files[file]=fs.readFileSync(path.join(source,file)).toString('base64');
@@ -26,13 +27,14 @@ export function verifyPayload(data) {
   assert(Object.keys(data.files).length<5000,'Bundle file limit exceeded');
   let total=0;
   for(const [name,content] of Object.entries(data.files)) {
-    assert(/^(bin|src|schemas|skills|modules|templates|adapters|docs)\//.test(name) || ['package.json','README.md','LICENSE'].includes(name),`Disallowed bundle path: ${name}`);
+    assert(/^(bin|src|schemas|skills|modules|templates|adapters|docs|dependencies)\//.test(name) || ['package.json','README.md','LICENSE'].includes(name),`Disallowed bundle path: ${name}`);
     inside(os.tmpdir(),name);
     assert(typeof content==='string' && Buffer.from(content,'base64').toString('base64')===content,'Invalid bundle encoding');
     total+=Buffer.byteLength(content,'base64');assert(total<50*1024*1024,'Bundle size limit exceeded');
   }
   assert(data.files['bin/ah-engineering.js'] && data.files['src/cli.js'],'Bundle missing runtime');
   assert(JSON.parse(Buffer.from(data.files['package.json'],'base64')).version===data.version,'Bundle version mismatch');
+  bundledDependency(data);
   return data;
 }
 function journalPath(root){return inside(root,'.agenthouse/transaction.json');}
@@ -91,6 +93,9 @@ export function install(root,options={}) {
   return exclusive(root,()=>{
     const stateFile=inside(root,'.agenthouse/installation.json'),state=fs.existsSync(stateFile)?read(stateFile):{files:{}};
     const data=verifyPayload(options.payload || payload());
+    const dependency=bundledDependency(data);
+    checkDependencyPin(root,dependency.lock);
+    if(options.expectedDigest)assert(state.digest===options.expectedDigest,'Installation changed during dependency update; retry');
     if(fs.existsSync(inside(root,'.agenthouse/config.json')))resolve(root,{frameworkVersion:data.version,persist:false});
     const agents=options.agents || state.agents || detect(root);
     for(const a of agents)assert(Object.hasOwn(AGENTS,a),`Unsupported agent ${a}`);
@@ -103,7 +108,7 @@ export function install(root,options={}) {
     }
     const health=spawnSync(process.execPath,[inside(root,`${runtime}/bin/ah-engineering.js`),'--help'],{encoding:'utf8',timeout:10000,windowsHide:true});
     assert(health.status===0,`New runtime failed health check: ${health.stderr || health.error?.message}`);
-    const guidance='## agenthouse engineering\nAt task start run `node .agenthouse/run.mjs session` and read `.agenthouse/resolved.json` plus `.agenthouse/lifecycle.md`. Use the lifecycle record and its acceptance criteria; never invent approval or evidence. For UI changes use frontend acceptance and inspect real screenshots. Use `node .agenthouse/run.mjs evaluate --profile pull-request --frozen` for the configured checks. These instructions are advisory; CI and signed decisions supply boundary controls.';
+    const guidance='## agenthouse engineering\nAt task start run `node .agenthouse/run.mjs session` and read `.agenthouse/resolved.json` plus `.agenthouse/lifecycle.md`. Use the lifecycle record and its acceptance criteria; never invent approval or evidence. For UI changes read and follow `.agents/skills/frontend-acceptance/SKILL.md` from agenthouse-skills and inspect real screenshots. Use `node .agenthouse/run.mjs evaluate --profile pull-request --frozen` for the configured checks. These instructions are advisory; CI and signed decisions supply boundary controls.';
     const desired={
       '.agenthouse/run.mjs':{content:`import fs from 'node:fs';\nimport {fileURLToPath} from 'node:url';\nconst active=JSON.parse(fs.readFileSync(new URL('./active.json',import.meta.url),'utf8'));\nconst target=new URL('./'+active.runtime+'/bin/ah-engineering.js',import.meta.url);\nawait import(target.href);\n`},
       '.agenthouse/lifecycle.md':{content:Buffer.from(data.files['docs/lifecycle.md'],'base64').toString('utf8')},
@@ -112,9 +117,29 @@ export function install(root,options={}) {
     };
     for(const a of agents)if(AGENTS[a]!=='AGENTS.md')desired[AGENTS[a]]={block:!AGENTS[a].endsWith('.mdc') && a!=='windsurf',content:a==='cursor'?`---\ndescription: agenthouse engineering lifecycle\nalwaysApply: true\n---\n${guidance}\n`:a==='windsurf'?`---\ntrigger: always_on\n---\n${guidance}\n`:guidance};
     for(const [file,b64] of Object.entries(data.files))if(file.startsWith('skills/'))desired[`.agents/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};
+    for(const [file,b64] of Object.entries(dependency.data.files))desired[`.agents/skills/${dependency.lock.id}/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};
+    desired['.agenthouse/dependencies.lock.json']={content:JSON.stringify({schemaVersion:1,dependencies:{[dependency.lock.id]:dependency.lock}},null,2)+'\n'};
+    const adoption={...state,files:{...state.files}};
+    const skillDirectory=inside(root,`.agents/skills/${dependency.lock.id}`);
+    if(fs.existsSync(skillDirectory))for(const file of walk(skillDirectory))assert(dependency.lock.files[file] || state.files[`.agents/skills/${dependency.lock.id}/${file}`],`Unowned dependency file: ${file}`);
+    for(const [file,digest] of Object.entries(dependency.lock.files)) {
+      const rel=`.agents/skills/${dependency.lock.id}/${file}`,dest=inside(root,rel);
+      if(!adoption.files[rel] && fs.existsSync(dest) && hash(fs.readFileSync(dest))===digest)adoption.files[rel]={block:false,digest};
+    }
+    const removed=[];
+    for(const old of Object.keys(state.files))if(!desired[old] && old.startsWith(`.agents/skills/${dependency.lock.id}/`)) {
+      assert(hash(fs.readFileSync(inside(root,old)))===state.files[old].digest,`Modified dependency file: ${old}`);
+      removed.push({path:old,content:null});
+    }
     // Keep previously selected adapters on upgrade rather than orphaning their owned files.
-    for(const old of Object.keys(state.files))assert(desired[old],`Cannot drop installed adapter implicitly: ${old}; uninstall first`);
-    const {changes,ownership}=managed(root,desired,state);
+    for(const old of Object.keys(state.files))assert(desired[old] || removed.some(c=>c.path===old),`Cannot drop installed adapter implicitly: ${old}; uninstall first`);
+    const {changes,ownership}=managed(root,desired,adoption);
+    changes.push(...removed);
+    const importFile=inside(root,'.agenthouse/skills.json');
+    if(fs.existsSync(importFile)) {
+      const imports=read(importFile);
+      if(imports[dependency.lock.id]){delete imports[dependency.lock.id];changes.push({path:'.agenthouse/skills.json',content:JSON.stringify(imports,null,2)+'\n'});}
+    }
     const active={runtime:runtime.replace('.agenthouse/',''),version:data.version,digest};
     if(state.digest!==digest && fs.existsSync(inside(root,'.agenthouse/active.json')))changes.push({path:'.agenthouse/previous.json',content:JSON.stringify({state,active:read(inside(root,'.agenthouse/active.json'))})});
     changes.push({path:'.agenthouse/active.json',content:JSON.stringify(active)}, {path:'.agenthouse/installation.json',content:JSON.stringify({version:data.version,agents,files:ownership,digest})});

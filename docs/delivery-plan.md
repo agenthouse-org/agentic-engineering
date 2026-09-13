@@ -73,7 +73,7 @@ Acceptance: both pilots meet their success criteria; actual release archives con
 
 ## Unresolved implementation choices
 
-- Installer runtime, package coordinates, binary/archive formats, and dependency strategy.
+- Extend the implemented Node CLI, npm tarball, and verified bundle distribution to public marketplaces and private infrastructure.
 - Release signing and enterprise trust bootstrap.
 - Existing hook-runtime version/API suitable for dependency use.
 - Tested current versions and actual capabilities of each target coding agent.

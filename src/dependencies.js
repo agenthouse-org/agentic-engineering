@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import os from 'node:os';
-import {assert,hash,inside,read} from './io.js';
+import {assert,hash,inside,read,walk} from './io.js';
 
 export const DEPENDENCY='frontend-acceptance';
 export const DEPENDENCY_FILE='dependencies/frontend-acceptance.json';
@@ -16,11 +16,13 @@ export function verifyDependency(data) {
     assert(!file.includes('\\') && file.split('/').every(p=>p && p!=='.'),'Noncanonical dependency path');
     assert(typeof encoded==='string' && Buffer.from(encoded,'base64').toString('base64')===encoded,'Invalid dependency encoding');
     const bytes=Buffer.from(encoded,'base64');total+=bytes.length;
+    assert(Buffer.from(bytes.toString('utf8')).equals(bytes),'Only UTF-8 skill resources are supported');
     assert(total<5*1024*1024,'Dependency size limit');hashes[file]=hash(bytes);
   }
   const entry=Buffer.from(data.files['SKILL.md'] || '','base64').toString('utf8');
   assert(entry.match(/^name:\s*["']?([a-z0-9-]+)/m)?.[1]===data.id,'Dependency skill identity mismatch');
   assert(entry.match(/^version:\s*(.+)$/m)?.[1].trim()===data.version,'Dependency skill version mismatch');
+  assert(/^license:\s*MIT\s*$/m.test(entry),'Skill license mismatch');
   assert(hash(hashes)===data.digest,'Dependency digest mismatch');
   return {id:data.id,version:data.version,source:data.source,license:data.license,digest:data.digest,files:hashes};
 }
@@ -40,6 +42,8 @@ export function dependencyStatus(root) {
   const data=read(inside(root,`.agenthouse/${active.runtime}/${DEPENDENCY_FILE}`));
   const expected=verifyDependency(data),lock=read(inside(root,'.agenthouse/dependencies.lock.json'));
   assert(hash(lock)===hash({schemaVersion:1,dependencies:{[expected.id]:expected}}),'Dependency lock changed');
+  const directory=inside(root,`.agents/skills/${expected.id}`);
+  assert(fs.existsSync(directory) && hash(walk(directory).sort())===hash(Object.keys(expected.files).sort()),'Dependency file inventory changed');
   for(const [file,digest] of Object.entries(expected.files)) {
     const target=inside(root,`.agents/skills/${expected.id}/${file}`);
     assert(fs.existsSync(target) && hash(fs.readFileSync(target))===digest,`Dependency missing or modified: ${file}`);

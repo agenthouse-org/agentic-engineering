@@ -14,7 +14,7 @@ Before implementation, identify the requested outcome, scope, acceptance criteri
 
 During implementation, keep the change reviewable. If evidence contradicts the requirement, surface the disagreement and resolve it through the project's process; do not silently alter tests or add unrelated work.
 
-For UI changes, use the installed frontend-acceptance skill if available. Derive observable criteria from the reference image, story, or bug report. Run the real browser journey, inspect screenshots, and link findings to criteria. If no visual reviewer/browser is available, record incomplete evidence rather than a visual pass.
+For UI changes, read and use `.agents/skills/frontend-acceptance/SKILL.md`, the required versioned dependency maintained in agenthouse-skills. Run `node .agenthouse/run.mjs dependencies status` to verify its identity and integrity. If it is missing or modified, repair the dependency before proceeding with frontend acceptance. Derive observable criteria from the reference image, story, or bug report. Run the real browser journey, inspect screenshots, and link findings to criteria. If no visual reviewer/browser is available, record incomplete evidence rather than a visual pass.
 
 Use `node .agenthouse/run.mjs evaluate --profile <configured-profile> --frozen --subject <build-id>` to gather the project's checks. An explicit build ID must identify the actual tested build. Interpret JSON/HTML reports; never treat a process error, missing criterion, or pending approval as success.
 

@@ -35,5 +35,5 @@ export function updateDependency(root,options) {
   const bundle=payload(inside(root,`.agenthouse/${active.runtime}`));
   assert(hash(bundle)===active.digest,'Active runtime modified');
   bundle.files[DEPENDENCY_FILE]=Buffer.from(JSON.stringify(data,null,2)+'\n').toString('base64');
-  return install(root,{payload:bundle});
+  return install(root,{payload:bundle,expectedDigest:active.digest});
 }
