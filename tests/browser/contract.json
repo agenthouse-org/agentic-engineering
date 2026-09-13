@@ -1,0 +1,8 @@
+{
+  "schemaVersion":1,"id":"browser-pilot",
+  "source":{"kind":"story","reference":"tests/browser/fixture.spec.mjs","revision":"1"},
+  "criteria":[
+    {"id":"behavior","method":"behavior","expectation":"Continue is visible and usable on mobile without horizontal scrolling","viewport":"360x800","state":"ready"},
+    {"id":"regression","method":"regression","expectation":"The approved primary-action layout remains unchanged","viewport":"360x800","state":"ready"}
+  ]
+}

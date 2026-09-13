@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "status", "reason"],
+  "properties": {
+    "schemaVersion": {"enum": [1]}, "status": {"enum": ["passed", "failed", "error", "incomplete", "pending", "not-applicable"]},
+    "reason": {"type": "string", "minLength": 1}, "subject": {"type": "string"}, "policyDigest": {"type": "string"},
+    "findings": {"type": "array"},
+    "evidence": {"type": "array", "items": {"type": "object", "required": ["path"], "additionalProperties": false,
+      "properties": {"path": {"type": "string", "minLength": 1}, "label": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}}}
+  }
+}

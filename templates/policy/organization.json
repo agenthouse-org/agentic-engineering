@@ -1,0 +1,10 @@
+{
+  "schemaVersion":1,
+  "id":"organization-engineering",
+  "revision":"1",
+  "rules":[
+    {"id":"documentation-authority","mode":"default","value":"git","decision":"ADR-0001","description":"Groups may select a different documentation authority."},
+    {"id":"retain-evidence","mode":"mandatory","value":true,"decision":"ADR-0002","description":"Keep verification evidence for governed changes."}
+  ],
+  "requiredChecks":["tests"]
+}

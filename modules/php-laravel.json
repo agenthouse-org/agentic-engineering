@@ -1,0 +1,9 @@
+{
+  "name": "php-laravel",
+  "description": "Suggested checks; replace arguments with the project's actual toolchain before enabling.",
+  "evaluators": [
+    {"id":"tests","kind":"command","executable":"php","args":["artisan","test"],"result":"exit-code"},
+    {"id":"analysis","kind":"command","executable":"php","args":["vendor/bin/phpstan","analyse","--no-progress"],"result":"exit-code"}
+  ],
+  "principles": ["Keep request validation and authorization explicit", "Test tenancy and permission boundaries", "Make database changes reversible where practical", "Use declared project formatter and analyzer configuration"]
+}

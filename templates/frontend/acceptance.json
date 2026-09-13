@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "primary-action",
+  "source": {"kind":"story","reference":"backlog/primary-action.md","revision":"1"},
+  "criteria": [
+    {"id":"mobile-action","expectation":"The primary action is visible and usable at 360px without horizontal scrolling.","method":"behavior","viewport":"360x800","state":"ready","required":true},
+    {"id":"concept","expectation":"The primary action has the prominence and hierarchy described in the story.","method":"concept","viewport":"360x800","state":"ready","required":true}
+  ]
+}

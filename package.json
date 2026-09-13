@@ -1,0 +1,38 @@
+{
+  "name": "@agenthouse-org/engineering",
+  "version": "0.1.0",
+  "description": "Portable agentic SDLC, policy and evidence evaluation for developers and CI/CD",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "ah-engineering": "bin/ah-engineering.js"
+  },
+  "exports": {
+    ".": "./src/evaluate.js",
+    "./playwright": "./adapters/playwright.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "schemas",
+    "skills",
+    "modules",
+    "templates",
+    "adapters",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "node scripts/check-release.mjs",
+    "prepack": "npm run check",
+    "test:browser": "node scripts/test-browser.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

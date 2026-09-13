@@ -1,0 +1,9 @@
+{
+  "name": "node-typescript",
+  "description": "Suggested checks; replace arguments with the project's actual toolchain before enabling.",
+  "evaluators": [
+    {"id":"types","kind":"command","executable":"node","args":["node_modules/typescript/bin/tsc","--noEmit"],"result":"exit-code"},
+    {"id":"tests","kind":"command","executable":"node","args":["--test"],"result":"exit-code"}
+  ],
+  "principles": ["Make public contracts explicit", "Test observable behavior", "Avoid weakening compiler or test settings to pass a gate", "Keep secrets outside committed configuration"]
+}

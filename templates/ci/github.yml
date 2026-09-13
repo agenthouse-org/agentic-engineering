@@ -1,0 +1,24 @@
+name: agenthouse evaluation
+on: [pull_request]
+permissions:
+  contents: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # Add the reviewed framework tarball as a locked project dependency first.
+      # npm ci honors the configured enterprise registry and certificate settings.
+      - run: npm ci --ignore-scripts
+      - name: Evaluate
+        run: node node_modules/@agenthouse-org/engineering/bin/ah-engineering.js evaluate --profile pull-request --ci --frozen --subject "${{ github.sha }}"
+      - name: Preserve evidence even when evaluation fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agenthouse-evidence
+          path: artifacts/agenthouse/
+          if-no-files-found: warn

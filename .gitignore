@@ -1,0 +1,13 @@
+# Private source material: never publish in framework releases.
+/input/
+
+# Local work and generated artifacts.
+/work/
+/dist/
+/node_modules/
+/.agenthouse/cache/
+/.agenthouse/credentials/
+*.log
+.env
+.env.*
+!.env.example
