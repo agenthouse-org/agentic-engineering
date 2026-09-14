@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import {assert,read,write,inside,hash} from './io.js';
+import {assert,read,write,inside,hash,exclusive} from './io.js';
 import {resolve,approval} from './policy.js';
 import {run} from './process.js';
 
@@ -9,10 +9,10 @@ export function gate(root,{item,phase='ready',decision,policyFile}={}) {
   const record=read(inside(root,item)),{config,snapshot}=resolve(root,{frozen:true,policyFile});
   const settings=config.lifecycle || {},rules=settings[phase] || {};
   const fields=rules.fields || CRITERIA[phase],findings=[];
-  const kindFields=phase==='ready'?(rules.kindFields || {bug:['reproduction','expected','observed'],incident:['impact','mitigation'],investigation:['question','completionCondition'],documentation:['audience']}):{};
+  const kindFields=rules.kindFields || (phase==='ready'?{bug:['reproduction','expected','observed'],incident:['impact','mitigation'],investigation:['question','completionCondition'],documentation:['audience']}:{});
   for(const id of new Set([...fields,...(kindFields[record.kind] || [])]))if(typeof record.fields?.[id]!=='string'||!record.fields[id].trim())findings.push({id,status:'incomplete',reason:`Missing ${id}`});
   assert(Array.isArray(record.criteria),'Work item requires criteria');
-  assert(record.criteria.every(c=>c.id && c.expectation) && new Set(record.criteria.map(c=>c.id)).size===record.criteria.length,'Invalid or duplicate acceptance criteria');
+  assert(record.criteria.every(c=>typeof c.id==='string' && c.id.trim() && typeof c.expectation==='string' && c.expectation.trim()) && new Set(record.criteria.map(c=>c.id)).size===record.criteria.length,'Invalid or duplicate acceptance criteria');
   if(!record.criteria.length)findings.push({id:'criteria',status:'incomplete',reason:'No observable criteria'});
   const evidence=[];
   if(phase==='done') {
@@ -63,6 +63,8 @@ export async function specification(root,{item,phase,evaluator}={}) {
   const capture={status:phase,at:new Date().toISOString(),commandDigest,policyDigest:snapshot.digest,exitCode:output.code,stdout:output.stdout,stderr:output.stderr};
   assert(command.specificationFiles.every(file=>hash(fs.readFileSync(inside(root,file)))===files[file]),'Test files changed during capture');
   record.specification=phase==='red'?{criteriaDigest,files,red:capture}:{...record.specification,green:capture};
-  assert(hash(read(file))===before,'Work item changed during capture');
-  write(file,record);return capture;
+  return exclusive(root,()=>{
+    assert(hash(read(file))===before,'Work item changed during capture');
+    write(file,record);return capture;
+  });
 }

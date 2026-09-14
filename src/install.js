@@ -154,6 +154,9 @@ export function install(root,options={}) {
     for(const old of Object.keys(state.files))assert(desired[old] || removed.some(c=>c.path===old),`Cannot drop installed adapter implicitly: ${old}; uninstall first`);
     const {changes,ownership}=managed(root,desired,adoption);
     changes.push(...removed);
+    // A rollback to a runtime without engineering hooks must not leave active
+    // handlers pointing at a command that the restored runtime cannot execute.
+    if(!hooks)changes.push(...hookSettings(root,{remove:true}).changes);
     const importFile=inside(root,'.agenthouse/skills.json');
     if(fs.existsSync(importFile)) {
       const imports=read(importFile);

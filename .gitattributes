@@ -4,4 +4,4 @@
 *.webp binary
 *.tgz binary
 dependencies/hooks/engineering.cjs -text
-dependencies/hooks/LICENSE -text
+dependencies/hooks/LICENSE -text whitespace=cr-at-eol

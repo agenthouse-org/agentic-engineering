@@ -126,3 +126,16 @@ test('native hook removal refuses edited managed groups without removing other f
   const root=setup(t);transact(root,hookSettings(root).changes);const file=path.join(root,'.claude/settings.json'),settings=read(file);settings.hooks.PreToolUse[0].matcher='Custom';write(file,settings);
   assert.throws(()=>uninstall(root),/Modified or missing managed hook/);assert.ok(fs.existsSync(path.join(root,'.agenthouse/run.mjs')));
 });
+
+test('restoring a runtime without hooks removes owned handlers while preserving settings',t=>{
+  const root=setup(t),file=path.join(root,'.claude/settings.json');write(file,{permissions:{allow:['Read']}});transact(root,hookSettings(root).changes);
+  const bundle=payload();for(const name of Object.keys(bundle.files))if(name.startsWith('dependencies/hooks/'))delete bundle.files[name];install(root,{payload:bundle});
+  assert.deepEqual(read(file),{permissions:{allow:['Read']}});assert.equal(fs.existsSync(path.join(root,'.agenthouse/hook-installation.json')),false);
+});
+
+test('kind-specific completion requirements are enforced and blank criteria rejected',t=>{
+  const root=setup(t),record=item(root);record.kind='feature';write(path.join(root,'item.json'),record);
+  config(root,c=>c.lifecycle={done:{approval:false,kindFields:{feature:['runbook']}}});
+  assert.ok(gate(root,{item:'item.json',phase:'done'}).findings.some(f=>f.id==='runbook'));
+  record.criteria[0].expectation=' ';write(path.join(root,'item.json'),record);assert.throws(()=>gate(root,{item:'item.json'}),/Invalid/);
+});

@@ -2,7 +2,7 @@
 
 Version 0.1.4 developer preview. Updated 2026-09-14.
 
-Local release checks: 64 core/workflow tests passed; real visual regression and usability pass/fail browser scenarios passed. The upstream hooks suite passed all eight test files.
+Local release checks: 66 core/workflow tests passed; real visual regression and usability pass/fail browser scenarios passed. The upstream hooks suite passed all eight test files.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
@@ -29,4 +29,4 @@ Dedicated two-way service connectors, a hosted REST/MCP service and live enterpr
 
 The hooks export is a versioned, content-pinned contribution from agenthouse-hooks; no registry publication or Git commit is claimed for that export. Usability setup has a transitive npm lockfile. Fully disconnected setup also needs cached packages, a matching browser and its operating-system dependencies.
 
-Cross-platform CI previously passed on Windows, Linux and macOS with the Linux browser job at 75d55bb. Each new release must pass its own workflow before receiving the same verification claim. Consumer-specific policies, integrations and host behavior require an isolated pilot before cutover.
+Cross-platform CI passed on Windows, Linux and macOS with both browser scenarios at a221109 ([run](https://github.com/agenthouse-org/agentic-engineering/actions/runs/34836151481)). Each new release must pass its own workflow before receiving the same verification claim. Consumer-specific policies, integrations and host behavior require an isolated pilot before cutover.

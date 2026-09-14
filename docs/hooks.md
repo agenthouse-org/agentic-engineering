@@ -11,3 +11,5 @@ Configure `hooks.blockNoVerify`, `hooks.protectedBranches` and `hooks.checks`. A
 Touched-file checks select extensions and invoke an executable with an argument array. `{file}` becomes the relative path, optional `available` skips absent tools, and `timeoutSeconds` bounds execution. Stack modules include examples. Nothing installs or auto-fixes tools. Symlink and out-of-root edit targets are rejected. Whole-project checks remain in CI.
 
 Claude, Cursor and CI payload translation are fixture-tested. Native activation is not certified for every host/version; other agents use the CLI through skills. Malformed events return errors, not passing checks.
+
+Restoring a framework version without the engineering hook runtime removes owned hook registrations in the same transaction. Modified hooks or a pin on the hook export block that change until reconciled.
