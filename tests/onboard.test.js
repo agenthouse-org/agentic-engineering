@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {PACKAGE,read,write} from '../src/io.js';
-import {onboard,demo} from '../src/onboard.js';
+import {onboard,demo,documentationFiles,openDocumentation,showDocumentation} from '../src/onboard.js';
 const temp=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah-onboard-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 const cli=(args)=>spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),...args],{encoding:'utf8',timeout:20000,windowsHide:true});
 test('command help works without enrollment and unknown topics fail',()=>{
@@ -28,6 +28,20 @@ test('piped onboarding explains explicit options without writing a project',t=>{
   const root=temp(t),result=cli(['onboard','--root',root]);
   assert.equal(result.status,2);assert.match(result.stderr,/--non-interactive/);assert.deepEqual(fs.readdirSync(root),[]);
   assert.equal(cli(['onboard','--root',root,'--non-interactive']).status,0);
+});
+test('onboarding can show or open both Markdown guides',async t=>{
+  const root=temp(t);await onboard(root,{agents:'codex',docs:'skip'});
+  const files=documentationFiles(root);assert.equal(files.length,2);assert.ok(files.every(file=>fs.existsSync(file)));
+  const shown=showDocumentation(root);assert.match(shown,/# agenthouse engineering cookbook/);assert.match(shown,/# Agent commands/);
+  const calls=[],opened=openDocumentation(root,{platform:'win32',run:(command,args,options)=>{calls.push({command,args,options});return {status:0};}});
+  assert.equal(calls.length,2);assert.ok(calls.every(call=>call.command==='rundll32.exe' && call.args[0]==='url.dll,FileProtocolHandler'));
+  assert.deepEqual(calls.map(call=>call.args[1]),files);assert.match(opened,/default Markdown application/);
+});
+test('scripted documentation choices are deterministic and validated before enrollment',t=>{
+  const shownRoot=temp(t),shown=cli(['onboard','--root',shownRoot,'--non-interactive','--docs','show']);
+  assert.equal(shown.status,0);assert.match(shown.stdout,/# agenthouse engineering cookbook/);assert.match(shown.stdout,/# Agent commands/);
+  const invalidRoot=temp(t),invalid=cli(['onboard','--root',invalidRoot,'--non-interactive','--docs','later']);
+  assert.equal(invalid.status,2);assert.match(invalid.stderr,/Documentation choice must be open, show, skip/);assert.deepEqual(fs.readdirSync(invalidRoot),[]);
 });
 test('demo retains failed and passing reports and refuses nonempty targets',async t=>{
   const root=temp(t);const result=await demo(root);assert.match(result,/exit 1/);assert.match(result,/exit 0/);

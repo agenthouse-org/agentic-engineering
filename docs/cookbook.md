@@ -41,7 +41,15 @@ Enroll each repository with an explicit agent list:
 ah-engineering onboard --root "C:/src/my-app" --agents codex,cursor
 ```
 
-On an existing installation, `onboard` only prints next steps and preserves the selected agents. To change the registered agents, run:
+In an interactive terminal, onboarding then asks whether to open the cookbook and project agent-command guide in the system's default Markdown app, show both in the terminal, or skip. For a deterministic scripted run, select the behavior explicitly:
+
+```text
+ah-engineering onboard --root "C:/src/my-app" --agents codex,cursor --docs show
+```
+
+Use `--docs open`, `--docs show`, or `--docs skip`. Noninteractive runs skip the guides when this option is omitted.
+
+On an existing installation, `onboard` offers the same documentation choice, prints next steps, and preserves the selected agents. To change the registered agents, run:
 
 ```text
 ah-engineering init --root "C:/src/my-app" --agents codex,cursor,claude

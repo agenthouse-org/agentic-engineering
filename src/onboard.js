@@ -1,11 +1,42 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createInterface} from 'node:readline/promises';
+import {spawnSync} from 'node:child_process';
 import {assert,inside,read,write} from './io.js';
 import {install,AGENTS} from './install.js';
 import {dependencyStatus} from './dependencies.js';
 import {resolve} from './policy.js';
 import {evaluate} from './evaluate.js';
+
+const DOC_CHOICES=['open','show','skip'];
+
+export function documentationFiles(root) {
+  const active=read(inside(root,'.agenthouse/active.json'));
+  const files=[
+    inside(root,`.agenthouse/${active.runtime}/docs/cookbook.md`),
+    inside(root,'.agenthouse/agent-commands.md')
+  ];
+  for(const file of files)assert(fs.existsSync(file),`Documentation missing: ${file}`);
+  return files;
+}
+export function showDocumentation(root) {
+  return documentationFiles(root).map(file=>`===== ${file} =====\n\n${fs.readFileSync(file,'utf8').trim()}`).join('\n\n');
+}
+export function openDocumentation(root,{platform=process.platform,run=spawnSync}={}) {
+  const files=documentationFiles(root),command=platform==='win32'?'rundll32.exe':platform==='darwin'?'open':'xdg-open';
+  for(const file of files) {
+    const args=platform==='win32'?['url.dll,FileProtocolHandler',file]:[file];
+    const result=run(command,args,{encoding:'utf8',timeout:10000,windowsHide:true});
+    assert(!result.error && result.status===0,`Could not open ${file}: ${result.error?.message || result.stderr || `exit ${result.status}`}`);
+  }
+  return `Opened in the default Markdown application:\n${files.map(file=>`  ${file}`).join('\n')}`;
+}
+export function documentation(root,choice,options={}) {
+  assert(DOC_CHOICES.includes(choice),`Documentation choice must be ${DOC_CHOICES.join(', ')}`);
+  if(choice==='open')return openDocumentation(root,options);
+  if(choice==='show')return showDocumentation(root);
+  return '';
+}
 
 export function nextSteps(root) {
   const config=resolve(root,{frozen:true}).config;
@@ -46,20 +77,29 @@ Explore: help evaluate, help dependencies, doctor, or demo in a NEW empty direct
 Native agent loading/hooks still require host-specific verification.`;
 }
 export async function onboard(root,options={}) {
-  if(fs.existsSync(inside(root,'.agenthouse/installation.json')))return nextSteps(root);
+  if(options.docs!==undefined)assert(DOC_CHOICES.includes(options.docs),`Documentation choice must be ${DOC_CHOICES.join(', ')}`);
+  const installed=fs.existsSync(inside(root,'.agenthouse/installation.json'));
+  const interactive=!options.nonInteractive && process.stdin.isTTY && process.stdout.isTTY;
   let agents=options.agents,policy=options.policy,autonomy=options.autonomy;
-  if(!agents && !options.nonInteractive) {
-    assert(process.stdin.isTTY && process.stdout.isTTY,'For scripted setup use onboard --agents codex (choose your agents), or --non-interactive. Run help onboard for options.');
-    const prompt=createInterface({input:process.stdin,output:process.stdout});
-    try {
+  if(!installed && !agents && !options.nonInteractive)assert(interactive,'For scripted setup use onboard --agents codex (choose your agents), or --non-interactive. Run help onboard for options.');
+  const needsPrompt=interactive && ((!installed && !agents) || options.docs===undefined);
+  const prompt=needsPrompt?createInterface({input:process.stdin,output:process.stdout}):null;
+  try {
+    if(!installed && !agents && !options.nonInteractive) {
       console.log(`Set up agenthouse in ${root}\nInstalls a project runtime, skills and advisory agent instructions.\nExisting project configuration and unrelated files are preserved.`);
       agents=(await prompt.question(`Coding agents, comma separated (${Object.keys(AGENTS).join(', ')}; Enter for codex): `)).trim() || 'codex';
       if(!policy)policy=(await prompt.question('Organization policy JSON path (Enter for a local solo policy): ')).trim() || undefined;
       if(!policy && !autonomy)autonomy=(await prompt.question('Autonomy: supervised, bounded, delegated (Enter for supervised): ')).trim() || 'supervised';
-    }finally{prompt.close();}
+    }
+    if(!installed)install(root,{agents:(agents || 'codex').split(',').map(a=>a.trim()),policy,autonomy,project:options.project});
+    let choice=options.docs;
+    if(choice===undefined && prompt)choice=(await prompt.question('Documentation: open in the default Markdown app, show in this terminal, or skip? (open/show/skip; Enter for open): ')).trim() || 'open';
+    choice=choice || 'skip';
+    const guide=documentation(root,choice,options.documentationOptions);
+    return `${nextSteps(root)}${guide?`\n\n${guide}`:''}`;
+  }finally{
+    prompt?.close();
   }
-  install(root,{agents:(agents || 'codex').split(',').map(a=>a.trim()),policy,autonomy,project:options.project});
-  return nextSteps(root);
 }
 export async function demo(root) {
   assert(!fs.existsSync(root) || fs.readdirSync(root).length===0,'Demo requires a new or empty directory; use --root ./ah-demo');

@@ -1,8 +1,8 @@
 # Implementation and verification status
 
-Version 0.1.5 developer preview. Updated 2026-09-14.
+Version 0.1.6 developer preview. Updated 2026-09-15.
 
-Local release checks: 66 core/workflow tests passed; real visual regression and usability pass/fail browser scenarios passed. The upstream hooks suite passed all eight test files.
+Local release checks: 68 core/workflow tests passed; real visual regression and usability pass/fail browser scenarios passed. The upstream hooks suite passed all eight test files.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |

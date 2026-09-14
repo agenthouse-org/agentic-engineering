@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**0.1.5 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling and marketplace manifests are included. See [implementation status](docs/implementation-status.md).
+**0.1.6 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling and marketplace manifests are included. See [implementation status](docs/implementation-status.md).
 
 
 ## Install on your computer
@@ -20,7 +20,7 @@ npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-To pin the CLI version, use `npm install --global @agenthouse/engineering@0.1.5 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@0.1.6 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
 
 Versioned GitHub release downloads are pending. For an offline installation, obtain a reviewed `.tgz` package as described below.
 
@@ -31,7 +31,7 @@ Update the CLI with `npm install --global @agenthouse/engineering@latest --ignor
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-engineering-0.1.5.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-0.1.6.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -45,7 +45,7 @@ To package the source yourself, run these commands in a tools directory outside 
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-engineering-0.1.5.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-0.1.6.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -83,13 +83,15 @@ The demo is a small CLI acceptance example. It does not approve a release or per
 ah-engineering onboard --root /path/to/your/project
 ```
 
-In a terminal, onboarding asks for your coding agents, an optional organization policy file, and autonomy preference. It installs the project runtime and skills, then prints instructions for your first task. The default is supervised autonomy. Rerunning onboarding on an enrolled project shows its next steps without modifying configuration.
+In a terminal, onboarding asks for your coding agents, an optional organization policy file, and autonomy preference. After setup it asks whether to open the cookbook and installed agent-command guide in the operating system's default Markdown app, show both in the terminal, or skip them. It then prints instructions for your first task. The default is supervised autonomy. Rerunning onboarding on an enrolled project offers the documentation choice and shows its next steps without modifying configuration.
 
 For scripts or a setup without prompts:
 
 ```text
-ah-engineering onboard --root /path/to/your/project --agents claude,codex,cursor
+ah-engineering onboard --root /path/to/your/project --agents claude,codex,cursor --docs skip
 ```
+
+Scripts can select `--docs open`, `--docs show`, or `--docs skip` explicitly. `--non-interactive` defaults to skipping the guides when `--docs` is omitted.
 
 Enterprise teams can add `--policy /path/to/approved-policy.json`. Teams retain ownership of their policies and approval process. Local setup uses a project policy and creates a private signing key under the Git-ignored `.agenthouse/local/` directory.
 

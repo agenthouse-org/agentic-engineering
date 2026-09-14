@@ -12,12 +12,12 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Guide setup conversationally: infer the target and coding agents from context, ask only for missing choices, and explain policy/autonomy options. Run onboard with explicit --agents or --non-interactive; never launch an interactive terminal wizard from an agent. Then help the user formulate their first real outcome. Existing installations keep their configuration.
+Guide setup conversationally: infer the target and coding agents from context, ask only for missing choices, and explain policy/autonomy options. Run onboard with explicit --agents or --non-interactive and --docs skip; never launch an interactive terminal wizard or open desktop applications from an agent unless the user requests it. Then point out the installed cookbook and agent-command guide and help the user formulate their first real outcome. Existing installations keep their configuration.
 
 CLI reference:
 
 ```text
-onboard [--root PATH] [--agents claude,codex,cursor] [--policy FILE] [--autonomy supervised|bounded|delegated]
-Guided setup in a terminal. Supply --agents (or --non-interactive) for scripts.
-Existing installations receive a read-only next-step guide; configuration is preserved.
+onboard [--root PATH] [--agents claude,codex,cursor] [--policy FILE] [--autonomy supervised|bounded|delegated] [--docs open|show|skip]
+Guided setup asks whether to open the Markdown guides in the default app, show them in the terminal, or skip. Supply --agents (or --non-interactive) and --docs for scripts.
+Existing installations receive the same documentation choice and a read-only next-step guide; configuration is preserved.
 ```
