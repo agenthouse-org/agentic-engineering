@@ -1,0 +1,61 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+  # Manual runs verify packaging without publishing a version.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    uses: ./.github/workflows/test.yml
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+      - run: npm install --global npm@11.19.1 --ignore-scripts
+      - name: Validate release identity
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_PRERELEASE: ${{ github.event.release.prerelease }}
+        run: node scripts/validate-npm-release.mjs
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - name: Pack and test the distributable
+        run: |
+          mkdir -p dist
+          npm pack --ignore-scripts --pack-destination dist
+          npm install --prefix /tmp/ah-package-smoke --ignore-scripts --no-audit --no-fund ./dist/*.tgz
+          node /tmp/ah-package-smoke/node_modules/@agenthouse/engineering/bin/ah-engineering.js demo --root /tmp/ah-release-demo
+      - name: Keep the tested archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: dist/*.tgz
+          if-no-files-found: error
+      - name: Verify publishing command without publishing
+        if: github.event_name == 'workflow_dispatch'
+        run: npm publish ./dist/*.tgz --access public --ignore-scripts --dry-run
+      - name: Publish release with trusted authentication
+        if: github.event_name == 'release'
+        env:
+          NPM_DIST_TAG: ${{ github.event.release.prerelease && 'next' || 'latest' }}
+        run: npm publish ./dist/*.tgz --access public --ignore-scripts --tag "$NPM_DIST_TAG"

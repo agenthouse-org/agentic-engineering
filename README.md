@@ -24,6 +24,8 @@ To pin the CLI version, use `npm install --global @agenthouse/engineering@0.1.4 
 
 Versioned GitHub release downloads are pending. For an offline installation, obtain a reviewed `.tgz` package as described below.
 
+Update the CLI with `npm install --global @agenthouse/engineering@latest --ignore-scripts`. Existing projects retain their pinned runtime and use verified bundles for updates. Maintainers can publish new versions through GitHub Releases; see [release automation and updates](docs/releasing.md).
+
 ### Install a supplied package
 
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
