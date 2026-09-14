@@ -1,4 +1,4 @@
-# Using agenthouse engineering 0.1.0
+# Using agenthouse engineering
 
 This is a runnable developer preview. The core requires Node.js 22 or newer and has no runtime package dependencies. See [implementation status](implementation-status.md) for tested behavior and remaining platform work. Native agent hooks and remote product-specific connectors are not claimed as complete.
 
@@ -10,7 +10,9 @@ From this checkout:
 node C:/src/agenthouse-agentic-engineering/bin/ah-engineering.js init --root C:/path/to/project --agents claude,codex,cursor
 ```
 
-Or install the generated npm tarball into a consuming project using `npm install --save-dev /path/to/agenthouse-org-engineering-0.1.0.tgz`, then run its `ah-engineering` binary. Use `npm install --global /path/to/archive.tgz` for a machine/user-accessible CLI; each project is still enrolled separately. No public npm release is assumed. npm's registry, proxy and certificate configuration applies when distributing through internal registries. The dependency-free tarball can be installed offline with Node/npm already provisioned.
+For normal use, install the CLI with `npm install --global @agenthouse/engineering --ignore-scripts`, then run `ah-engineering onboard --root /path/to/project`. Each application is enrolled separately; no framework checkout is needed. To pin the CLI, install `@agenthouse/engineering@0.1.4` instead.
+
+For a project-local CLI, use `npm install --save-dev --save-exact @agenthouse/engineering@0.1.4 --ignore-scripts`, then `npx --no-install ah-engineering onboard`. This updates the application's package manifest and lockfile; use the global option if you do not want a development dependency. A supplied archive can be installed with `npm install --global /path/to/agenthouse-engineering-0.1.4.tgz --ignore-scripts`. npm's registry, proxy and certificate configuration applies when distributing through internal registries. The dependency-free tarball can be installed offline with Node/npm already provisioned.
 
 `init` detects agent directories when `--agents` is omitted. Explicit supported values are claude, codex, opencode, cursor, windsurf, and openclaw. OpenClaw enrollment must target its configured workspace. When no host is detected, generic AGENTS.md instructions and the lifecycle skill are still installed. All CLI commands accept `--root`; by default they use the current directory.
 

@@ -1,5 +1,5 @@
 {
-  "name": "@agenthouse-org/engineering",
+  "name": "@agenthouse/engineering",
   "version": "0.1.4",
   "description": "Portable agentic SDLC, policy and evidence evaluation for developers and CI/CD",
   "type": "module",
@@ -40,5 +40,17 @@
   },
   "devDependencies": {
     "@playwright/test": "1.63.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agenthouse-org/agentic-engineering.git"
+  },
+  "homepage": "https://github.com/agenthouse-org/agentic-engineering#readme",
+  "bugs": {
+    "url": "https://github.com/agenthouse-org/agentic-engineering/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

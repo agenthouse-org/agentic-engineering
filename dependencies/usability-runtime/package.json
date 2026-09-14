@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@agenthouse-org/engineering": "file:../..",
+    "@agenthouse/engineering": "file:../..",
     "@axe-core/playwright": "4.10.1",
     "html-validate": "9.5.3",
     "playwright": "1.63.0"

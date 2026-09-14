@@ -11,38 +11,39 @@ agenthouse connects requirements, architecture decisions, implementation, accept
 
 Requires **Node.js 22 or newer**. Install the CLI once, then enroll each existing application repository. You do not need to run `npm ci` in your application to adopt agenthouse.
 
-### Planned npm installation — publication pending
+### Install from npm
 
-The intended installation after npm publication is:
+Install the CLI and start guided setup in your existing repository:
 
 ```text
-# Available after the package is published to npm:
-npm install --global @agenthouse-org/engineering --ignore-scripts
+npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-**The 0.1.4 preview has not been published to npm; this registry installation is not yet available.** Versioned GitHub release downloads are also pending. Once published, those downloads will provide a manual, enterprise and offline installation option without cloning or building the framework.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@0.1.4 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+
+Versioned GitHub release downloads are pending. For an offline installation, obtain a reviewed `.tgz` package as described below.
 
 ### Install a supplied package
 
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-org-engineering-0.1.4.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-0.1.4.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
 Replace the example repository path with your application's actual location. The core package has no third-party runtime dependencies. Global CLI installation does not replace the application's `node_modules`, change its dependencies or change its Git remote. Onboarding adds framework assets and managed instruction sections, preserves consumer configuration, and reports conflicting managed files.
 
-### Current public preview: install from a separate checkout
+### Alternative: install from a separate checkout
 
-Until public package downloads are available, another user can obtain the preview from GitHub. Run these commands in a tools directory outside the application repository; Git is required:
+To package the source yourself, run these commands in a tools directory outside the application repository; Git is required:
 
 ```text
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-org-engineering-0.1.4.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-0.1.4.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 

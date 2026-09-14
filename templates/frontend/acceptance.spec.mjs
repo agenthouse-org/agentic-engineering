@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {capture} from '@agenthouse-org/engineering/playwright';
+import {capture} from '@agenthouse/engineering/playwright';
 
 test('primary action works on mobile', async ({page},testInfo)=>{
   testInfo.annotations.push({type:'agenthouse-criterion',description:'mobile-action'},

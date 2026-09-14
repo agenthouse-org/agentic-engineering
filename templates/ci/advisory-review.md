@@ -5,7 +5,7 @@ Run deterministic evaluation first and preserve its result regardless of the rev
 Generate the structured context with:
 
 ```text
-node node_modules/@agenthouse-org/engineering/bin/ah-engineering.js review --item .agenthouse/work/change.json --evidence artifacts/evaluation/result.json --ref HEAD --output artifacts/review/context.json
+node node_modules/@agenthouse/engineering/bin/ah-engineering.js review --item .agenthouse/work/change.json --evidence artifacts/evaluation/result.json --ref HEAD --output artifacts/review/context.json
 ```
 
 The context command may exit 1 or 4 for failed or incomplete evidence. Preserve that status as an artifact; do not rewrite the deterministic job's result. Invoke the team's installed agent CLI with this task:
