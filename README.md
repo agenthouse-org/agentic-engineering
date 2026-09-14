@@ -6,6 +6,8 @@ agenthouse connects requirements, architecture decisions, implementation, accept
 
 **0.1.3 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Native agent hooks and marketplace packages are not yet certified. See [implementation status](docs/implementation-status.md).
 
+**Replacing an existing framework?** Read the [functional parity assessment](docs/functional-parity.md) first. This preview does not yet replace all hooks, executable review helpers, detailed readiness/done policies, or included usability tooling from the reference implementation. Keep existing capabilities until their replacements are verified.
+
 ## Try it in ten minutes
 
 Requires **Node.js 22 or newer**. From a source checkout:
@@ -169,7 +171,7 @@ The same `evaluate` command works without an interactive agent. `--ci` freezes p
 
 Framework and skill updates use trusted checksums or signatures, project pins, and rollback. Approved local or mirrored bundles can update between sessions; upstream HEAD is never implicitly fetched during evaluation. See [dependency operations](docs/dependencies.md).
 
-Instruction files are generated for Claude Code, Codex, OpenCode, Cursor, Windsurf, and OpenClaw. File generation is tested; native host loading, hooks, and permission behavior still need certification. Windows runtime tests have been run locally; the Linux/macOS CI matrix is supplied. Dedicated external-service connectors and enterprise live pilots remain open.
+Instruction files are generated for Claude Code, Codex, OpenCode, Cursor, Windsurf, and OpenClaw. File generation is tested; native host loading, hooks, and permission behavior still need certification. Core verification has passed in GitHub Actions on Windows, Linux, and macOS, along with the Linux browser test. Dedicated external-service connectors and enterprise live pilots remain open.
 
 ## Learn more and contribute
 

@@ -1,6 +1,6 @@
 # Implementation and verification status
 
-Version: 0.1.3 developer preview. Date: 2026-09-13.
+Version: 0.1.3 developer preview. Date: 2026-09-14.
 
 | Capability | Implemented | Verified here |
 | --- | --- | --- |
@@ -23,7 +23,7 @@ Version: 0.1.3 developer preview. Date: 2026-09-13.
 | Other specialist skill imports | Yes | Source-preserving import and conflict checks; no automatic updates |
 | PHP/Laravel and Node.js/TypeScript modules | Command templates | Adapt to consuming repository tools before use |
 | GitHub Actions/GitLab CI templates | Yes | Templates supplied; platform runs not executed in this repository |
-| macOS/Linux runtime validation | CI matrix supplied | Not executed on this Windows host |
+| Windows/macOS/Linux runtime validation | Yes | GitHub Actions run 34787011808 passed all three core jobs and the Ubuntu browser job at 75d55bb |
 | Native GitHub/GitLab/Jira/Wrike/Confluence/GitBook connectors | Not implemented | Existing organization CLIs can be wrapped |
 | Paid/self-hosted REST/MCP decision providers | Open command/result boundary | No hosted service or MCP server built |
 | Enterprise live-repository and independent user pilots | Not performed | Isolated local policy, lifecycle and browser pilots only |
@@ -41,3 +41,5 @@ File conventions were checked against official documentation. Reading those docu
 - [Windsurf rules](https://docs.windsurf.com/windsurf/cascade/memories)
 - [OpenClaw workspace](https://docs.openclaw.ai/concepts/agent-workspace)
 - [Playwright visual comparisons](https://playwright.dev/docs/test-snapshots)
+
+Migration readiness: see [functional parity](functional-parity.md). CI success validates the current implementation; it does not establish parity with the reference snapshot.
