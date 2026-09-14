@@ -17,5 +17,5 @@ Explain the installed command map and recommend the next command for the user’
 CLI reference:
 
 ```text
-help [COMMAND]
+help [COMMAND|agents|cookbook|extended|ah-SKILL]
 ```

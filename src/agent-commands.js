@@ -50,7 +50,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.`;
   for(const command of ['help',...Object.keys(topics)]) {
     const name=`ah-${command}`,description=`Use agenthouse ${command} when the user requests this framework operation. ${guidance[command].split('. ')[0]}.`;
-    entries[name]={description,body:`# agenthouse ${command}\n\n${shared}\n\n${guidance[command]}\n\nCLI reference:\n\n\`\`\`text\n${command==='help'?'help [COMMAND]':topics[command]}\n\`\`\`\n`};
+    entries[name]={description,body:`# agenthouse ${command}\n\n${shared}\n\n${guidance[command]}\n\nCLI reference:\n\n\`\`\`text\n${command==='help'?'help [COMMAND|agents|cookbook|extended|ah-SKILL]':topics[command]}\n\`\`\`\n`};
   }
   for(const [command,[description,body]] of Object.entries(workflows))entries[`ah-${command}`]={description,body:`# agenthouse ${command}\n\n${shared}\n\n${body}\n`};
   return Object.fromEntries(Object.entries(entries).map(([name,{description,body}])=>[name,`---\nname: ${name}\ndescription: ${JSON.stringify(description)}\nlicense: MIT\n---\n\n${body}`]));

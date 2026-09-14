@@ -1,4 +1,6 @@
-import {assert,VERSION} from './io.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import {assert,PACKAGE,VERSION} from './io.js';
 
 export const topics={
   controls:'controls [--policy-file FILE]\nMap resolved rule identifiers to actual runtime mechanisms and configured checks. Unknown rules remain guidance; deployment activation is not inferred.',
@@ -30,8 +32,50 @@ export const topics={
   keygen:'keygen --output PRIVATE_KEY_FILE\nCreate an Ed25519 key pair; refuses existing files. Keep the private key private.',
   sign:'sign --input FILE --key PRIVATE_KEY --output FILE [--delegation FILE]\nSign a reviewed governance decision or data bundle. Signing must be authorized by the key owner.'
 };
+
+const guideFiles={
+  agents:'agent-commands.md',
+  cookbook:'cookbook.md',
+  extended:'cookbook.md'
+};
+const guide=topic=>fs.readFileSync(path.join(PACKAGE,'docs',guideFiles[topic]),'utf8').trim();
+const skillNames=()=>fs.readdirSync(path.join(PACKAGE,'skills'),{withFileTypes:true})
+  .filter(entry=>entry.isDirectory() && entry.name.startsWith('ah-'))
+  .map(entry=>entry.name).sort();
+function skillHelp(name) {
+  const file=path.join(PACKAGE,'skills',name,'SKILL.md'),body=fs.readFileSync(file,'utf8');
+  const description=body.match(/^description:\s*["']?(.+?)["']?\s*$/m)?.[1] || 'No description available.';
+  return `agenthouse engineering ${VERSION}
+
+${name} is a coding-agent skill, not a CLI subcommand.
+
+${description}
+
+Invoke it after opening the enrolled repository in your coding agent:
+  Codex:        $${name}
+  Claude Code:  /${name}
+  Cursor:       /${name} or attach the named skill
+  OpenCode:     /${name}
+  Windsurf:     /${name} workflow
+
+Full installed instructions: .agents/skills/${name}/SKILL.md
+Host setup and reload guidance: ah-engineering help agents`;
+}
+function suggestedSkill(topic,names) {
+  const needle=topic.replace(/^ah-/,'');
+  const matches=names.filter(name=>name.replace(/^ah-/,'').split('-').includes(needle));
+  return matches.length===1?matches[0]:null;
+}
 export function help(topic) {
-  if(topic){assert(topics[topic],`Unknown help topic: ${topic}`);return `agenthouse engineering ${VERSION}\n\n${topics[topic]}\n\nAll commands accept --root PATH. Use help for the command map.`;}
+  if(topic) {
+    if(guideFiles[topic])return guide(topic);
+    if(topics[topic])return `agenthouse engineering ${VERSION}\n\n${topics[topic]}\n\nAll commands accept --root PATH. Use help for the command map.`;
+    const names=skillNames(),name=topic.startsWith('ah-')?topic:`ah-${topic}`;
+    if(names.includes(name))return skillHelp(name);
+    const suggestion=suggestedSkill(topic,names);
+    assert(!suggestion,`Unknown help topic: ${topic}. Did you mean coding-agent skill ${suggestion}? Run "ah-engineering help ${suggestion}" or invoke "$${suggestion}" in Codex.`);
+    assert(false,`Unknown help topic: ${topic}. Run "ah-engineering help" for CLI commands, "ah-engineering help agents" for coding-agent skills, or "ah-engineering help cookbook" for examples.`);
+  }
   return `agenthouse engineering ${VERSION}
 
 Turn a story or bug into a reviewable change with explicit criteria, checks,
@@ -41,6 +85,8 @@ Start here
   onboard       Set up a project and discover the next steps
   demo          Try a failing check, fix, and passing report in an empty directory
   help COMMAND  Show options and examples (also COMMAND --help)
+  help agents   Explain coding-agent installation and invocation
+  help cookbook Longer setup and workflow recipes (alias: help extended)
 
 Daily work
   survey        Discover repository conventions and available tooling
@@ -63,7 +109,7 @@ Installation and maintenance
   module        Discover stack-specific check templates
   keygen, sign  Create keys and sign authorized decisions
 
-Agents: see .agenthouse/agent-commands.md for ah-prefixed skills.
+Agent skills: use help ah-SKILL, help agents, or .agenthouse/agent-commands.md.
 npm installs one executable: ah-engineering. These are its subcommands.
 Enrollment also creates node .agenthouse/run.mjs for the project's pinned runtime.
 Use --root PATH to target a repository. No paid account is required.

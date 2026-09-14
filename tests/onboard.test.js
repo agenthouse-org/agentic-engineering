@@ -12,10 +12,14 @@ test('command help works without enrollment and unknown topics fail',()=>{
   for(const command of ['onboard','demo','init','work','evaluate','doctor','resolve','session','dependencies','update','bundle','rollback','recover','uninstall','skill','module','keygen','sign']) {
     assert.equal(cli(['help',command]).status,0);assert.equal(cli([command,'--help']).status,0);
   }
-  assert.equal(cli(['help','missing']).status,2);
+  for(const topic of ['agents','cookbook','extended','ah-validate-scope','validate-scope'])assert.equal(cli(['help',topic]).status,0);
+  const skill=cli(['help','ah-validate-scope']);assert.match(skill.stdout,/coding-agent skill/);assert.match(skill.stdout,/\$ah-validate-scope/);
+  const suggestion=cli(['help','ah-scope']);assert.equal(suggestion.status,2);assert.match(suggestion.stderr,/Did you mean coding-agent skill ah-validate-scope/);
+  const missing=cli(['help','missing']);assert.equal(missing.status,2);assert.match(missing.stderr,/help cookbook/);
 });
 test('noninteractive onboarding enrolls and repeat preserves configuration',async t=>{
   const root=temp(t);const first=await onboard(root,{agents:'codex,cursor'});assert.match(first,/frontend-acceptance/);
+  assert.match(first,/Registered coding agents: codex, cursor/);assert.match(first,/help cookbook/);assert.match(first,/reload/);
   const file=path.join(root,'.agenthouse/config.json'),before=fs.readFileSync(file);
   assert.match(await onboard(root,{agents:'claude'}),/Project ready/);assert.deepEqual(fs.readFileSync(file),before);
   assert.deepEqual(read(path.join(root,'.agenthouse/installation.json')).agents,['codex','cursor']);

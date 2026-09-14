@@ -9,11 +9,17 @@ import {evaluate} from './evaluate.js';
 
 export function nextSteps(root) {
   const config=resolve(root,{frozen:true}).config;
+  const installation=read(inside(root,'.agenthouse/installation.json'));
   dependencyStatus(root);
   return `Project ready: ${root}
 
 Installed: project launcher, lifecycle skill, frontend-acceptance, and agent instructions.
+Registered coding agents: ${installation.agents.length?installation.agents.join(', '):'generic instructions only'}.
 Autonomy: ${config.autonomy || 'supervised'}; policy sources: ${config.policySources.join(', ')}.
+
+Open this enrolled repository as the coding-agent workspace, then reload the host or start a fresh session.
+  node .agenthouse/run.mjs help agents
+  node .agenthouse/run.mjs help cookbook
 
 From this directory:
   node .agenthouse/run.mjs work new --id first-change --title "Describe your outcome"
@@ -35,6 +41,7 @@ After reviewing configuration changes:
 An incomplete starter is expected to fail readiness; it is not an application test.
 Supervised transitions need an authorized signed decision (help work / help sign).
 Agent commands: read .agenthouse/agent-commands.md; invoke ah-help or ah-review-change through your host skill/command picker.
+To change agents on an existing installation, rerun init with the complete list, for example --agents codex,cursor.
 Explore: help evaluate, help dependencies, doctor, or demo in a NEW empty directory.
 Native agent loading/hooks still require host-specific verification.`;
 }

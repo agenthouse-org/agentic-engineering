@@ -1,12 +1,12 @@
 # Implementation and verification status
 
-Version 0.1.4 developer preview. Updated 2026-09-14.
+Version 0.1.5 developer preview. Updated 2026-09-14.
 
 Local release checks: 66 core/workflow tests passed; real visual regression and usability pass/fail browser scenarios passed. The upstream hooks suite passed all eight test files.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
-| CLI and agent commands | 38 framework skills; every CLI operation has an ah-prefixed entry point | Shared routing, help, installation, ownership and removal tests |
+| CLI and agent commands | 37 framework skills; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership and removal tests |
 | Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; commit/range/merge-base analysis; candidate tests and review signals | Root commit, deletion and merge-base fixtures; no discovered scripts executed |
 | Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions | Missing/stale evidence, self-review rejection and invalidated signatures |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |
