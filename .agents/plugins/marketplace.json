@@ -1,0 +1,20 @@
+{
+  "name": "agenthouse-engineering",
+  "interface": {
+    "displayName": "agenthouse engineering"
+  },
+  "plugins": [
+    {
+      "name": "ah-engineering",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

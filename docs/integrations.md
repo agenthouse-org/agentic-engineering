@@ -13,7 +13,6 @@ Track each adapter by agent version, operating system, installation scope, instr
 
 Agent features differ. A capability declaration identifies supported events and unavailable enforcement. Where hooks are unavailable, expose appropriate instructions and CLI/CI checks, and disclose the difference. Never represent advisory instructions as equivalent to a blocking control.
 
-The existing local `agenthouse-hooks` checkout contains vendor adapter source for Claude, Codex, Cursor, Pi, and CI. Its README describes detection and initialization for several hosts. This is inspected source, not verification that those adapters work with current releases. Pi support is an existing asset to assess, not a newly committed launch target.
 
 ## Hook-runtime integration
 
@@ -29,7 +28,7 @@ Playwright is the initial optional adapter for real-browser journeys, capture, a
 
 ## Work tracking
 
-Local repository Markdown is the baseline. Planned platform adapters are GitHub, GitLab, Jira, and Wrike. Code-hosting and work-tracking roles are separate even where a platform performs both.
+Local markdown and JSON exports are imported through `backlog`, preserving external IDs. Planned platform adapters are GitHub, GitLab, Jira, and Wrike. Code-hosting and work-tracking roles are separate even where a platform performs both.
 
 Proposed contract operations include read item, map lifecycle state, create/update item, link evidence, request decision, and observe authorized decisions. Each adapter declares its supported subset, identity model, revision model, and write permissions. Workflows are discovered or configured per group rather than hardcoded as universal state names.
 
@@ -55,7 +54,6 @@ Potential paid services include centralized delegation/exception workflows, orga
 
 ## Skills and stacks
 
-The input already includes a derived copy of agenthouse-skills' web-usability-conformity skill. Replace independent maintenance with an identified upstream dependency. Preserve required license notices and any necessary adapter transformation provenance.
 
 Use frontend-acceptance as the agent-facing frontend acceptance method when work affects a UI; its display name in the framework is frontend acceptance. Extend reusable acceptance guidance upstream in agenthouse-skills rather than maintaining a fork here. Version 0.2.0 is published in the skills release-2026-09-13; existing installations can migrate now.
 

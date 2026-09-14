@@ -108,7 +108,6 @@ Cache immutable dependencies using the resolved version set. Parallel checks wri
 
 ## Current reuse and a known integration gap
 
-The existing agenthouse-hooks CLI has single-file scanning and CI-oriented result rendering. It is not the general framework evaluator. Source inspection also shows that malformed JSON input on its `run --vendor ci` path currently sets exit code 0. Do not use that path as an authoritative gate without fixing it upstream or adding validated failure handling. The new evaluator contract requires malformed input to produce an error; this design does not modify the sibling runtime.
 
 ## Verification scenarios required for release
 
@@ -120,3 +119,5 @@ The existing agenthouse-hooks CLI has single-file scanning and CI-oriented resul
 - Frozen/offline evaluation performs no update or undeclared fetch; a missing dependency is actionable and nonzero.
 - Reused evidence from a different commit, contract, policy, or environment is rejected; duplicate/retried runs do not overwrite unrelated results.
 - Windows, macOS, and Linux exercise argument quoting, paths with spaces, timeouts, and subprocess failures consistently.
+
+The engineering hook command rejects malformed event input with exit 2. It supplements the evaluation boundary; see [hooks](hooks.md).

@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {assert,read,write,hash,PACKAGE} from '../src/io.js';
+const repo=path.resolve(process.argv[2] || '');
+assert(process.argv[2],'Provide the agenthouse-hooks checkout');
+const pkg=read(path.join(repo,'package.json'));assert(pkg.name==='@agenthouse-org/hooks','Expected upstream hooks package');
+const bytes=fs.readFileSync(path.join(repo,'src/engineering.js'));
+const license=fs.readFileSync(path.join(repo,'LICENSE'));
+write(path.join(PACKAGE,'dependencies/hooks/engineering.cjs'),bytes);
+write(path.join(PACKAGE,'dependencies/hooks/LICENSE'),license);
+write(path.join(PACKAGE,'dependencies/hooks/manifest.json'),{schemaVersion:1,package:pkg.name,version:pkg.version,contractVersion:1,sourcePath:'src/engineering.js',files:{'engineering.cjs':hash(bytes),LICENSE:hash(license)}});

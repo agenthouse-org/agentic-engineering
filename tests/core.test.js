@@ -99,9 +99,9 @@ test('lifecycle records require real fields and signed high-impact transitions',
   assert.equal(advance(root,'change','define').stage,'define');assert.throws(()=>advance(root,'change','release'),/follow/);
 });
 test('offline bundle verifies checksum, rejects tampering, updates and rolls back',t=>{
-  const root=setup(t),data=payload();data.version='0.1.4';const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');
+  const root=setup(t),data=payload(),originalVersion=data.version,nextVersion=data.version.split('.').map((v,i)=>i===2?String(Number(v)+1):v).join('.');data.version=nextVersion;const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');
   const bundle=path.join(temp(t),'update.json');write(bundle,data);const digest=hash(fs.readFileSync(bundle));
-  assert.throws(()=>update(root,{bundle,sha256:'bad'}),/trusted/);assert.equal(update(root,{bundle,sha256:digest}).version,'0.1.4');assert.equal(rollback(root).version,'0.1.3');
+  assert.throws(()=>update(root,{bundle,sha256:'bad'}),/trusted/);assert.equal(update(root,{bundle,sha256:digest}).version,nextVersion);assert.equal(rollback(root).version,originalVersion);
   data.files['src/../../outside']=Buffer.from('bad').toString('base64');write(bundle,data);assert.throws(()=>update(root,{bundle,sha256:hash(fs.readFileSync(bundle))}),/Unsafe/);
 });
 test('transaction recovery restores interrupted managed files',t=>{

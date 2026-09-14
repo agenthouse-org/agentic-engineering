@@ -53,6 +53,10 @@ The generator reads committed Git objects, ignoring working-tree edits. It does 
 
 This release supports this declared skill dependency and UTF-8 resources; it is not a general npm dependency resolver. Other specialist skills still use explicit source-preserving imports. Existing identical frontend imports are adopted; changed copies require reconciliation. Re-enroll older 0.1.0 projects using the new package to install this dependency. The old 0.1.0 updater cannot read the new dependency bundle layout.
 
-## Hooks
+## Additional bundled dependencies
 
-`agenthouse-hooks` remains the owner of native hook execution. It is not installed or activated by this change. Its CLI contract and transitive packages need their own tested integration, and the previously identified malformed-input CI behavior must be corrected before it is a required gate. Do not advertise native hook integration merely because the skill dependency is installed.
+The same operations support web-usability-conformity 0.1.0. Use `dependencies pin --name web-usability-conformity` or `unpin --name web-usability-conformity`. To build its update, append `web-usability-conformity` to the bundle-skill maintainer command. Other optional skill imports retain the explicit import workflow.
+
+The hooks engineering export is included in `dependencies status` under runtimeDependencies and can be pinned with `--name hooks`. Hook updates arrive through the framework bundle, with content hashes and rollback; no separate hooks registry release is assumed. See [hook integration](hooks.md).
+
+Usability tooling is provisioned explicitly with `usability setup` into an isolated local directory using exact direct versions and a transitive npm lockfile. `--offline` uses the npm cache and requires a separately provisioned matching browser. `usability run` never installs dependencies. Its zero exit status means technical evidence was collected, not that manual conformity criteria passed.

@@ -27,8 +27,11 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: node node_modules/@playwright/test/cli.js install --with-deps chromium
       - run: npm run test:browser
+      - run: npm run test:usability
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: browser-evidence
-          path: work/browser-*
+          path: |
+            work/browser-*
+            work/usability-test-*/artifacts/agenthouse/usability/**

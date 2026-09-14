@@ -1,0 +1,128 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {install,payload,transact,uninstall} from '../src/install.js';
+import {write,read,hash} from '../src/io.js';
+import {resolve,signed} from '../src/policy.js';
+import {newItem,advance} from '../src/lifecycle.js';
+import {controls} from '../src/controls.js';
+import {gate,specification,CRITERIA} from '../src/gates.js';
+import {survey,inspectChange,evidenceReview} from '../src/inspect.js';
+import {importBacklog} from '../src/backlog.js';
+import {hookRuntime,hook,hookSettings} from '../src/hooks.js';
+import {dependencyStatus} from '../src/dependencies.js';
+import {pinDependency,updateDependency} from '../src/dependency-update.js';
+import {evaluate} from '../src/evaluate.js';
+
+function temp(t){const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah workflow '));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;}
+function setup(t){const root=temp(t);install(root,{agents:[],project:'example',autonomy:'bounded'});return root;}
+function config(root,edit){const f=path.join(root,'.agenthouse/config.json'),c=read(f);edit(c);write(f,c);return resolve(root).snapshot;}
+function git(root,...args){const r=spawnSync('git',args,{cwd:root,encoding:'utf8',windowsHide:true});assert.equal(r.status,0,r.stderr);return r.stdout.trim();}
+function item(root){const record={id:'sample',author:'author',criteria:[{id:'behavior',expectation:'Observable outcome'}],fields:Object.fromEntries([...CRITERIA.ready,...CRITERIA.done].map(f=>[f,'Documented'])),evidence:[],build:'build-one'};write(path.join(root,'item.json'),record);return record;}
+
+test('survey and commit analysis handle root commit, deleted files and merge bases',t=>{
+  const root=temp(t);git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');
+  write(path.join(root,'package.json'),{scripts:{test:'not executed'},devDependencies:{typescript:'1'}});
+  write(path.join(root,'widget.ts'),'export const value=1;\n');write(path.join(root,'tests/widget.test.ts'),'test\n');git(root,'add','.');git(root,'commit','-m','initial');const base=git(root,'rev-parse','HEAD');
+  assert.equal(inspectChange(root).comparison,'root-commit');assert.equal(survey(root).tools[0].command,'not executed');
+  write(path.join(root,'widget.ts'),'// TODO investigate\n// @ts-ignore\nexport const value=2;\n');fs.unlinkSync(path.join(root,'tests/widget.test.ts'));git(root,'add','.');git(root,'commit','-m','change');
+  const report=inspectChange(root,{base});assert.equal(report.base,base);assert.equal(report.findings.length,2);assert.ok(report.files.some(f=>f.status==='D'));assert.throws(()=>inspectChange(root,{ref:'--help'}));
+});
+test('ready gates separate incomplete fields from pending reviewer approval',t=>{
+  const root=setup(t),record=item(root);assert.equal(gate(root,{item:'item.json'}).status,'pending');
+  record.fields.scope='';write(path.join(root,'item.json'),record);assert.equal(gate(root,{item:'item.json'}).status,'incomplete');
+  config(root,c=>c.lifecycle={ready:{approval:false}});record.fields.scope='Defined';write(path.join(root,'item.json'),record);assert.equal(gate(root,{item:'item.json'}).status,'passed');
+});
+test('done gates consume actual evaluator success and reject stale policy or failed criteria',async t=>{
+  const root=setup(t),record=item(root);config(root,c=>{c.lifecycle={done:{approval:false}};c.evaluators=[{id:'behavior',kind:'command',executable:'node',args:['-e','process.exit(0)'],result:'exit-code'}];c.profiles={'pull-request':{checks:[{evaluator:'behavior',required:true}]}};});
+  const result=await evaluate(root,{frozen:true,subject:record.build});
+  const report=path.relative(root,path.join(result.folder,'result.json')).replaceAll('\\','/');
+  record.evidence=[report];write(path.join(root,'item.json'),record);
+  assert.equal(gate(root,{item:'item.json',phase:'done'}).status,'passed');
+  config(root,c=>c.documentationAuthority='confluence');assert.equal(gate(root,{item:'item.json',phase:'done'}).status,'incomplete');
+});
+test('specification requires a relevant failing command before green and detects changed criteria',async t=>{
+  const root=setup(t),record=item(root);write(path.join(root,'value.json'),1);write(path.join(root,'check.mjs'),"import fs from 'node:fs';process.exit(JSON.parse(fs.readFileSync('value.json'))===2?0:1);");
+  config(root,c=>{c.evaluators=[{id:'behavior',kind:'command',executable:'node',args:['check.mjs'],result:'exit-code',specificationFiles:['check.mjs']}];c.profiles={'pull-request':{checks:[{evaluator:'behavior'}]}};});
+  await assert.rejects(specification(root,{item:'item.json',phase:'green',evaluator:'behavior'}),/Capture red/);
+  assert.equal((await specification(root,{item:'item.json',phase:'red',evaluator:'behavior'})).exitCode,1);
+  write(path.join(root,'value.json'),2);assert.equal((await specification(root,{item:'item.json',phase:'green',evaluator:'behavior'})).status,'green');
+  const changed=read(path.join(root,'item.json'));changed.criteria[0].expectation='Different behavior';write(path.join(root,'item.json'),changed);
+  await assert.rejects(specification(root,{item:'item.json',phase:'green',evaluator:'behavior'}),/Capture red/);
+});
+test('backlog import preserves content and identity, is idempotent and refuses overwrite',t=>{
+  const root=temp(t);write(path.join(root,'story.md'),'# A useful outcome\n\nKeep this text.');
+  const args={source:'story.md',id:'item-1',provider:'jira',externalId:'TEAM-42'};
+  assert.equal(importBacklog(root,args).item.external.id,'TEAM-42');assert.equal(importBacklog(root,args).status,'unchanged');
+  fs.appendFileSync(path.join(root,'story.md'),'Changed');assert.throws(()=>importBacklog(root,args),/already exists/);
+});
+test('upstream hook guards abstain from host approval on success and reject unsafe matches',async t=>{
+  const {runtime}=hookRuntime();assert.equal(runtime.guard('git commit --no-verify',{},'main').status,'denied');
+  assert.equal(runtime.guard('git push --force origin main',{protectedBranches:['main']},'feature').status,'denied');
+  assert.equal(runtime.guard('git push origin feature',{protectedBranches:['main']},'feature').status,'allowed');
+  assert.deepEqual(JSON.parse(runtime.render('claude','before-command',{status:'allowed'}).stdout),{});
+  const root=setup(t);write(path.join(root,'event.json'),{event:'after-edit',file:'../outside'});
+  await assert.rejects(hook(root,{input:'event.json'}),/outside/);
+  write(path.join(root,'event.json'),'malformed');await assert.rejects(hook(root,{input:'event.json'}));
+});
+test('touched-file checks run only selected extensions with bounded execution',async t=>{
+  const {runtime}=hookRuntime(),root=temp(t);write(path.join(root,'file.ts'),'content');const calls=[];
+  const policy={checks:[{id:'types',extensions:['.ts'],executable:'tool',args:['--file','{file}'],timeoutSeconds:3},{id:'php',extensions:['.php'],executable:'php',args:[]}]};
+  const r=await runtime.handle({event:'after-edit',file:'file.ts'},policy,{root,run:async (...args)=>{calls.push(args);return {code:1,stderr:'failure'};}});
+  assert.equal(r.status,'failed');assert.equal(calls.length,1);assert.deepEqual(calls[0][1],['--file','file.ts']);assert.equal(calls[0][2].timeoutSeconds,3);
+});
+test('second upstream skill is immutable, pinnable and can be checked independently',t=>{
+  const root=setup(t),lock=dependencyStatus(root);assert.equal(lock.dependencies['web-usability-conformity'].version,'0.1.0');
+  const policy=pinDependency(root,false,'web-usability-conformity');assert.ok(policy.pins['web-usability-conformity']);assert.equal(policy.pins['frontend-acceptance'],undefined);
+  const data=read(new URL('../dependencies/web-usability-conformity.json',import.meta.url)),file=path.join(root,'bundle.json');write(file,data);
+  assert.equal(updateDependency(root,{bundle:file,sha256:hash(fs.readFileSync(file)),check:true}).available,'0.1.0');
+});
+
+test('readiness approvals require a different issuer and become invalid after record changes',t=>{
+  const root=setup(t),record=item(root),pending=gate(root,{item:'item.json'});
+  const key=fs.readFileSync(path.join(root,'.agenthouse/local/owner.key'),'utf8');
+  const decision={schemaVersion:1,kind:'decision',issuer:'project-owner',scope:'example',action:'gate:ready',subject:pending.subject,policyDigest:pending.policyDigest,issuedAt:new Date(Date.now()-1000).toISOString(),expiresAt:new Date(Date.now()+60000).toISOString(),verdict:'allowed'};
+  write(path.join(root,'approval.json'),signed(decision,key));assert.equal(gate(root,{item:'item.json',decision:'approval.json'}).status,'passed');
+  record.fields.scope='Changed';write(path.join(root,'item.json'),record);assert.throws(()=>gate(root,{item:'item.json',decision:'approval.json'}),/mismatch/);
+  record.author='project-owner';write(path.join(root,'item.json'),record);assert.throws(()=>gate(root,{item:'item.json',decision:'approval.json'}),/independent/);
+});
+test('short paths require eligible kinds, rationale, verification and protected decisions',t=>{
+  const root=setup(t);config(root,c=>c.lifecycle={paths:{small:['discover','implement','verify','accept','release','retire']},pathKinds:{small:['documentation']}});
+  const record=newItem(root,'doc','Clarify guide','documentation','small');record.fields={outcome:'Clear instructions',pathReason:'Text-only clarification'};write(path.join(root,'.agenthouse/work/doc.json'),record);
+  assert.equal(advance(root,'doc','implement').stage,'implement');
+  const bug=newItem(root,'bug','Bug','bug','small');bug.fields={outcome:'Fix',pathReason:'Small'};write(path.join(root,'.agenthouse/work/bug.json'),bug);assert.throws(()=>advance(root,'bug','implement'),/eligible/);
+  config(root,c=>c.lifecycle.paths.small=['discover','define','implement','release','retire']);assert.throws(()=>advance(root,'doc','release'),/protected/);
+});
+test('control mapping distinguishes unresolved guidance from automated mechanisms',t=>{
+  const root=setup(t),file=path.join(root,'.agenthouse/policy.json'),policy=read(file);policy.rules.push({id:'naming',mode:'default',value:'Use clear names'});write(file,policy);resolve(root);
+  const report=controls(root);assert.equal(report.rules.find(r=>r.id==='naming').automated,false);
+});
+test('pinned exports cannot disappear during a framework update',t=>{
+  const root=setup(t);pinDependency(root,false,'hooks');
+  const bundle=payload();for(const file of Object.keys(bundle.files))if(file.startsWith('dependencies/hooks/'))delete bundle.files[file];assert.throws(()=>install(root,{payload:bundle}),/Pinned dependency missing/);
+  const data=read(path.join(root,'.agenthouse/active.json'));
+  const manifest=path.join(root,'.agenthouse',data.runtime,'dependencies/hooks/engineering.cjs');fs.appendFileSync(manifest,'changed');assert.throws(()=>dependencyStatus(root),/modified/);
+});
+
+test('review maps explicit criteria and compares only matching build and policy baselines',t=>{
+  const root=setup(t);git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');write(path.join(root,'code.js'),'before');git(root,'add','code.js');git(root,'commit','-m','before');const base=git(root,'rev-parse','HEAD');
+  write(path.join(root,'code.js'),'after');git(root,'add','code.js');git(root,'commit','-m','after');const head=git(root,'rev-parse','HEAD'),record=item(root),{snapshot}=resolve(root,{frozen:true});
+  write(path.join(root,'report.json'),{status:'satisfied',exitCode:0,subject:head,policyDigest:snapshot.digest,checks:[{id:'check',status:'passed',criteria:['behavior']}]});
+  write(path.join(root,'baseline.json'),{subject:base,policyDigest:snapshot.digest,checks:[{id:'check',status:'failed'}]});
+  const r=evidenceReview(root,{item:'item.json',evidence:['report.json'],baseline:'baseline.json'});assert.equal(r.status,'passed');assert.equal(r.baselineComparison[0].classification,'improved');
+  config(root,c=>c.documentationAuthority='confluence');assert.equal(evidenceReview(root,{item:'item.json',evidence:['report.json']}).status,'incomplete');assert.throws(()=>evidenceReview(root,{item:'item.json',evidence:['report.json'],baseline:'baseline.json'}),/Baseline evidence/);
+});
+
+test('native hook setup preserves unrelated settings, is idempotent and removes owned entries',t=>{
+  const root=setup(t),file=path.join(root,'.claude/settings.json'),original={permissions:{allow:['Read']},hooks:{SessionStart:[{hooks:[{type:'command',command:'existing-helper'}]}]}};write(file,original);
+  transact(root,hookSettings(root).changes);assert.equal(read(file).hooks.SessionStart.length,2);assert.equal(hookSettings(root).changes.length,0);
+  const changed=read(file);changed.extraSetting='preserve';write(file,changed);uninstall(root);
+  assert.deepEqual(read(file),{...original,extraSetting:'preserve'});
+});
+test('native hook removal refuses edited managed groups without removing other files',t=>{
+  const root=setup(t);transact(root,hookSettings(root).changes);const file=path.join(root,'.claude/settings.json'),settings=read(file);settings.hooks.PreToolUse[0].matcher='Custom';write(file,settings);
+  assert.throws(()=>uninstall(root),/Modified or missing managed hook/);assert.ok(fs.existsSync(path.join(root,'.agenthouse/run.mjs')));
+});

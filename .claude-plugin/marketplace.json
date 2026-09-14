@@ -1,0 +1,17 @@
+{
+  "name": "agenthouse-engineering",
+  "owner": {
+    "name": "agenthouse"
+  },
+  "plugins": [
+    {
+      "name": "ah-engineering",
+      "source": "./",
+      "description": "Agent-neutral engineering lifecycle, visual acceptance, evidence and governance.",
+      "version": "0.1.4"
+    }
+  ],
+  "metadata": {
+    "description": "agenthouse engineering workflows, evidence and governance"
+  }
+}

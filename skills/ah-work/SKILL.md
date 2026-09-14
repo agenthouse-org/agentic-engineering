@@ -17,8 +17,8 @@ Choose new, show, or advance from the request. Default to show when the action i
 CLI reference:
 
 ```text
-work new --id ID --title "Outcome" [--kind feature|bug|incident|change|investigation]
+work new --id ID --title "Outcome" [--kind feature|bug|incident|change|investigation|documentation] [--path NAME]
 work show --id ID
-work advance --id ID --to STAGE [--decision REPOSITORY_RELATIVE_FILE] [--policy-file FILE]
+work advance --id ID --to STAGE [--decision REPOSITORY_RELATIVE_FILE] [--gate-decision FILE] [--policy-file FILE]
 Edit fields in .agenthouse/work/ID.json. Stages require evidence and applicable approvals.
 ```

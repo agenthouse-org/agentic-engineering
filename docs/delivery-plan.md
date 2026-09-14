@@ -73,9 +73,9 @@ Acceptance: both pilots meet their success criteria; actual release archives con
 
 ## Unresolved implementation choices
 
-- Extend the implemented Node CLI, npm tarball, and verified bundle distribution to public marketplaces and private infrastructure.
+- Validate private infrastructure and broader native-host behavior for the implemented package/marketplace distribution.
 - Release signing and enterprise trust bootstrap.
-- Existing hook-runtime version/API suitable for dependency use.
+- Publish the content-pinned hooks contribution through the upstream release process.
 - Tested current versions and actual capabilities of each target coding agent.
 - First documentation-platform operations to implement and external authority snapshot format.
 - Real enterprise consumer repository and independent pilot repository locations.

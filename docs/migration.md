@@ -1,43 +1,18 @@
-# Enterprise migration and pilot plan
+# Adoption and migration
 
-Status: agreed migration direction; migration has not been executed.
+Organizations maintain policies and foundational ADRs in their own repositories. Applications consume a pinned agenthouse framework, selected modules and those policies. Generic engineering behavior has one upstream implementation; private decisions and integrations remain consumer-owned.
 
-## Maintain one framework
+1. Record the target revision and local modifications. Inventory instructions, commands, hooks, checks, policies, tracker mappings and documentation links with `survey` and a substantive review.
+2. Validate the capabilities the application depends on in an isolated checkout with representative passing and failing cases.
+3. Install an identified release with `onboard`. Preserve configuration, add approved policy sources, and review the resolved snapshot.
+4. Import work with `backlog`, retaining external identity. Imported status never grants approval.
+5. Select actual evaluators, ready/done rules and optional shorter lifecycle paths. Configure visual evidence for UI work and activate each supported hook once.
+6. Exercise a complete change, a failed check, a pending decision, a dependency update and rollback. Retain evidence and verify CI exit codes.
+7. Replace duplicated command bodies with thin aliases where needed and define their retirement date.
+8. Roll out through the organization's normal approval process after the pilot succeeds.
 
-The existing enterprise engineering repository becomes a consumer-owned organization policy package. The reusable lifecycle and tooling move to agenthouse. Company decisions, private infrastructure mappings, internal evidence, and approval ownership stay in the enterprise repository.
+Keep organization policy and application remotes. Framework updates arrive through an approved artifact, mirror or marketplace; policy changes follow their own governance process. An individual pilot needs no enterprise services. An enterprise pilot also validates inherited policy, delegated approval, existing tooling and local customizations.
 
-No second independently maintained framework is required. Both repositories continue to exist with distinct responsibilities. Generic improvements are contributed to agenthouse; organizational policy changes are made only in the organization's package.
+For UI work include image-backed, story-only and bug-report criteria. An unchanged screenshot can still depict the wrong outcome. A pipeline must retain evidence when evaluation fails.
 
-## Migration sequence
-
-1. Inventory the enterprise repository at a recorded revision, including local modifications, deployed plugin names, active hooks, links, and consumers.
-2. Classify each item as reusable framework behavior, specialist skill, hook runtime, stack module, organization policy, project configuration, or historical evidence.
-3. Build the generic implementation against the public contracts, replacing company-specific examples with original generic examples.
-4. Publish or privately mirror an identified framework release with the required modules and skills. Release readiness is defined by the delivery plan, not the presence of design documents.
-5. Create the private organization policy package with foundational ADRs, governance ownership, delegation rules, selected autonomy defaults, and integration mappings.
-6. Produce a migration preview for one pilot repository: managed-file changes, preserved settings, policy resolution, command mappings, and rollback route.
-7. Install in an isolated pilot checkout, initially observe assessments without asserting new enforcement, and compare results against expected organizational decisions.
-8. Activate the chosen checks through the organization's normal governance process, verify the end-to-end lifecycle, and then roll out in cohorts.
-
-Temporary compatibility aliases may map old commands to the shared implementation. They must not install a second set of active hooks or carry duplicated policy bodies. Record an alias deprecation period and update consumer documentation when aliases are retired.
-
-## Two pilots
-
-| Pilot | Purpose | Required proof |
-| --- | --- | --- |
-| Existing enterprise repository | Validate private policy distribution and real governance | Foundational decision inheritance, delegated exception request, existing tracker/document integration, private distribution, preserved customizations, controlled rollout |
-| Independent single-developer repository | Validate the low-friction default experience | One enrollment, local work tracking, Git authority, a simple autonomy profile, minimal required questions, update and removal recovery |
-
-The user owns the enterprise repository as CTO. The actual live repository location and independent pilot selection still need to be identified before modifying those consumers. `input/` is a reference snapshot and must not be mistaken for the live consumer repository.
-
-The single-developer pilot must complete a small change through outcome definition, implementation, verification, release, and learning without installing an enterprise platform. The enterprise pilot must also demonstrate a request that remains pending until an authorized governance decision is recorded.
-
-For UI work, both pilots use frontend acceptance via the existing frontend-acceptance skill and the shared evidence contract. Across the pilots, include an image-reference task, a story-only task, and a UI bug report. The enterprise pilot also integrates an existing organization-owned process through the framework CLI in CI/CD, including an intentional failing run with preserved reports and screenshot evidence.
-
-## Source material and release hygiene
-
-Leave `input/` as local reference material. Exclude it from Git and all release/package/site manifests. A Git ignore rule alone does not protect a manually assembled archive, so release tests must inspect actual artifacts.
-
-Do not carry internal company names, domains, product references, measurements, URLs, or private historical ADRs into generic documentation. Preserve required third-party attribution when distributing third-party content; replacement of branding is not a reason to remove a license notice.
-
-Before public release, validate every distributable and generated documentation output, including source maps and fixtures, for accidental inclusion of local reference material.
+Adoption readiness is specific to the consumer. Host versions, private infrastructure and platform credentials need validation in that environment; a generic package cannot certify them in advance.

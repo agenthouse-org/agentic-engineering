@@ -4,9 +4,8 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**0.1.3 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Native agent hooks and marketplace packages are not yet certified. See [implementation status](docs/implementation-status.md).
+**0.1.4 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling and marketplace manifests are included. See [implementation status](docs/implementation-status.md).
 
-**Replacing an existing framework?** Read the [functional parity assessment](docs/functional-parity.md) first. This preview does not yet replace all hooks, executable review helpers, detailed readiness/done policies, or included usability tooling from the reference implementation. Keep existing capabilities until their replacements are verified.
 
 ## Try it in ten minutes
 
@@ -15,7 +14,7 @@ Requires **Node.js 22 or newer**. From a source checkout:
 ```text
 npm ci --ignore-scripts
 npm pack
-npm install --global ./agenthouse-org-engineering-0.1.3.tgz --ignore-scripts
+npm install --global ./agenthouse-org-engineering-0.1.4.tgz --ignore-scripts
 ah-engineering help
 ah-engineering demo --root ./ah-demo
 ```
@@ -62,7 +61,7 @@ Story drafting, readiness, scope validation, commit checking, and review workflo
 
 ### Included skills
 
-The framework ships **28 agent-facing skills**, plus the required upstream **frontend-acceptance 0.2.0** dependency.
+The framework ships **38 agent-facing skills**, plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
 
 | Skill | Purpose |
 | --- | --- |
@@ -79,7 +78,17 @@ The framework ships **28 agent-facing skills**, plus the required upstream **fro
 | `ah-check-commit` | Verify behavior affected by a commit |
 | `ah-review-change` | Review requirements, changes, and evidence |
 | `ah-frontend-acceptance` | Invoke the pinned upstream frontend skill |
-| `ah-web-usability-conformity` | Invoke an optional upstream usability skill |
+| `ah-web-usability-conformity` | Invoke the pinned upstream usability skill |
+| `ah-controls` | Map rules to actual checks and guidance |
+| `ah-survey` | Discover repository tooling and conventions |
+| `ah-inspect` | Analyze a commit or range |
+| `ah-review` | Map criteria to build and policy evidence |
+| `ah-gate` | Evaluate ready/done rules and decisions |
+| `ah-spec` | Capture unchanged-test red/green evidence |
+| `ah-backlog` | Import markdown or exported work items |
+| `ah-usability` | Provision and run the upstream browser audit |
+| `ah-hook` | Process local engineering events |
+| `ah-hook-config` | Discover native hook configuration |
 | `ah-evaluate` | Run configured checks and produce reports |
 | `ah-doctor` | Diagnose installation and dependency problems |
 | `ah-resolve` | Resolve or verify policy configuration |
@@ -95,9 +104,15 @@ The framework ships **28 agent-facing skills**, plus the required upstream **fro
 | `ah-keygen` | Generate signing keys |
 | `ah-sign` | Sign authorized decisions or bundles |
 
-`ah-frontend-acceptance` routes to `frontend-acceptance`, installed unchanged from agenthouse-skills. The optional `web-usability-conformity` skill must be imported from a reviewed source before its wrapper can perform an assessment. Skill invocation does not bypass project governance or host permissions.
+`ah-frontend-acceptance` routes to `frontend-acceptance`, installed unchanged from agenthouse-skills. `web-usability-conformity` is bundled from the same upstream. Run `usability setup` to provision its locked browser tooling, then `usability run` to collect evidence. Skill invocation does not bypass project governance or host permissions.
 
 Existing projects can install these entry points by rerunning `init` from the new package with their chosen agents. Unchanged old managed command names are removed; edited files cause a conflict instead of being overwritten. Reload the host if its command menu has not refreshed.
+
+## Inspect, verify and review
+
+Start with `survey` to discover the actual tooling, then `inspect --ref HEAD --base main` to identify the affected code. Import a story with `backlog`, define observable criteria, and use `spec` when red/green test evidence fits the change. Configurable `gate` checks protect readiness and completion; `review` maps evidence to requirements and can compare a baseline report. Teams can choose shorter lifecycle paths while retaining protected decisions.
+
+See [workflow commands](docs/workflow-tools.md), [engineering hooks](docs/hooks.md), and [marketplace installation](docs/marketplaces.md). The [Node/TypeScript](modules/node-typescript.md) and [PHP/Laravel](modules/php-laravel.md) modules include practical standards and touched-file check templates.
 
 ## Start working
 
@@ -161,7 +176,7 @@ flowchart LR
 
 - **This framework** owns lifecycle records, governance contracts, evaluation, and distribution.
 - **agenthouse-skills** owns specialist methods. `frontend-acceptance 0.2.0` is a required, bundled upstream dependency with source commit and hashes. It guides UI acceptance from images, stories, and bugs.
-- **agenthouse-hooks** owns native event execution. Its integration remains separate and is not activated by enrollment.
+- **agenthouse-hooks** owns native event execution. The framework bundles a content-pinned engineering event export; native hooks are activated explicitly.
 
 The Playwright adapter captures browser evidence and regression results. Concept review still requires inspection against the intended outcome; unchanged pixels alone do not prove that a design is correct. Browser provisioning is separate. See [visual acceptance](docs/visual-acceptance.md).
 
@@ -171,7 +186,7 @@ The same `evaluate` command works without an interactive agent. `--ci` freezes p
 
 Framework and skill updates use trusted checksums or signatures, project pins, and rollback. Approved local or mirrored bundles can update between sessions; upstream HEAD is never implicitly fetched during evaluation. See [dependency operations](docs/dependencies.md).
 
-Instruction files are generated for Claude Code, Codex, OpenCode, Cursor, Windsurf, and OpenClaw. File generation is tested; native host loading, hooks, and permission behavior still need certification. Core verification has passed in GitHub Actions on Windows, Linux, and macOS, along with the Linux browser test. Dedicated external-service connectors and enterprise live pilots remain open.
+Instruction files are generated for Claude Code, Codex, OpenCode, Cursor, Windsurf, and OpenClaw. Claude and Codex packed-plugin installation and enablement were exercised in isolated native CLI profiles. Live-session hook delivery and all-host discovery/permission behavior still require environment-specific validation. Core verification has passed in GitHub Actions on Windows, Linux, and macOS, along with the Linux browser test. Dedicated external-service connectors and enterprise live pilots remain open.
 
 ## Learn more and contribute
 

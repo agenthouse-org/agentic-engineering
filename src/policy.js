@@ -50,7 +50,7 @@ export function resolve(root, {frozen = false, policyFile, frameworkVersion=VERS
     rules.set(id,{id,value,mode:rule?.mode || 'default'});
     provenance[id] = {source:'project',file:'.agenthouse/config.json'};
   }
-  for(const [id,field] of [['autonomy','autonomy'],['documentation-authority','documentationAuthority']]) {
+  for(const [id,field] of [['autonomy','autonomy'],['documentation-authority','documentationAuthority'],['lifecycle','lifecycle'],['hooks','hooks']]) {
     const rule=rules.get(id);
     if(rule) {
       if(config[field]!==undefined)assert(rule.mode!=='mandatory' || canonical(config[field])===canonical(rule.value),`Project conflicts with mandatory ${id}`);

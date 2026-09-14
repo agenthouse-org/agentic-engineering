@@ -93,7 +93,7 @@ export async function evaluate(root,options={}) {
         if(data.status==='not-applicable') assert(data.reason?.trim(),'Not-applicable requires a reason');
         if(data.evidence) data.evidence=collectEvidence(root,folder,data.evidence);
       } catch(error) { data={status:'error',reason:error.message}; }
-      result.checks.push({...data,id,required});
+      result.checks.push({...data,id,required,criteria:config.evaluators.find(x=>x.id===id)?.criteria || []});
     }
   } catch(error) { result.checks.push({id:'framework',required:true,status:'error',reason:error.message}); }
   Object.assign(result,summarize(result.checks),{finishedAt:new Date().toISOString()});

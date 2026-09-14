@@ -3,3 +3,5 @@
 *.jpg binary
 *.webp binary
 *.tgz binary
+dependencies/hooks/engineering.cjs -text
+dependencies/hooks/LICENSE -text

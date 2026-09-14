@@ -2,8 +2,76 @@
   "name": "php-laravel",
   "description": "Suggested checks; replace arguments with the project's actual toolchain before enabling.",
   "evaluators": [
-    {"id":"tests","kind":"command","executable":"php","args":["artisan","test"],"result":"exit-code"},
-    {"id":"analysis","kind":"command","executable":"php","args":["vendor/bin/phpstan","analyse","--no-progress"],"result":"exit-code"}
+    {
+      "id": "tests",
+      "kind": "command",
+      "executable": "php",
+      "args": [
+        "artisan",
+        "test"
+      ],
+      "result": "exit-code"
+    },
+    {
+      "id": "analysis",
+      "kind": "command",
+      "executable": "php",
+      "args": [
+        "vendor/bin/phpstan",
+        "analyse",
+        "--no-progress"
+      ],
+      "result": "exit-code"
+    },
+    {
+      "id": "format",
+      "kind": "command",
+      "executable": "php",
+      "args": [
+        "vendor/bin/pint",
+        "--test"
+      ],
+      "result": "exit-code"
+    }
   ],
-  "principles": ["Keep request validation and authorization explicit", "Test tenancy and permission boundaries", "Make database changes reversible where practical", "Use declared project formatter and analyzer configuration"]
+  "principles": [
+    "Keep request validation and authorization explicit",
+    "Test tenancy and permission boundaries",
+    "Make database changes reversible where practical",
+    "Use declared project formatter and analyzer configuration"
+  ],
+  "standards": "modules/php-laravel.md",
+  "hooks": {
+    "checks": [
+      {
+        "id": "format-file",
+        "extensions": [
+          ".php"
+        ],
+        "available": "vendor/bin/pint",
+        "executable": "php",
+        "args": [
+          "vendor/bin/pint",
+          "--test",
+          "{file}"
+        ],
+        "timeoutSeconds": 45
+      },
+      {
+        "id": "analysis-file",
+        "extensions": [
+          ".php"
+        ],
+        "available": "vendor/bin/phpstan",
+        "executable": "php",
+        "args": [
+          "vendor/bin/phpstan",
+          "analyse",
+          "--no-progress",
+          "{file}"
+        ],
+        "timeoutSeconds": 45
+      }
+    ]
+  }
 }

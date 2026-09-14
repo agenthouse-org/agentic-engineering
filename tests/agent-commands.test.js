@@ -9,7 +9,7 @@ import {topics} from '../src/help.js';
 import {agentSkills} from '../src/agent-commands.js';
 import {read,write} from '../src/io.js';
 const temp=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah-commands-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
-test('all CLI topics and incoming workflow roles have installed agent entry points',t=>{
+test('all CLI topics and engineering workflow roles have installed agent entry points',t=>{
   const root=temp(t);install(root,{agents:['claude','codex','cursor','opencode','windsurf','openclaw']});
   for(const command of ['help',...Object.keys(topics),'review-change','draft-user-story','assess-story-readiness','validate-scope','check-commit','enroll-repository','frontend-acceptance']) {
     const name=`ah-${command}`,canonical=path.join(root,'.agents/skills',name,'SKILL.md');assert.ok(fs.existsSync(canonical));

@@ -1,6 +1,6 @@
 # Agent commands
 
-Version 0.1.3 installs 27 agent-facing commands plus the lifecycle skill. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
+Version 0.1.4 installs 37 agent-facing commands plus the lifecycle skill. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
 
 ## Invoke them
 
@@ -41,7 +41,7 @@ Reload the host or start a fresh session after first enrollment if the command i
 | `ah-keygen` | `keygen` |
 | `ah-sign` | `sign` within authorized governance scope |
 
-The input snapshot's useful workflow roles are rewritten generically:
+The framework includes these engineering workflows:
 
 - `ah-enroll-repository`: conversational enrollment through onboarding.
 - `ah-draft-user-story`: outcomes, criteria, proposed details, and open questions.
@@ -49,10 +49,10 @@ The input snapshot's useful workflow roles are rewritten generically:
 - `ah-validate-scope`: coverage of a target across multiple requirements.
 - `ah-check-commit`: checks relevant to a commit and regression evidence.
 - `ah-review-change`: requirement-based review and findings.
-- `ah-web-usability-conformity`: routes to an optional reviewed upstream usability skill; reports missing dependency if it has not been imported.
+- `ah-web-usability-conformity`: routes to the pinned upstream usability method and its explicitly provisioned audit runtime.
 - `ah-frontend-acceptance`: routes to the pinned upstream specialist skill.
 
-These workflows are agent instructions, not new deterministic CLI evaluators. They do not import the snapshot's company identifiers, tracker requirements, global independence rules, or tool permissions. Team governance determines the applicable approvals and reviewer independence. Reviews and drafted stories do not automatically approve or transition work.
+These workflows combine agent judgment with the survey, inspect, gate and review commands. Team governance determines the applicable approvals and reviewer independence. Reviews and drafted stories do not automatically approve or transition work.
 
 ## Before enrollment
 

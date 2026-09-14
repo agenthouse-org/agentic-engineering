@@ -18,7 +18,7 @@ CLI reference:
 
 ```text
 dependencies status
-dependencies pin | unpin
+dependencies pin | unpin [--name frontend-acceptance|web-usability-conformity|hooks]
 dependencies update --bundle FILE (--sha256 HASH | --public-key FILE) [--check] [--allow-breaking]
-Manage required frontend-acceptance. Pins bind version and digest; updates preserve upstream ownership.
+Manage bundled upstream skills. Pins bind version and digest; updates preserve upstream ownership.
 ```

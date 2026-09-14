@@ -1,5 +1,5 @@
 import {updateDependency} from './dependency-update.js';
-import {dependencyStatus,bundledDependency,checkDependencyPin} from './dependencies.js';
+import {dependencyStatus,hookLock,bundledDependencies,checkDependencyPin,checkPresentPins} from './dependencies.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {assert,read,write,inside,hash,VERSION} from './io.js';
@@ -13,7 +13,9 @@ export function update(root,options) {
   if(options.publicKey) data=verifyEnvelope(bundle,fs.readFileSync(path.resolve(options.publicKey),'utf8'));
   else {assert(options.sha256 && hash(raw)===options.sha256,'Supply a trusted SHA-256 or public key for bundle verification');data=bundle;}
   verifyPayload(data);
-  checkDependencyPin(root,bundledDependency(data).lock);
+  for(const dependency of bundledDependencies(data))checkDependencyPin(root,dependency.lock);
+  const hooks=hookLock(data);if(hooks)checkDependencyPin(root,hooks);
+  checkPresentPins(root,[...bundledDependencies(data).map(d=>d.lock.id),...(hooks?[hooks.id]:[])]);
   const installed=read(inside(root,'.agenthouse/installation.json'));
   const current=installed.version.split('.').map(Number),next=data.version.split('.').map(Number);
   const compatible=next[0]===current[0] && (current[0]!==0 || next[1]===current[1]);

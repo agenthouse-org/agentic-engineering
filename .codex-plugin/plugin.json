@@ -1,0 +1,21 @@
+{
+  "name": "ah-engineering",
+  "version": "0.1.4",
+  "description": "Agent-neutral engineering lifecycle, visual acceptance, evidence and governance.",
+  "author": {
+    "name": "agenthouse"
+  },
+  "homepage": "https://github.com/agenthouse-org/agentic-engineering",
+  "repository": "https://github.com/agenthouse-org/agentic-engineering",
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "agenthouse engineering",
+    "shortDescription": "Engineering workflows for developers and teams",
+    "longDescription": "Agent-neutral engineering lifecycle, visual acceptance, evidence and governance.",
+    "developerName": "agenthouse",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Use ah-onboard to help me adopt agenthouse engineering in this repository."
+  }
+}

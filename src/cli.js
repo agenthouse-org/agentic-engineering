@@ -4,8 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import {generateKeyPairSync} from 'node:crypto';
-import {assert,read,write,create,hash,inside,VERSION,PACKAGE} from './io.js';
-import {install,uninstall,detect,payload,recover} from './install.js';
+import {assert,read,write,create,hash,inside,VERSION,PACKAGE,exclusive} from './io.js';
+import {install,uninstall,detect,payload,recover,transact} from './install.js';
 import {resolve,signed} from './policy.js';
 import {evaluate} from './evaluate.js';
 import {newItem,advance,STAGES} from './lifecycle.js';
@@ -13,8 +13,14 @@ import {update,rollback,session} from './update.js';
 import {importSkill} from './skills.js';
 import {dependencyStatus} from './dependencies.js';
 import {pinDependency,updateDependency} from './dependency-update.js';
+import {survey,inspectChange,evidenceReview} from './inspect.js';
+import {gate,specification} from './gates.js';
+import {importBacklog} from './backlog.js';
+import {setupUsability,auditUsability} from './usability.js';
+import {hook,hookConfiguration,hookSettings} from './hooks.js';
+import {controls} from './controls.js';
 
-const boolean=new Set(['ci','frozen','check','allow-breaking','help','non-interactive']);
+const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive']);
 function parse(args) {
   const o={},pos=[];
   for(let i=0;i<args.length;i++) {
@@ -25,6 +31,13 @@ function parse(args) {
   return {o,pos};
 }
 const allowed={onboard:['agents','policy','project','autonomy','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking'],rollback:[],session:[],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output']};
+Object.assign(allowed,{survey:['output'],inspect:['ref','base','output'],review:['ref','base','baseline','item','evidence','output'],gate:['item','phase','decision','policy-file','output'],spec:['item','phase','evaluator','output'],backlog:['source','id','title','provider','external-id','output']});
+allowed.controls=['policy-file'];
+allowed.hook=['vendor','input'];
+allowed['hook-config']=['vendor','install','remove'];
+allowed.usability=['url','fixture','output','npm-cli','offline'];
+allowed.work.push('gate-decision','path');
+allowed.dependencies.push('name');
 export async function main(args) {
   const {o,pos}=parse(args),command=pos.shift();
   if(!command || o.help || command==='help') {
@@ -33,11 +46,21 @@ export async function main(args) {
     console.log(help(topic));return 0;
   }
   assert(Object.hasOwn(allowed,command),`Unknown command ${command}`);
-  assert(['work','dependencies'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
+  assert(['work','dependencies','usability'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
   for(const key of Object.keys(o))assert(['root','help',...allowed[command]].includes(key),`Unknown option --${key} for ${command}`);
   const root=path.resolve(o.root || process.cwd());
   let result;
   switch(command) {
+    case 'usability': {const action=pos.shift();assert(['setup','run'].includes(action),'Choose usability setup or run');result=action==='setup'?await setupUsability(root,{npmCli:o['npm-cli'],offline:o.offline}):await auditUsability(root,{url:o.url,fixture:o.fixture,output:o.output});break;}
+    case 'hook': {const r=await hook(root,{vendor:o.vendor,input:o.input});if(r.stdout)process.stdout.write(r.stdout+'\n');if(r.stderr)process.stderr.write(r.stderr+'\n');return r.exitCode;}
+    case 'controls':result=controls(root,{policyFile:o['policy-file']});break;
+    case 'hook-config': {assert(!(o.install && o.remove),'Choose install or remove');hookConfiguration(o.vendor);result=o.install || o.remove?exclusive(root,()=>{const plan=hookSettings(root,{remove:o.remove});if(plan.changes.length)transact(root,plan.changes);return {status:plan.status};}):hookConfiguration(o.vendor);break;}
+    case 'survey':result=survey(root);break;
+    case 'inspect':result=inspectChange(root,{ref:o.ref,base:o.base});break;
+    case 'review':result=evidenceReview(root,{ref:o.ref,base:o.base,item:o.item,evidence:o.evidence?.split(','),baseline:o.baseline});result.exitCode={passed:0,failed:1,incomplete:4}[result.status];break;
+    case 'gate':result=gate(root,{item:o.item,phase:o.phase,decision:o.decision,policyFile:o['policy-file']});break;
+    case 'spec':result=await specification(root,{item:o.item,phase:o.phase,evaluator:o.evaluator});break;
+    case 'backlog':result=importBacklog(root,{source:o.source,id:o.id,title:o.title,provider:o.provider,externalId:o['external-id']});break;
     case 'onboard':console.log(await onboard(root,{agents:o.agents,policy:o.policy,autonomy:o.autonomy,project:o.project,nonInteractive:o['non-interactive']}));return 0;
     case 'demo':assert(o.root,'Specify --root NEW_EMPTY_DIRECTORY for the demo');console.log(await demo(root));return 0;
     case 'init': {
@@ -62,8 +85,8 @@ export async function main(args) {
     }
     case 'work': {
       const action=pos.shift();
-      if(action==='new')result=newItem(root,o.id,o.title || o.id,o.kind);
-      else if(action==='advance')result=advance(root,o.id,o.to,o.decision,{policyFile:o['policy-file']});
+      if(action==='new')result=newItem(root,o.id,o.title || o.id,o.kind,o.path);
+      else if(action==='advance')result=advance(root,o.id,o.to,o.decision,{policyFile:o['policy-file'],gateDecision:o['gate-decision']});
       else if(action==='show'){const item=read(inside(root,`.agenthouse/work/${o.id}.json`));result={...item,subjectHash:hash(item)};}
       else throw new Error(`Work action must be new, advance, or show. Stages: ${STAGES.join(', ')}`);break;
     }
@@ -90,7 +113,7 @@ export async function main(args) {
     case 'dependencies': {
       const action=pos.shift();
       if(action==='status')result=dependencyStatus(root);
-      else if(action==='pin' || action==='unpin')result=pinDependency(root,action==='unpin');
+      else if(action==='pin' || action==='unpin')result=pinDependency(root,action==='unpin',o.name);
       else if(action==='update'){assert(o.bundle,'--bundle required');result=updateDependency(root,{bundle:o.bundle,sha256:o.sha256,publicKey:o['public-key'],check:o.check,allowBreaking:o['allow-breaking']});}
       else throw new Error('Choose dependencies status, update, pin, or unpin');
       break;
@@ -99,8 +122,10 @@ export async function main(args) {
     case 'module': {
       assert(['node-typescript','php-laravel'].includes(o.name),'Choose node-typescript or php-laravel');
       const data=read(path.join(PACKAGE,'modules',o.name+'.json'));
+      if(data.standards)data.standardsText=fs.readFileSync(inside(PACKAGE,data.standards),'utf8');
       if(o.output)create(path.resolve(root,o.output),data);result=data;break;
     }
   }
-  console.log(JSON.stringify(result,null,2));return 0;
+  if(['survey','inspect','review','gate','spec','backlog'].includes(command) && o.output)write(inside(root,o.output),result);
+  console.log(JSON.stringify(result,null,2));return result.exitCode || 0;
 }

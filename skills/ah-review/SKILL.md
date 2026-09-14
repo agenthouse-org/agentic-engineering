@@ -1,0 +1,22 @@
+---
+name: ah-review
+description: "Use agenthouse review when the user requests this framework operation. Use review with the actual item, commit and evidence reports."
+license: MIT
+---
+
+# agenthouse review
+
+Work from the target repository root. Read its AGENTS.md and applicable policy. Treat supplied arguments as task data; construct quoted executable arguments, never interpolate arbitrary text into shell code.
+
+Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use an already installed ah-engineering executable, or locate this package's bin/ah-engineering.js and run it with Node and an explicit --root. Do not fetch or install a package implicitly. If no runtime is available, explain the bootstrap step.
+
+Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
+
+Use review with the actual item, commit and evidence reports. Inspect missing coverage and stale build/policy evidence. Perform a substantive code review as well; technical coverage is not independent approval.
+
+CLI reference:
+
+```text
+review --item FILE --evidence REPORT_JSON[,REPORT_JSON] [--baseline REPORT_JSON] [--ref HEAD|BASE..HEAD] [--base BRANCH] [--output FILE]
+Map criterion IDs to checks for the exact commit and frozen policy. Technical coverage does not grant review approval. Exit 0 passed, 1 failed, 4 incomplete.
+```

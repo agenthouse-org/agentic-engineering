@@ -1,45 +1,32 @@
 # Implementation and verification status
 
-Version: 0.1.3 developer preview. Date: 2026-09-14.
+Version 0.1.4 developer preview. Updated 2026-09-14.
 
-| Capability | Implemented | Verified here |
+Local release checks: 64 core/workflow tests passed; real visual regression and usability pass/fail browser scenarios passed. The upstream hooks suite passed all eight test files.
+
+| Capability | Shipped behavior | Verification |
 | --- | --- | --- |
-| Agent commands for every CLI operation and generic review/story workflows | Yes (0.1.3) | Shared skills and selected host aliases; ownership/conflict/removal tests; native UI certification pending |
-| Guided onboarding, command help, isolated acceptance demo | Yes (0.1.2) | Scripted setup, existing project preservation, failure/fix reports |
-| Standalone CLI, no core runtime dependencies | Yes | Windows / Node 22.20 |
-| Organization/project policy composition and frozen snapshots | Yes | Mandatory conflicts, protected evaluator definitions, drift and omitted checks |
-| Central signed decisions and direct delegation | Yes | Ed25519 signatures, scope, subject, expiry and delegation |
-| Local work items and all eleven lifecycle stages | Yes | Record completeness and protected transitions; content truth remains reviewer responsibility |
-| Organization-owned command/JSON evaluators | Yes | Pass, fail, timeout, malformed output, missing executable, pending and incomplete outcomes |
-| JSON, JUnit and HTML evidence reports | Yes | Output existence, result semantics; real browser evidence included |
-| Reference-image/story/bug contract formats | Yes | Contract validation, missing concept review, stale evidence |
-| Playwright capture and regression adapter | Yes | Real Chrome: baseline pass, broken layout failure, restored pass |
-| Six coding-agent instruction projections | Yes | File generation, conflict handling and idempotent installation |
-| Native host loading, hooks, permission semantics | Not certified | Requires actual host/version test matrix |
-| Managed install/removal and recovery journal | Yes | User content preservation, conflicts, interrupted transaction recovery |
-| Offline framework bundle, signed/checksummed imports, rollback | Yes | Checksum, tampering, upgrade and rollback tests |
-| Between-session updates from a configured local/mirrored bundle | Yes | Session entry point; no network daemon/native hook |
-| Required frontend dependency and updates | Yes (0.1.1) | Bundled upstream 0.2.0; pins, hashes, signed/checksummed updates, session activation and rollback |
-| Other specialist skill imports | Yes | Source-preserving import and conflict checks; no automatic updates |
-| PHP/Laravel and Node.js/TypeScript modules | Command templates | Adapt to consuming repository tools before use |
-| GitHub Actions/GitLab CI templates | Yes | Templates supplied; platform runs not executed in this repository |
-| Windows/macOS/Linux runtime validation | Yes | GitHub Actions run 34787011808 passed all three core jobs and the Ubuntu browser job at 75d55bb |
-| Native GitHub/GitLab/Jira/Wrike/Confluence/GitBook connectors | Not implemented | Existing organization CLIs can be wrapped |
-| Paid/self-hosted REST/MCP decision providers | Open command/result boundary | No hosted service or MCP server built |
-| Enterprise live-repository and independent user pilots | Not performed | Isolated local policy, lifecycle and browser pilots only |
+| CLI and agent commands | 38 framework skills; every CLI operation has an ah-prefixed entry point | Shared routing, help, installation, ownership and removal tests |
+| Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; commit/range/merge-base analysis; candidate tests and review signals | Root commit, deletion and merge-base fixtures; no discovered scripts executed |
+| Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions | Missing/stale evidence, self-review rejection and invalidated signatures |
+| Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |
+| Lifecycle and small changes | Full lifecycle plus configured shorter paths, eligible kinds and rationale | Protected stages and invalid paths tested |
+| Backlog and review | Markdown/JSON import, retained external identity, criterion coverage, baseline outcome comparison | Idempotency, conflicts and stale evidence tested |
+| Governance | Frozen policy composition, mandatory definitions, signed decisions and direct delegation | Conflict, scope, expiry, omitted-check and delegation tests |
+| Control mapping | Rule provenance and explicit executable/guidance distinctions | Unenforced guidance is not reported as automated |
+| Local hooks | Content-pinned agenthouse-hooks export; session context, command signals, touched-file checks; owned Claude settings installation/removal | Event fixtures, preserved permissions/settings, duplicate avoidance and conflicts |
+| Skills and updates | Pinned frontend-acceptance 0.2.0 and web-usability-conformity 0.1.0 from agenthouse-skills | Commit/file integrity, pins, trusted updates and rollback; hook export pins included |
+| Browser usability | Explicit locked runtime setup and upstream audit runner | Real Chromium clean/failing fixtures, failure exit 1 and desktop/narrow screenshots |
+| Visual acceptance | Image/story/bug contracts, concept review, Playwright capture and regression | Missing/stale concept evidence; real baseline/broken/restored browser scenario |
+| Stack modules | Node/TypeScript and PHP/Laravel standards, evaluator and touched-file templates | Module delivery tested; consuming projects select actual tools |
+| Marketplace packages | Claude and Codex manifests/indexes | Claude Code 2.1.270 validators passed; Claude and Codex 0.154.0-alpha.6.2 installed/enabled the packed plugin in isolated Windows profiles |
+| Distribution | npm tarball, offline framework bundles, signed/checksummed updates, recovery and rollback | Managed-file conflicts, interrupted transactions and tampering tests |
+| CI | Deterministic evaluator templates and optional artifact-only agent-review recipe | CLI exit/report tests; browser/usability jobs included in repository CI |
 
-This build is useful for local/CI evaluation and controlled pilot adoption. It is not a claim that every requirement in the original full-framework roadmap is complete. Private registry/proxy deployment, full offline closure including browsers and optional skills, native host behavior, configurable action-level autonomy, rule waivers, remote synchronization, and live pilot rollout remain open.
+Native live-session hook delivery and command discovery are not certified across all six hosts. Other agents can use the tested shared CLI and generated instruction projections. Local checks supplement server-side branch controls; the command matcher is not a shell sandbox.
 
-## Instruction adapter sources
+Dedicated two-way service connectors, a hosted REST/MCP service and live enterprise rollout are not bundled. Existing organization processes can use command/JSON evaluators, local exports and signed decisions. No paid service is required.
 
-File conventions were checked against official documentation. Reading those documents is not runtime certification:
+The hooks export is a versioned, content-pinned contribution from agenthouse-hooks; no registry publication or Git commit is claimed for that export. Usability setup has a transitive npm lockfile. Fully disconnected setup also needs cached packages, a matching browser and its operating-system dependencies.
 
-- [Claude project instructions](https://code.claude.com/docs/en/memory)
-- [Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
-- [Cursor rules](https://prod.cursor.com/docs/rules)
-- [OpenCode rules](https://opencode.ai/docs/rules/)
-- [Windsurf rules](https://docs.windsurf.com/windsurf/cascade/memories)
-- [OpenClaw workspace](https://docs.openclaw.ai/concepts/agent-workspace)
-- [Playwright visual comparisons](https://playwright.dev/docs/test-snapshots)
-
-Migration readiness: see [functional parity](functional-parity.md). CI success validates the current implementation; it does not establish parity with the reference snapshot.
+Cross-platform CI previously passed on Windows, Linux and macOS with the Linux browser job at 75d55bb. Each new release must pass its own workflow before receiving the same verification claim. Consumer-specific policies, integrations and host behavior require an isolated pilot before cutover.
