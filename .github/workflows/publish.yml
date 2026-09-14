@@ -53,7 +53,9 @@ jobs:
           if-no-files-found: error
       - name: Verify publishing command without publishing
         if: github.event_name == 'workflow_dispatch'
-        run: npm publish ./dist/*.tgz --access public --ignore-scripts --dry-run
+        # A manual run may use an already published version. Force bypasses
+        # that preflight only here; dry-run prevents registry mutation.
+        run: npm publish ./dist/*.tgz --access public --ignore-scripts --dry-run --force
       - name: Publish release with trusted authentication
         if: github.event_name == 'release'
         env:
