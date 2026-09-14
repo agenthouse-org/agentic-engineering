@@ -7,19 +7,55 @@ agenthouse connects requirements, architecture decisions, implementation, accept
 **0.1.4 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling and marketplace manifests are included. See [implementation status](docs/implementation-status.md).
 
 
-## Try it in ten minutes
+## Install on your computer
 
-Requires **Node.js 22 or newer**. From a source checkout:
+Requires **Node.js 22 or newer**. Install the CLI once, then enroll each existing application repository. You do not need to run `npm ci` in your application to adopt agenthouse.
+
+### Planned npm installation — publication pending
+
+The intended installation after npm publication is:
 
 ```text
-npm ci --ignore-scripts
-npm pack
+# Available after the package is published to npm:
+npm install --global @agenthouse-org/engineering --ignore-scripts
+ah-engineering onboard --root "C:/src/my-existing-app"
+```
+
+**The 0.1.4 preview has not been published to npm; this registry installation is not yet available.** Versioned GitHub release downloads are also pending. Once published, those downloads will provide a manual, enterprise and offline installation option without cloning or building the framework.
+
+### Install a supplied package
+
+If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
+
+```text
 npm install --global ./agenthouse-org-engineering-0.1.4.tgz --ignore-scripts
+ah-engineering onboard --root "C:/src/my-existing-app"
+```
+
+Replace the example repository path with your application's actual location. The core package has no third-party runtime dependencies. Global CLI installation does not replace the application's `node_modules`, change its dependencies or change its Git remote. Onboarding adds framework assets and managed instruction sections, preserves consumer configuration, and reports conflicting managed files.
+
+### Current public preview: install from a separate checkout
+
+Until public package downloads are available, another user can obtain the preview from GitHub. Run these commands in a tools directory outside the application repository; Git is required:
+
+```text
+git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
+cd agenthouse-engineering
+npm pack --ignore-scripts
+npm install --global ./agenthouse-org-engineering-0.1.4.tgz --ignore-scripts
+ah-engineering onboard --root "C:/src/my-existing-app"
+```
+
+Use the filename printed by `npm pack` if the preview version has changed. This packages the checked-in runtime and generated assets without installing development dependencies. Alternatively, skip packaging and global installation: use `node bin/ah-engineering.js` from this checkout wherever the instructions below use `ah-engineering`.
+
+## Try it in ten minutes
+
+With the CLI installed, run:
+
+```text
 ah-engineering help
 ah-engineering demo --root ./ah-demo
 ```
-
-If you received the release tarball, start at `npm install --global` using its actual path. No public npm registry release is assumed. Installation from the tarball needs no third-party runtime packages. To avoid a global installation, use `node bin/ah-engineering.js` from this checkout in place of `ah-engineering`.
 
 The demo creates an isolated project and demonstrates:
 
@@ -198,10 +234,13 @@ Instruction files are generated for Claude Code, Codex, OpenCode, Cursor, Windsu
 To validate changes from a checkout:
 
 ```text
+npm ci --ignore-scripts
 npm test
 npm run check
 npm run test:browser
 ```
+
+Run these development commands inside the framework checkout. `npm ci` removes and reinstalls that checkout's `node_modules` from its lockfile; `--ignore-scripts` skips installation scripts, not dependency cleanup. It does not remove source files or Git history. This step is for framework development and testing, not application enrollment.
 
 Browser verification requires Playwright Chromium or `AH_BROWSER_EXECUTABLE` pointing to installed Chrome/Chromium. Private reference material under `input/` is excluded from Git and release artifacts.
 
