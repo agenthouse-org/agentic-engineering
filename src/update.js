@@ -3,7 +3,7 @@ import {dependencyStatus,hookLock,bundledDependencies,checkDependencyPin,checkPr
 import fs from 'node:fs';
 import path from 'node:path';
 import {assert,read,write,inside,hash,VERSION} from './io.js';
-import {install,verifyPayload} from './install.js';
+import {install,verifyPayload,installationStatus} from './install.js';
 import {verifyEnvelope} from './policy.js';
 
 export function update(root,options) {
@@ -45,6 +45,7 @@ export function rollback(root) {
   return install(root,{payload:data});
 }
 export function session(root) {
+  installationStatus(root);
   const file=inside(root,'.agenthouse/update.json');
   let updateResult={status:'not-configured'};
   if(fs.existsSync(file)) {

@@ -6,7 +6,7 @@ Local release checks: 68 core/workflow tests passed; real visual regression and 
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
-| CLI and agent commands | 37 framework skills; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership and removal tests |
+| CLI and agent commands | 38 framework skills; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership and removal tests |
 | Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; commit/range/merge-base analysis; candidate tests and review signals | Root commit, deletion and merge-base fixtures; no discovered scripts executed |
 | Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions | Missing/stale evidence, self-review rejection and invalidated signatures |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |
@@ -30,3 +30,5 @@ Dedicated two-way service connectors, a hosted REST/MCP service and live enterpr
 The hooks export is a versioned, content-pinned contribution from agenthouse-hooks; no registry publication or Git commit is claimed for that export. Usability setup has a transitive npm lockfile. Fully disconnected setup also needs cached packages, a matching browser and its operating-system dependencies.
 
 Cross-platform CI passed on Windows, Linux and macOS with both browser scenarios at a221109 ([run](https://github.com/agenthouse-org/agentic-engineering/actions/runs/34836151481)). Each new release must pass its own workflow before receiving the same verification claim. Consumer-specific policies, integrations and host behavior require an isolated pilot before cutover.
+
+Exact-pin restore and owned generated-file ignore rules are implemented locally, with missing/edited/linked projection diagnostics. Tests cover recorded agents, cached and bundle sources, conflicts, preserved consumer state and interrupted transactions. Historical projection formats and Linux/macOS restoration require separate verification before claiming compatibility.

@@ -5,7 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import {generateKeyPairSync} from 'node:crypto';
 import {assert,read,write,create,hash,inside,VERSION,PACKAGE,exclusive} from './io.js';
-import {install,uninstall,detect,payload,recover,transact} from './install.js';
+import {install,uninstall,detect,payload,recover,transact,restore,installationStatus} from './install.js';
 import {resolve,signed} from './policy.js';
 import {evaluate} from './evaluate.js';
 import {newItem,advance,STAGES} from './lifecycle.js';
@@ -20,7 +20,7 @@ import {setupUsability,auditUsability} from './usability.js';
 import {hook,hookConfiguration,hookSettings} from './hooks.js';
 import {controls} from './controls.js';
 
-const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive']);
+const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated']);
 function parse(args) {
   const o={},pos=[];
   for(let i=0;i<args.length;i++) {
@@ -30,7 +30,7 @@ function parse(args) {
   }
   return {o,pos};
 }
-const allowed={onboard:['agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking'],rollback:[],session:[],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output']};
+const allowed={onboard:['agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking'],rollback:[],session:[],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output']};
 Object.assign(allowed,{survey:['output'],inspect:['ref','base','output'],review:['ref','base','baseline','item','evidence','output'],gate:['item','phase','decision','policy-file','output'],spec:['item','phase','evaluator','output'],backlog:['source','id','title','provider','external-id','output']});
 allowed.controls=['policy-file'];
 allowed.hook=['vendor','input'];
@@ -68,6 +68,7 @@ export async function main(args) {
       const target=o.scope==='user'?path.join(os.homedir(),'.agenthouse-defaults'):root;
       result=install(target,{agents:o.agents?.split(','),policy:o.policy,project:o.project,autonomy:o.autonomy});break;
     }
+    case 'restore':result=restore(root,{bundle:o.bundle,ignoreGenerated:o['ignore-generated']});break;
     case 'resolve':result=resolve(root,{frozen:o.frozen,policyFile:o['policy-file']}).snapshot;break;
     case 'evaluate': {
       result=await evaluate(root,{profile:o.profile,subject:o.subject,baseUrl:o['base-url'],output:o.output,frozen:o.frozen || o.ci,policyFile:o['policy-file']});
@@ -75,6 +76,7 @@ export async function main(args) {
     }
     case 'doctor': {
       const problems=[];let config;
+      try {installationStatus(root);}catch(e){problems.push(e.message);}
       try {dependencyStatus(root);}catch(e){problems.push(e.message);}
       try {config=resolve(root,{frozen:true}).config;}catch(e){problems.push(e.message);}
       if(fs.existsSync(inside(root,'.agenthouse/transaction.json')))problems.push('Interrupted installation: run recover');

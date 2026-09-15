@@ -103,7 +103,7 @@ Story drafting, readiness, scope validation, commit checking, and review workflo
 
 ### Included skills
 
-The framework ships **37 agent-facing skills**, plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
+The framework ships **38 agent-facing skills**, plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
 
 | Skill | Purpose |
 | --- | --- |
@@ -139,6 +139,7 @@ The framework ships **37 agent-facing skills**, plus pinned upstream **frontend-
 | `ah-update` | Update the framework |
 | `ah-bundle` | Create an offline distribution bundle |
 | `ah-rollback` | Restore the previous version set |
+| `ah-restore` | Recreate generated assets from the exact project pin |
 | `ah-recover` | Recover an interrupted installation |
 | `ah-uninstall` | Remove managed framework assets |
 | `ah-skill` | Import another reviewed skill |
@@ -202,6 +203,8 @@ npm installs **one executable: `ah-engineering`**. Everything below is a subcomm
 | `keygen`, `sign` | Manage keys and sign authorized decisions |
 
 Enrollment creates a project launcher, `node .agenthouse/run.mjs`, which selects the installed runtime. Prefer it for daily work and CI so a global CLI update does not silently change the project's runtime.
+
+New installations Git-ignore exact owned generated skill and command files. After cloning, run `ah-engineering restore`; an exact installed package or original offline bundle is required when the runtime cache is absent. Existing installations opt in with `restore --ignore-generated`. See [restoration and retained project state](docs/distribution.md#generated-files-and-restoring-a-clone).
 
 Managed assets include `.agenthouse/`, `.agents/skills/`, and instructions appropriate to the selected agents. Installation preserves unrelated content and refuses conflicting edits. It does not install coding agents, browsers, or native hooks.
 

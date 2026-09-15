@@ -87,6 +87,36 @@ function managed(root,desired,state) {
   }
   return {changes,ownership};
 }
+export function installationStatus(root) {
+  const state=read(inside(root,'.agenthouse/installation.json'));
+  const active=read(inside(root,'.agenthouse/active.json'));
+  assert(active.version===state.version && active.digest===state.digest,'Active pin differs from installation');
+  for(const [relative,entry] of Object.entries(state.files)) {
+    const file=inside(root,relative);
+    assert(fs.existsSync(file),`Missing managed file: ${relative}; run restore`);
+    const content=fs.readFileSync(file,'utf8');
+    const blocks=entry.block?content.match(/<!-- agenthouse:start -->[\s\S]*?<!-- agenthouse:end -->/g):null;
+    assert(!entry.block || blocks?.length===1,`Missing/duplicate managed block: ${relative}`);
+    assert(hash(entry.block?blocks[0]:content)===entry.digest,`Modified managed file: ${relative}`);
+  }
+  return state;
+}
+export function restore(root,options={}) {
+  const state=read(inside(root,'.agenthouse/installation.json'));
+  const active=read(inside(root,'.agenthouse/active.json'));
+  assert(active.version===state.version && active.digest===state.digest,'Active pin differs from installation');
+  assert(Array.isArray(state.agents),'Installation is missing the recorded agent list');
+  resolve(root,{frameworkVersion:state.version,frozen:true});
+  assert(active.runtime===`runtime/${state.version}-${state.digest.slice(0,12)}`,'Active runtime path differs from recorded pin');
+  const source=inside(root,'.agenthouse/'+active.runtime);
+  let data;
+  if(options.bundle)data=read(path.resolve(options.bundle));
+  else if(fs.existsSync(source))data=payload(source);
+  else data=payload();
+  verifyPayload(data);
+  assert(data.version===state.version && hash(data)===state.digest,'Exact pinned restore source unavailable or modified; supply --bundle with the original unsigned framework bundle');
+  return install(root,{payload:data,agents:state.agents,expectedDigest:state.digest,restore:true,ignoreGenerated:options.ignoreGenerated});
+}
 export function install(root,options={}) {
   assert(!options.autonomy || ['supervised','bounded','delegated'].includes(options.autonomy),'Invalid autonomy profile');
   const project=options.project || path.basename(root).replace(/[^a-zA-Z0-9_.-]/g,'-').replace(/^[^a-zA-Z0-9]+/,'') || 'project';safeId(project);
@@ -100,8 +130,9 @@ export function install(root,options={}) {
     checkPresentPins(root,[...dependencies.map(d=>d.lock.id),...(hooks?[hooks.id]:[])]);
     for(const dependency of dependencies)checkDependencyPin(root,dependency.lock);
     if(options.expectedDigest)assert(state.digest===options.expectedDigest,'Installation changed during dependency update; retry');
-    if(fs.existsSync(inside(root,'.agenthouse/config.json')))resolve(root,{frameworkVersion:data.version,persist:false});
+    if(fs.existsSync(inside(root,'.agenthouse/config.json')))resolve(root,{frameworkVersion:data.version,persist:false,frozen:!!options.restore});
     const agents=options.agents || state.agents || detect(root);
+    const ignoreGenerated=options.ignoreGenerated ?? state.ignoreGenerated ?? !state.version;
     for(const a of agents)assert(Object.hasOwn(AGENTS,a),`Unsupported agent ${a}`);
     const digest=hash(data),runtime=`.agenthouse/runtime/${data.version}-${digest.slice(0,12)}`;
     // Version directories are immutable. Their identity is verified on repeat install.
@@ -136,6 +167,10 @@ export function install(root,options={}) {
     desired['.agenthouse/agent-commands.md']={content:`# Agent commands\n\nUse a skill by name or ask your agent in natural language. CLI execution is shared.\n\n${commandNames.sort().map(name=>`- ${name}: .agents/skills/${name}/SKILL.md`).join('\n')}\n\nClaude/OpenCode/Windsurf: /ah-help. Codex: select ah-help from the skill picker. Cursor/OpenClaw: use the shared project skills. Host discovery and permissions remain subject to the installed host version.\n`};
     for(const dependency of dependencies)for(const [file,b64] of Object.entries(dependency.data.files))desired[`.agents/skills/${dependency.lock.id}/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};
     desired['.agenthouse/dependencies.lock.json']={content:JSON.stringify({schemaVersion:1,dependencies:Object.fromEntries(dependencies.map(d=>[d.lock.id,d.lock]))},null,2)+'\n'};
+    if(ignoreGenerated) {
+      const generated=Object.keys(desired).filter(file=>/^\.(agents\/skills|claude\/commands|opencode\/commands|windsurf\/workflows)\//.test(file));
+      desired['.gitignore'].content+='\n'+generated.sort().map(file=>'/'+file.replace(/[!*?\[\]\\ ]/g,character=>'\\'+character)).join('\n');
+    }
     const adoption={...state,files:{...state.files}};
     for(const dependency of dependencies) {
     const skillDirectory=inside(root,`.agents/skills/${dependency.lock.id}`);
@@ -153,18 +188,24 @@ export function install(root,options={}) {
     // Keep previously selected adapters on upgrade rather than orphaning their owned files.
     for(const old of Object.keys(state.files))assert(desired[old] || removed.some(c=>c.path===old),`Cannot drop installed adapter implicitly: ${old}; uninstall first`);
     const {changes,ownership}=managed(root,desired,adoption);
+    if(options.restore) {
+      for(const [relative,entry] of Object.entries(ownership)) {
+        assert(state.files[relative] && (relative==='.gitignore' && options.ignoreGenerated!==undefined || hash(entry)===hash(state.files[relative])),`Restore projection differs from installation: ${relative}`);
+      }
+      assert(Object.keys(ownership).length===Object.keys(state.files).length,'Restore inventory differs from installation');
+    }
     changes.push(...removed);
     // A rollback to a runtime without engineering hooks must not leave active
     // handlers pointing at a command that the restored runtime cannot execute.
-    if(!hooks)changes.push(...hookSettings(root,{remove:true}).changes);
+    if(!hooks && !options.restore)changes.push(...hookSettings(root,{remove:true}).changes);
     const importFile=inside(root,'.agenthouse/skills.json');
-    if(fs.existsSync(importFile)) {
+    if(fs.existsSync(importFile) && !options.restore) {
       const imports=read(importFile);
       for(const dependency of dependencies)if(imports[dependency.lock.id]){delete imports[dependency.lock.id];changes.push({path:'.agenthouse/skills.json',content:JSON.stringify(imports,null,2)+'\n'});}
     }
     const active={runtime:runtime.replace('.agenthouse/',''),version:data.version,digest};
     if(state.digest!==digest && fs.existsSync(inside(root,'.agenthouse/active.json')))changes.push({path:'.agenthouse/previous.json',content:JSON.stringify({state,active:read(inside(root,'.agenthouse/active.json'))})});
-    changes.push({path:'.agenthouse/active.json',content:JSON.stringify(active)}, {path:'.agenthouse/installation.json',content:JSON.stringify({version:data.version,agents,files:ownership,digest})});
+    changes.push({path:'.agenthouse/active.json',content:JSON.stringify(active)}, {path:'.agenthouse/installation.json',content:JSON.stringify({version:data.version,agents,files:ownership,digest,ignoreGenerated})});
     if(!fs.existsSync(inside(root,'.agenthouse/config.json'))) {
       const policySources=[];
       function initial(relative,value) {
@@ -182,7 +223,7 @@ export function install(root,options={}) {
       initial('.agenthouse/config.json',{schemaVersion:1,project,...(options.policy?{}:{autonomy:options.autonomy || 'supervised',documentationAuthority:'git'}),policySources,
         evaluators:[{id:'readiness',kind:'work-item',file:'.agenthouse/work/first-change.json',stage:'plan'}],profiles:{'pull-request':{checks:[{evaluator:'readiness',required:true}]}}});
     }
-    transact(root,changes,()=>[{path:'.agenthouse/resolved.json',content:JSON.stringify(resolve(root,{frameworkVersion:data.version,persist:false}).snapshot,null,2)+'\n'}]);
+    transact(root,changes,options.restore?undefined:()=>[{path:'.agenthouse/resolved.json',content:JSON.stringify(resolve(root,{frameworkVersion:data.version,persist:false}).snapshot,null,2)+'\n'}]);
     return {version:data.version,agents,root,advisoryAdapters:true};
   });
 }

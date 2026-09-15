@@ -25,6 +25,7 @@ export const topics={
   update:'update --bundle FILE (--sha256 HASH | --public-key FILE) [--check] [--allow-breaking]\nVerify and activate an approved framework bundle, respecting project pins.',
   bundle:'bundle --output FILE [--key PRIVATE_KEY]\nPackage this framework and required skill for offline distribution. Optionally sign with Ed25519.',
   rollback:'rollback\nRestore the previous complete runtime and dependency set. Conflicting dependency pins must be removed first.',
+  restore:'restore [--bundle FILE] [--ignore-generated]\nRecreate owned assets from the exact active pin and recorded agents. Uses the cached runtime, exact executing package, or original unsigned bundle. --ignore-generated opts an existing installation into owned-file ignore rules. Preserves policy snapshots and refuses edits; recover handles interrupted transactions.',
   recover:'recover\nRecover an interrupted installation transaction without overwriting subsequent user edits.',
   uninstall:'uninstall\nRemove unchanged managed files. Preserve configuration, policies, keys, work records, and evidence.',
   skill:'skill --source DIRECTORY [--name ID] [--sha256 HASH]\nImport another reviewed specialist skill unchanged. Required frontend-acceptance is managed by dependencies.',
@@ -104,7 +105,7 @@ Daily work
   session       Apply approved updates between commands
 
 Installation and maintenance
-  init, dependencies, update, bundle, rollback, recover, uninstall
+  init, dependencies, update, bundle, rollback, restore, recover, uninstall
   skill         Import an additional specialist skill
   module        Discover stack-specific check templates
   keygen, sign  Create keys and sign authorized decisions

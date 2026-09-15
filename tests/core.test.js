@@ -6,7 +6,7 @@ import path from 'node:path';
 import {generateKeyPairSync} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {read,write,hash,PACKAGE,inside} from '../src/io.js';
-import {install,uninstall,payload,recover} from '../src/install.js';
+import {install,uninstall,payload,recover,restore,installationStatus} from '../src/install.js';
 import {resolve,approval,signed} from '../src/policy.js';
 import {evaluate} from '../src/evaluate.js';
 import {newItem,advance,STAGES} from '../src/lifecycle.js';
@@ -153,4 +153,76 @@ test('invalid organization policy rolls enrollment back without replacing user f
 test('an existing owner key is preserved on a conflicting first enrollment',t=>{
   const root=temp(t);write(path.join(root,'.agenthouse/local/owner.key'),'Existing private key');
   assert.throws(()=>install(root,{agents:[]}),/Existing initial configuration/);assert.equal(fs.readFileSync(path.join(root,'.agenthouse/local/owner.key'),'utf8'),'Existing private key');assert.equal(fs.existsSync(path.join(root,'.agenthouse/active.json')),false);
+});
+
+
+test('restore rebuilds ignored assets with recorded agents and preserves project state',t=>{
+  const root=setup(t,['claude','codex']);
+  const snapshot=fs.readFileSync(path.join(root,'.agenthouse/resolved.json'));
+  const configuration=fs.readFileSync(path.join(root,'.agenthouse/config.json'));
+  write(path.join(root,'.agents/skills/custom/SKILL.md'),'consumer skill');
+  write(path.join(root,'.claude/settings.json'),'{"consumer":true}');
+  const ignore=fs.readFileSync(path.join(root,'.gitignore'),'utf8');
+  assert.match(ignore,/\/\.agents\/skills\/ah-help\/SKILL.md/);
+  assert.ok(!ignore.includes('\n.agents/\n'));
+  for(const relative of Object.keys(read(path.join(root,'.agenthouse/installation.json')).files))
+    if(relative.startsWith('.agents/') || relative.startsWith('.claude/commands/'))fs.unlinkSync(path.join(root,relative));
+  assert.throws(()=>installationStatus(root),/Missing managed file/);
+  restore(root);restore(root);
+  assert.deepEqual(read(path.join(root,'.agenthouse/installation.json')).agents,['claude','codex']);
+  assert.deepEqual(fs.readFileSync(path.join(root,'.agenthouse/resolved.json')),snapshot);
+  assert.deepEqual(fs.readFileSync(path.join(root,'.agenthouse/config.json')),configuration);
+  assert.equal(fs.readFileSync(path.join(root,'.agents/skills/custom/SKILL.md'),'utf8'),'consumer skill');
+  assert.equal(read(path.join(root,'.claude/settings.json')).consumer,true);
+  installationStatus(root);
+});
+
+test('restore accepts exact bundle without cache and rejects wrong sources and edits',t=>{
+  const root=setup(t,['claude']);const data=payload();
+  const bundle=path.join(temp(t),'original.json');write(bundle,data);
+  fs.rmSync(path.join(root,'.agenthouse/runtime'),{recursive:true});
+  restore(root,{bundle});
+  const wrong=structuredClone(data);wrong.files['README.md']=Buffer.from('wrong').toString('base64');write(bundle,wrong);
+  assert.throws(()=>restore(root,{bundle}),/source unavailable or modified/);
+  fs.appendFileSync(path.join(root,'.claude/commands/ah-help.md'),'edit');
+  assert.throws(()=>restore(root),/modified/i);
+  assert.throws(()=>installationStatus(root),/Modified managed file/);
+});
+
+test('existing installations opt into ignore rules without hiding consumer files',t=>{
+  const root=temp(t);install(root,{agents:['claude'],ignoreGenerated:false});
+  assert.ok(!fs.readFileSync(path.join(root,'.gitignore'),'utf8').includes('/.agents/skills/'));
+  restore(root);assert.equal(read(path.join(root,'.agenthouse/installation.json')).ignoreGenerated,false);
+  fs.appendFileSync(path.join(root,'.gitignore'),'\nconsumer-output/\n');
+  restore(root,{ignoreGenerated:true});
+  assert.match(fs.readFileSync(path.join(root,'.gitignore'),'utf8'),/consumer-output/);
+  assert.equal(read(path.join(root,'.agenthouse/installation.json')).ignoreGenerated,true);
+});
+
+test('diagnostics reject linked host command directories before a pin bump',t=>{
+  const root=setup(t,['claude']);const commands=path.join(root,'.claude/commands'),target=path.join(root,'commands-cache');
+  fs.renameSync(commands,target);
+  try {fs.symlinkSync(target,commands,process.platform==='win32'?'junction':'dir');}
+  catch(error){if(error.code==='EPERM'){t.skip('Symlink privilege unavailable');return;}throw error;}
+  assert.throws(()=>installationStatus(root),/Symlink path rejected/);
+  const cli=spawnSync(process.execPath,['bin/ah-engineering.js','doctor','--root',root],{encoding:'utf8'});
+  assert.equal(cli.status,2);assert.match(cli.stdout,/Symlink path rejected/);
+});
+
+
+test('restore never upgrades an older pin and rejects interrupted transactions',t=>{
+  const root=temp(t),data=payload();data.version='0.1.5';
+  const metadata=JSON.parse(Buffer.from(data.files['package.json'],'base64'));metadata.version=data.version;
+  data.files['package.json']=Buffer.from(JSON.stringify(metadata)).toString('base64');
+  install(root,{agents:['claude','codex'],payload:data,ignoreGenerated:false});
+  const pin=fs.readFileSync(path.join(root,'.agenthouse/active.json'));
+  fs.rmSync(path.join(root,'.agents'),{recursive:true});restore(root);
+  assert.deepEqual(fs.readFileSync(path.join(root,'.agenthouse/active.json')),pin);
+  fs.rmSync(path.join(root,'.agenthouse/runtime'),{recursive:true});
+  assert.throws(()=>restore(root),/source unavailable or modified/);
+  const bundle=path.join(temp(t),'original.json');write(bundle,data);
+  write(path.join(root,'.agenthouse/transaction.json'),[]);
+  assert.throws(()=>restore(root,{bundle}),/Interrupted transaction/);
+  assert.deepEqual(fs.readFileSync(path.join(root,'.agenthouse/active.json')),pin);
+  recover(root);restore(root,{bundle});installationStatus(root);
 });

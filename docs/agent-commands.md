@@ -1,6 +1,6 @@
 # Agent commands
 
-Version 0.1.6 installs 37 agent-facing commands plus the lifecycle skill. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
+Version 0.1.6 installs 38 agent-facing commands plus the lifecycle skill. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
 
 ## Invoke them
 
@@ -34,6 +34,7 @@ Reload the host or start a fresh session after first enrollment if the command i
 | `ah-update` | `update` |
 | `ah-bundle` | `bundle` |
 | `ah-rollback` | `rollback` |
+| `ah-restore` | `restore` |
 | `ah-recover` | `recover` |
 | `ah-uninstall` | `uninstall` |
 | `ah-skill` | `skill` |
@@ -46,7 +47,7 @@ The framework includes these engineering workflows:
 - `ah-enroll-repository`: conversational enrollment through onboarding.
 - `ah-draft-user-story`: outcomes, criteria, proposed details, and open questions.
 - `ah-assess-story-readiness`: an evidence-based readiness assessment.
-- `ah-validate-scope`: coverage of a target across multiple requirements.
+- `ah-validate-scope`: agent assessment of coverage across multiple requirements. There is no `validate-scope` CLI subcommand. A local work item is optional; use supplied authoritative outcomes and requirements.
 - `ah-check-commit`: checks relevant to a commit and regression evidence.
 - `ah-review-change`: requirement-based review and findings.
 - `ah-web-usability-conformity`: routes to the pinned upstream usability method and its explicitly provisioned audit runtime.

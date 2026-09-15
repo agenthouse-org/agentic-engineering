@@ -3,7 +3,7 @@ import path from 'node:path';
 import {createInterface} from 'node:readline/promises';
 import {spawnSync} from 'node:child_process';
 import {assert,inside,read,write} from './io.js';
-import {install,AGENTS} from './install.js';
+import {install,AGENTS,installationStatus} from './install.js';
 import {dependencyStatus} from './dependencies.js';
 import {resolve} from './policy.js';
 import {evaluate} from './evaluate.js';
@@ -39,6 +39,7 @@ export function documentation(root,choice,options={}) {
 }
 
 export function nextSteps(root) {
+  installationStatus(root);
   const config=resolve(root,{frozen:true}).config;
   const installation=read(inside(root,'.agenthouse/installation.json'));
   dependencyStatus(root);

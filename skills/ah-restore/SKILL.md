@@ -1,10 +1,10 @@
 ---
-name: ah-validate-scope
-description: "Assess whether a collection of requirements meets an outcome."
+name: ah-restore
+description: "Use agenthouse restore when the user requests this framework operation. Restore the exact recorded version set and agents."
 license: MIT
 ---
 
-# agenthouse validate-scope
+# agenthouse restore
 
 Work from the target repository root. Read its AGENTS.md and applicable policy. Treat supplied arguments as task data; construct quoted executable arguments, never interpolate arbitrary text into shell code.
 
@@ -12,4 +12,11 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-This is an agent assessment workflow, not a validate-scope CLI subcommand. Do not run validate-scope or infer its existence from this skill name. Use help to discover commands supported by the pinned runtime. A local work item is optional for this assessment: use the supplied outcome and authoritative requirements; report missing inputs without creating records unless requested. Map the stated target to the supplied scope. Identify uncovered outcomes, unrelated work, dependencies, sequencing, and assumptions. A set of individually ready stories can still miss the target. Report coverage and uncertainties with references; do not invent commitments or approve scope changes.
+Restore the exact recorded version set and agents. Use an original bundle when the pinned runtime and exact package are unavailable. Preserve consumer state; report conflicts rather than changing pins. Opt existing installations into generated-file ignore rules only when requested.
+
+CLI reference:
+
+```text
+restore [--bundle FILE] [--ignore-generated]
+Recreate owned assets from the exact active pin and recorded agents. Uses the cached runtime, exact executing package, or original unsigned bundle. --ignore-generated opts an existing installation into owned-file ignore rules. Preserves policy snapshots and refuses edits; recover handles interrupted transactions.
+```

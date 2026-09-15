@@ -53,3 +53,28 @@ Discover an eligible update; retrieve to staging; verify origin, integrity, depe
 Failure before activation leaves the current version usable. Failed activation restores managed assets and reports the failure. Rollback restores software assets; it cannot automatically undo external decisions, platform writes, or an organizational policy revocation. State migrations require declared reversibility or an explicit recovery route.
 
 Do not load new executable hooks or remote skill instructions merely because an untrusted manifest advertises a higher version. Validate against the configured trusted distribution source and release policy.
+
+
+## Generated files and restoring a clone
+
+New installations add exact owned paths under `.agents/skills/`, `.claude/commands/`, `.opencode/commands/`, and `.windsurf/workflows/` to the managed `.gitignore` block, according to selected hosts. Consumer-owned files are not ignored by these rules. Files already tracked by Git remain tracked; review and untrack only generated paths if adopting this workflow in an existing repository.
+
+Keep `.agenthouse/installation.json`, `active.json`, `run.mjs`, configuration, policy sources, dependency locks/pins, resolved policy snapshots, work records, and managed instruction files in Git. These include generated metadata needed to verify and bootstrap restoration; do not ignore all of `.agenthouse/`. Runtime caches, local private keys, sessions and transaction files retain their existing ignore rules. Imported skills recorded separately in `.agenthouse/skills.json` are consumer dependencies and are not recreated by restore.
+
+After cloning, use an installed CLI with the exact original payload:
+
+```text
+ah-engineering restore --root /path/to/project
+ah-engineering doctor --root /path/to/project
+ah-engineering resolve --root /path/to/project --frozen
+```
+
+If the ignored runtime cache is absent, restore tries the executing package. A matching version number alone is insufficient: the complete payload digest must match. An approved separately updated dependency set may require its original complete bundle rather than the base npm package. Supply that original unsigned framework bundle explicitly:
+
+```text
+ah-engineering restore --root /path/to/project --bundle /offline/original-bundle.json
+```
+
+Restore makes no network requests, preserves the recorded agents, and leaves configuration and resolved policy snapshots unchanged. It refuses modified owned files and removed managed instruction blocks. It does not reconstruct missing project authority or consumer imports. Interrupted transactions require `recover` first. An older pinned project launcher may not contain `restore`; invoke the newer global CLI to request restoration without upgrading the pin. Historical projection formats have not been verified: if reconstructed ownership digests differ, restore refuses the operation rather than rewriting them.
+
+Existing installations opt in with `ah-engineering restore --ignore-generated`. Repeating restore is idempotent. Diagnostics reject missing, edited, or symlinked managed projections. Shared storage is not implemented; ordinary copies remain on disk.
