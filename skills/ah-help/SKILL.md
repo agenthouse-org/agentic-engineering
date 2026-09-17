@@ -1,6 +1,6 @@
 ---
 name: ah-help
-description: "Use agenthouse help when the user requests this framework operation. Explain the installed command map and recommend the next command for the user’s goal."
+description: "Explain installed agenthouse commands and recommend the next step for a goal. Use when asking what agenthouse can do, which skill to pick, or for the command map."
 license: MIT
 ---
 

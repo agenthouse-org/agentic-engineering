@@ -1,6 +1,6 @@
 ---
 name: ah-rollback
-description: "Use agenthouse rollback when the user requests this framework operation. Explain that rollback restores the previous runtime/dependency set."
+description: "Restore the previous complete runtime and dependency set. Use when an update should be undone and the prior version set is still available."
 license: MIT
 ---
 

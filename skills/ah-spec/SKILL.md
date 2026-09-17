@@ -1,6 +1,6 @@
 ---
 name: ah-spec
-description: "Use agenthouse spec when the user requests this framework operation. Capture red before implementing and green after using the same configured test command."
+description: "Capture a failing (red) then passing (green) run of the same configured test command. Use when recording specification evidence for a work item."
 license: MIT
 ---
 

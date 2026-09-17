@@ -1,6 +1,6 @@
 ---
 name: ah-doctor
-description: "Use agenthouse doctor when the user requests this framework operation. Inspect problems and explain their concrete impact."
+description: "Diagnose installation, policy snapshot, and required skill integrity problems. Use when enrollment looks broken, skills are missing, or asking why agenthouse is unhealthy."
 license: MIT
 ---
 

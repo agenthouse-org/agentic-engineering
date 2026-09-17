@@ -10,11 +10,13 @@ metadata:
 
 Read `.agenthouse/lifecycle.md`, the relevant work record, and `.agenthouse/resolved.json`. Run the enrolled launcher from the repository root. If enrollment is absent, explain what context is missing instead of inventing organization policy.
 
-Before implementation, identify the requested outcome, scope, acceptance criteria and applicable decisions. Record material gaps and assumptions. Select evidence appropriate to the change: a documentation correction and a permission boundary change need different verification.
+Before implementation, identify the requested outcome, scope, acceptance criteria and applicable decisions. Record material gaps and assumptions. Select evidence appropriate to the change: a documentation correction and a permission boundary change need different verification. Keep replies to Decide / Ready or Blocked / Open unless the user asks for more.
+
+For UI layout or data-model work that must be seen before code, use ah-visual-plan (wireframe, mermaid, both, or neither) and store the path in `fields.visualPlan`. Do not invent screens when neither is enough.
 
 During implementation, keep the change reviewable. If evidence contradicts the requirement, surface the disagreement and resolve it through the project's process; do not silently alter tests or add unrelated work.
 
-For UI changes, read and use `.agents/skills/frontend-acceptance/SKILL.md`, the required versioned dependency maintained in agenthouse-skills. Run `node .agenthouse/run.mjs dependencies status` to verify its identity and integrity. If it is missing or modified, repair the dependency before proceeding with frontend acceptance. Derive observable criteria from the reference image, story, or bug report. Run the real browser journey, inspect screenshots, and link findings to criteria. If no visual reviewer/browser is available, record incomplete evidence rather than a visual pass.
+For UI changes, read and use `.agents/skills/frontend-acceptance/SKILL.md`, the required versioned dependency maintained in agenthouse-skills. Run `node .agenthouse/run.mjs dependencies status` to verify its identity and integrity. If it is missing or modified, repair the dependency before proceeding with frontend acceptance. Derive observable criteria from the reference image, wireframe, story, or bug report. Run the real browser journey, inspect screenshots, and link findings to criteria. If no visual reviewer/browser is available, record incomplete evidence rather than a visual pass.
 
 Use `node .agenthouse/run.mjs evaluate --profile <configured-profile> --frozen --subject <build-id>` to gather the project's checks. An explicit build ID must identify the actual tested build. Interpret JSON/HTML reports; never treat a process error, missing criterion, or pending approval as success.
 

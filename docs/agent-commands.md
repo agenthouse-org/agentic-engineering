@@ -1,6 +1,6 @@
 # Agent commands
 
-Version 0.1.6 installs 38 agent-facing commands plus the lifecycle skill. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
+Version 0.1.7 installs 40 generated agent-facing commands plus the lifecycle skill. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
 
 ## Invoke them
 
@@ -26,6 +26,7 @@ Reload the host or start a fresh session after first enrollment if the command i
 | `ah-demo` | `demo` in a new/empty directory |
 | `ah-init` | `init` |
 | `ah-work` | `work new`, `show`, `advance` |
+| `ah-visual-plan` | `visual-plan check` |
 | `ah-evaluate` | `evaluate` |
 | `ah-doctor` | `doctor` |
 | `ah-resolve` | `resolve` |
@@ -33,6 +34,7 @@ Reload the host or start a fresh session after first enrollment if the command i
 | `ah-dependencies` | `dependencies status`, `pin`, `unpin`, `update` |
 | `ah-update` | `update` |
 | `ah-bundle` | `bundle` |
+| `ah-npm-provenance` | `npm-provenance status`, `apply` |
 | `ah-rollback` | `rollback` |
 | `ah-restore` | `restore` |
 | `ah-recover` | `recover` |
@@ -45,13 +47,17 @@ Reload the host or start a fresh session after first enrollment if the command i
 The framework includes these engineering workflows:
 
 - `ah-enroll-repository`: conversational enrollment through onboarding.
-- `ah-draft-user-story`: outcomes, criteria, proposed details, and open questions.
+- `ah-draft-user-story`: outcomes, criteria, proposed details, and open questions. Offers a visual plan (wireframe, mermaid, both, neither) as a scoping option.
 - `ah-assess-story-readiness`: an evidence-based readiness assessment.
 - `ah-validate-scope`: agent assessment of coverage across multiple requirements. There is no `validate-scope` CLI subcommand. A local work item is optional; use supplied authoritative outcomes and requirements.
 - `ah-check-commit`: checks relevant to a commit and regression evidence.
 - `ah-review-change`: requirement-based review and findings.
+- `ah-visual-plan`: local wireframes and mermaid architecture diagrams, then `visual-plan check`.
 - `ah-web-usability-conformity`: routes to the pinned upstream usability method and its explicitly provisioned audit runtime.
 - `ah-frontend-acceptance`: routes to the pinned upstream specialist skill.
+- `ah-npm-provenance`: explains npm provenance, asks whether to add it, and inspects or writes local publish files. It does not publish or configure npmjs.com.
+
+Scoping and review skills stay decision-first: a short Decide list, then Ready/Blocked or Findings. They expand only when the user asks.
 
 These workflows combine agent judgment with the survey, inspect, gate and review commands. Team governance determines the applicable approvals and reviewer independence. Reviews and drafted stories do not automatically approve or transition work.
 
@@ -61,7 +67,7 @@ Project command files appear after `onboard` or `init`. A globally installed CLI
 
 ## Maintenance
 
-`src/agent-commands.js` defines the routing and workflow guidance; `src/help.js` supplies CLI reference text. Run `npm run build:agent-skills` after changing them. Generated skills ship in `skills/`; release checks reject stale generated content. Enrollment creates `.agenthouse/agent-commands.md` as the project catalog and the selected native aliases. Updates and removal use existing managed-file ownership checks and reject local edits.
+`src/agent-commands.js` defines routing, picker descriptions, and workflow guidance; `src/help.js` supplies CLI reference text. Skill descriptions must say what the command does and when to use it; do not derive them from the first sentence of agent instructions. Run `npm run build:agent-skills` after changing them. Generated skills ship in `skills/`; release checks reject stale generated content. Enrollment creates `.agenthouse/agent-commands.md` as the project catalog and the selected native aliases. Updates and removal use existing managed-file ownership checks and reject local edits.
 
 The frontend specialist implementation remains upstream in agenthouse-skills. Its wrapper reads the installed verified dependency; it does not duplicate the method. Agent skills grant no additional tool permissions. Private-key use, policy changes, external publication, and other sensitive mutations still require the user's applicable authorization.
 

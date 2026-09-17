@@ -1,6 +1,6 @@
 ---
 name: ah-keygen
-description: "Use agenthouse keygen when the user requests this framework operation. Create keys only at the requested location."
+description: "Create an Ed25519 key pair at a requested path without overwriting existing files. Use when setting up signing keys for governance decisions or bundles."
 license: MIT
 ---
 

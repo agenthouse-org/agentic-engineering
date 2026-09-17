@@ -1,6 +1,6 @@
 ---
 name: ah-assess-story-readiness
-description: "Assess whether an existing work item is ready to implement."
+description: "Assess whether one existing work item is complete enough to implement. Use when asking if a story is ready, blocked, or missing facts."
 license: MIT
 ---
 
@@ -12,4 +12,13 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Run gate --item FILE --phase ready against the actual item and policy; use its findings as the completeness baseline. Read the item and applicable project readiness policy. Check outcome, scope, observable criteria, dependencies, risks, and verification approach. Cite each missing fact and make suggested wording explicit. Evaluate completeness separately from truth. Disclose authorship; follow the project’s independence requirements. Produce a readiness assessment, not an automatic stage transition or signature.
+Run gate --item FILE --phase ready against the actual item and policy; use its findings as the completeness baseline.
+
+Reply as Decide / Ready or Blocked / Missing. Cite each missing fact with suggested wording. Evaluate completeness separately from truth. Disclose authorship.
+
+Decide:
+1. Ready to implement? yes / no / blocked-on-X
+2. Visual plan needed? If UI or data-model work has no fields.visualPlan, offer wireframe, mermaid, both, or neither — do not invent screens unless they choose it
+3. Independent review required?
+
+A readiness assessment is not a stage transition or signature. Expand only if the user asks.

@@ -1,6 +1,6 @@
 ---
 name: ah-check-commit
-description: "Check the behavior affected by a commit or change range."
+description: "Check the behavior affected by a commit or change range against its intended outcome. Use when verifying a fix, looking for regressions, or inspecting what a commit changed."
 license: MIT
 ---
 
@@ -12,4 +12,4 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Run inspect for the requested ref/base, then compare the changed behavior to its intended outcome. Inspect the repository’s actual tooling, select relevant checks, and execute those supported in the environment. For a bugfix seek a regression test that fails before the fix and passes after it, using an isolated checkout if needed; preserve the user’s working tree. Distinguish inherited failures and unrun checks. Use the configured CLI evaluation when applicable and report evidence without committing, pushing, or approving.
+Run inspect for the requested ref/base, then compare the changed behavior to its intended outcome. Inspect the repository’s actual tooling, select relevant checks, and execute those supported in the environment. For a bugfix seek a regression test that fails before the fix and passes after it, using an isolated checkout if needed; preserve the user’s working tree. Distinguish inherited failures and unrun checks. Use the configured CLI evaluation when applicable and report evidence without committing, pushing, or approving. Lead with pass / fail / incomplete and the checks that matter; do not narrate the whole diff unless asked.

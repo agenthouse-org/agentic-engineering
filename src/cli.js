@@ -19,6 +19,8 @@ import {importBacklog} from './backlog.js';
 import {setupUsability,auditUsability} from './usability.js';
 import {hook,hookConfiguration,hookSettings} from './hooks.js';
 import {controls} from './controls.js';
+import {checkVisualPlan} from './visual-plan.js';
+import {statusNpmProvenance,applyNpmProvenance} from './npm-provenance.js';
 
 const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated']);
 function parse(args) {
@@ -37,6 +39,8 @@ allowed.hook=['vendor','input'];
 allowed['hook-config']=['vendor','install','remove'];
 allowed.usability=['url','fixture','output','npm-cli','offline'];
 allowed.work.push('gate-decision','path');
+allowed['visual-plan']=['item','plan','output'];
+allowed['npm-provenance']=['provider','workflow','publish','access','output'];
 allowed.dependencies.push('name');
 export async function main(args) {
   const {o,pos}=parse(args),command=pos.shift();
@@ -46,7 +50,7 @@ export async function main(args) {
     console.log(help(topic));return 0;
   }
   assert(Object.hasOwn(allowed,command),`Unknown command ${command}`);
-  assert(['work','dependencies','usability'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
+  assert(['work','dependencies','usability','visual-plan','npm-provenance'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
   for(const key of Object.keys(o))assert(['root','help',...allowed[command]].includes(key),`Unknown option --${key} for ${command}`);
   const root=path.resolve(o.root || process.cwd());
   let result;
@@ -55,6 +59,8 @@ export async function main(args) {
     case 'hook': {const r=await hook(root,{vendor:o.vendor,input:o.input});if(r.stdout)process.stdout.write(r.stdout+'\n');if(r.stderr)process.stderr.write(r.stderr+'\n');return r.exitCode;}
     case 'controls':result=controls(root,{policyFile:o['policy-file']});break;
     case 'hook-config': {assert(!(o.install && o.remove),'Choose install or remove');hookConfiguration(o.vendor);result=o.install || o.remove?exclusive(root,()=>{const plan=hookSettings(root,{remove:o.remove});if(plan.changes.length)transact(root,plan.changes);return {status:plan.status};}):hookConfiguration(o.vendor);break;}
+    case 'visual-plan': {const action=pos.shift();assert(action==='check','Choose visual-plan check');result=checkVisualPlan(root,{item:o.item,plan:o.plan});break;}
+    case 'npm-provenance': {const action=pos.shift();assert(['status','apply'].includes(action),'Choose npm-provenance status or apply');result=action==='apply'?applyNpmProvenance(root,{provider:o.provider,workflow:o.workflow,publish:o.publish,access:o.access}):statusNpmProvenance(root,{provider:o.provider,workflow:o.workflow,publish:o.publish});break;}
     case 'survey':result=survey(root);break;
     case 'inspect':result=inspectChange(root,{ref:o.ref,base:o.base});break;
     case 'review':result=evidenceReview(root,{ref:o.ref,base:o.base,item:o.item,evidence:o.evidence?.split(','),baseline:o.baseline});result.exitCode={passed:0,failed:1,incomplete:4}[result.status];break;
@@ -128,6 +134,6 @@ export async function main(args) {
       if(o.output)create(path.resolve(root,o.output),data);result=data;break;
     }
   }
-  if(['survey','inspect','review','gate','spec','backlog'].includes(command) && o.output)write(inside(root,o.output),result);
+  if(['survey','inspect','review','gate','spec','backlog','visual-plan','npm-provenance'].includes(command) && o.output)write(inside(root,o.output),result);
   console.log(JSON.stringify(result,null,2));return result.exitCode || 0;
 }

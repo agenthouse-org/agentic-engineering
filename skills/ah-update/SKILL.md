@@ -1,6 +1,6 @@
 ---
 name: ah-update
-description: "Use agenthouse update when the user requests this framework operation. Inspect the requested trusted bundle with --check, then apply within the user’s authorized update scope."
+description: "Verify and activate an approved agenthouse framework bundle, respecting project pins. Use when updating the pinned runtime from a reviewed bundle."
 license: MIT
 ---
 

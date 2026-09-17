@@ -1,6 +1,6 @@
 ---
 name: ah-evaluate
-description: "Use agenthouse evaluate when the user requests this framework operation. Use the project’s configured profile and actual build identity."
+description: "Run the project's configured checks and write JSON, JUnit, and HTML evidence reports. Use when running local or CI evaluation, pull-request checks, or verifying a specific build."
 license: MIT
 ---
 

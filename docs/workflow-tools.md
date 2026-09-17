@@ -26,6 +26,14 @@ When configured, ready runs before Implement and done before Accept. `work advan
 
 `review --item FILE --evidence RESULT_JSON --ref HEAD` maps requirements to checks and rejects stale commit/policy evidence. Technical completeness does not establish code correctness or governance approval. An artifact-only CI job can retain this output without posting comments or modifying trackers.
 
+## Visual plans
+
+`visual-plan check --plan FILE` (or `--item` when `fields.visualPlan` is set) validates a local visual-plan JSON: hashed semantic HTML wireframes and mermaid architecture diagrams. Exit 0 passed, 1 failed, 4 incomplete. It does not render or host a review UI. Ready gates check a linked plan when the field is present; they do not require one for every change. Copy `templates/visual-plan/` as a starting layout.
+
+## npm provenance
+
+`npm-provenance status` inspects `package.json`, git origin, and GitHub Actions / GitLab CI files for a public npm publish. Exit 0 ready or inapplicable, 1 failed, 4 incomplete. `npm-provenance apply --provider github|gitlab` writes a new publish workflow only when that file is missing and reports required edits otherwise. Default `--publish trusted` uses OIDC; `--publish token` adds `--provenance` and an `NPM_TOKEN` reference. Neither action publishes or writes credentials. See [npm provenance](npm-provenance.md).
+
 ## Small changes
 
 Teams can define `lifecycle.paths`, mapping names to ordered stage lists, with allowed work kinds in `lifecycle.pathKinds`. Use `work new --path NAME` and explain suitability in `fields.pathReason`. Paths must start at Discover and retain Verify, Accept, Release and Retire in order. Shorter paths preserve protected decisions; teams select relevant gate fields. The default remains the full lifecycle.

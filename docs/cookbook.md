@@ -122,7 +122,40 @@ For the readiness of one structured work item, use the deterministic gate as a b
 node .agenthouse/run.mjs gate --item .agenthouse/work/first-change.json --phase ready
 ```
 
-Readiness completeness is not proof that the requirements are true or sufficient; the agent assessment supplies that judgment.
+Readiness completeness is not proof that the requirements are true or sufficient; the agent assessment supplies that judgment. Scoping skills ask a short Decide list (including whether a wireframe, mermaid, both, or neither is needed) and stay brief unless you ask for more.
+
+## Recipe: visual plan before UI or data-model work
+
+When a layout or schema must be seen before code:
+
+```text
+$ah-visual-plan Empty cart in the browser shell, plus an erDiagram for orders. Fidelity is wireframe.
+```
+
+Then check the files:
+
+```text
+node .agenthouse/run.mjs visual-plan check --plan design/cart-plan.json
+```
+
+Skip this for copy, docs, or one-line changes. `templates/visual-plan/` is a starting layout. The check does not render a hosted review UI.
+
+## Recipe: add npm provenance before a public publish
+
+When the repository is about to publish a public package to npm:
+
+```text
+$ah-npm-provenance We need to publish this package. Should we add provenance?
+node .agenthouse/run.mjs npm-provenance status
+```
+
+Say yes to write a GitHub Actions or GitLab.com job if the target file is missing:
+
+```text
+node .agenthouse/run.mjs npm-provenance apply --provider github
+```
+
+Trusted publishing is the default: OIDC from cloud-hosted CI, no long-lived npm token, provenance attached automatically. Then add the trusted publisher on npmjs.com (org/user, repository, workflow filename). The command does not publish, store tokens, or change the registry. See [npm provenance](npm-provenance.md).
 
 ## Recipe: review a change
 
@@ -211,3 +244,4 @@ Compare `ah-engineering --help` with `node .agenthouse/run.mjs --help`. Use the 
 - `docs/workflow-tools.md`: survey, inspect, review, gates, and specification evidence
 - `docs/dependencies.md`: dependency integrity, pins, updates, and rollback
 - `docs/visual-acceptance.md`: UI acceptance and browser evidence
+- `docs/npm-provenance.md`: public npm publish provenance and trusted publishing

@@ -5,7 +5,7 @@ export function visual(root,e,context) {
   const contract=validated('acceptance',read(inside(root,e.contract)));
   assert(new Set(contract.criteria.map(c=>c.id)).size===contract.criteria.length,'Duplicate acceptance criteria');
   const references=contract.references || [];
-  if(contract.source.kind==='image') assert(references.length>0,'Image contract requires a hashed reference image');
+  if(contract.source.kind==='image' || contract.source.kind==='wireframe') assert(references.length>0,`${contract.source.kind==='wireframe'?'Wireframe':'Image'} contract requires a hashed reference`);
   for(const r of references) assert(hash(fs.readFileSync(inside(root,r.path)))===r.sha256,`Reference image changed: ${r.path}`);
   const file=inside(root,e.assessment);
   if(!fs.existsSync(file))return {status:'incomplete',reason:'Visual assessment missing',findings:contract.criteria.map(c=>({id:c.id,status:'not-assessed',expectation:c.expectation}))};

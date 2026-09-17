@@ -13,5 +13,7 @@ The following product decisions were confirmed by the repository owner on 2026-0
 | [0006](0006-versioned-frontend-dependency.md) | Required upstream frontend dependency with versioned updates and pins |
 
 | [0007](0007-generated-assets-and-restore.md) | Owned generated assets ignored and restored from exact project pins |
+| [0008](0008-visual-plans-and-mermaid.md) | Local wireframe and mermaid visual plans at Define/Design |
+| [0009](0009-npm-provenance.md) | Optional npm package provenance setup for public publishes |
 
 Proposed implementation details live in the linked design documents until implemented or promoted to an accepted technical ADR.

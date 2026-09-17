@@ -1,6 +1,6 @@
 ---
 name: ah-module
-description: "Use agenthouse module when the user requests this framework operation. Show the requested stack template and explain needed adaptation."
+description: "Show Node/TypeScript or PHP/Laravel check templates to adapt before enabling. Use when choosing stack-specific evaluators or starting from a module template."
 license: MIT
 ---
 

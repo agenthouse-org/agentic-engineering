@@ -1,6 +1,6 @@
 ---
 name: ah-session
-description: "Use agenthouse session when the user requests this framework operation. Explain any applied or deferred approved updates and the active version set."
+description: "Record the active runtime and dependency versions and apply configured approved updates. Use at task start, or when checking which agenthouse version this project is running."
 license: MIT
 ---
 

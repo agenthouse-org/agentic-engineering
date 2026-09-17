@@ -1,6 +1,6 @@
 ---
 name: ah-onboard
-description: "Use agenthouse onboard when the user requests this framework operation. Guide setup conversationally: infer the target and coding agents from context, ask only for missing choices, and explain policy/autonomy options."
+description: "Set up agenthouse in an existing repository: choose coding agents and policy, then enroll. Use when starting with agenthouse or adding it to a project."
 license: MIT
 ---
 

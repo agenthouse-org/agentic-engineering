@@ -1,6 +1,6 @@
 ---
 name: ah-gate
-description: "Use agenthouse gate when the user requests this framework operation. Use the requested ready or done phase."
+description: "Evaluate ready or done lifecycle criteria, evidence, and independent signed approval for a work item. Use when asking if a story is ready to implement or done."
 license: MIT
 ---
 

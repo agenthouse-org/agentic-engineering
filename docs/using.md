@@ -10,9 +10,9 @@ From this checkout:
 node C:/src/agenthouse-agentic-engineering/bin/ah-engineering.js init --root C:/path/to/project --agents claude,codex,cursor
 ```
 
-For normal use, install the CLI with `npm install --global @agenthouse/engineering --ignore-scripts`, then run `ah-engineering onboard --root /path/to/project`. Each application is enrolled separately; no framework checkout is needed. To pin the CLI, install `@agenthouse/engineering@0.1.6` instead.
+For normal use, install the CLI with `npm install --global @agenthouse/engineering --ignore-scripts`, then run `ah-engineering onboard --root /path/to/project`. Each application is enrolled separately; no framework checkout is needed. To pin the CLI, install `@agenthouse/engineering@0.1.7` instead.
 
-For a project-local CLI, use `npm install --save-dev --save-exact @agenthouse/engineering@0.1.6 --ignore-scripts`, then `npx --no-install ah-engineering onboard`. This updates the application's package manifest and lockfile; use the global option if you do not want a development dependency. A supplied archive can be installed with `npm install --global /path/to/agenthouse-engineering-0.1.6.tgz --ignore-scripts`. npm's registry, proxy and certificate configuration applies when distributing through internal registries. The dependency-free tarball can be installed offline with Node/npm already provisioned.
+For a project-local CLI, use `npm install --save-dev --save-exact @agenthouse/engineering@0.1.7 --ignore-scripts`, then `npx --no-install ah-engineering onboard`. This updates the application's package manifest and lockfile; use the global option if you do not want a development dependency. A supplied archive can be installed with `npm install --global /path/to/agenthouse-engineering-0.1.7.tgz --ignore-scripts`. npm's registry, proxy and certificate configuration applies when distributing through internal registries. The dependency-free tarball can be installed offline with Node/npm already provisioned.
 
 `init` detects agent directories when `--agents` is omitted. Explicit supported values are claude, codex, opencode, cursor, windsurf, and openclaw. OpenClaw enrollment must target its configured workspace. When no host is detected, generic AGENTS.md instructions and the lifecycle skill are still installed. All CLI commands accept `--root`; by default they use the current directory.
 
@@ -96,7 +96,9 @@ The central owner may sign a delegation payload containing `kind: delegation`, `
 
 Copy/adapt `templates/frontend/`. Install Playwright in the consuming project and provision its browser separately. Evaluation never downloads a browser. A command evaluator runs the project's Playwright CLI using the provided reporter. Put a following `visual` evaluator in the profile with `contract` and `assessment` paths. The adapter emits hashed screenshots, criterion results, environment metadata, and build/contract/policy identity.
 
-The contract supports image, story, or bug sources. Image contracts require reference paths and hashes. Criteria distinguish concept, regression, behavior and accessibility. Browser tests annotate criterion IDs, viewport and state; the reporter refuses to fabricate concept approval. A concept reviewer must add a criterion with `reviewer`, `inspected: true`, a reason, and the hashed screenshot evidence. It remains incomplete until reviewed. The framework verifies provenance and completeness of the record, not the truthfulness of a self-asserted review; require an independent signed approval where organizational policy demands it.
+The contract supports image, wireframe, story, or bug sources. Image and wireframe contracts require reference paths and hashes. Record wireframe fidelity (`wireframe`, `design`, or `prototype`); sketch treatment is not a pixel requirement. Criteria distinguish concept, regression, behavior and accessibility. Browser tests annotate criterion IDs, viewport and state; the reporter refuses to fabricate concept approval. A concept reviewer must add a criterion with `reviewer`, `inspected: true`, a reason, and the hashed screenshot evidence. It remains incomplete until reviewed. The framework verifies provenance and completeness of the record, not the truthfulness of a self-asserted review; require an independent signed approval where organizational policy demands it.
+
+Local visual plans are optional Design artifacts: semantic HTML fragments, mermaid ERD/UML, and `visual-plan check`. Link the plan from `fields.visualPlan` when a ready gate should validate it. See [ADR-0008](adr/0008-visual-plans-and-mermaid.md). They do not replace frontend-acceptance or real-browser evidence.
 
 Use `capture(page, testInfo)` from the Playwright adapter. Baseline comparison uses the project's normal Playwright assertions. Validation configs should set `updateSnapshots: 'none'`; baseline generation is a separate reviewed operation. Never accept a baseline automatically just to turn a failure green.
 
@@ -131,5 +133,7 @@ Bundles include the framework, lifecycle skill and stack templates; separately i
 ## CI and platform integration
 
 Use `templates/ci/github.yml` or `templates/ci/gitlab.yml` after adding the tarball as a locked dependency. Both preserve reports on failure. Protect the job through the platform's normal required-check/release policy. Other CI systems run the same command, preserve its exit status, and archive its output directory even on failure.
+
+To attach npm provenance to a **public** package publish, use `npm-provenance status` and `npm-provenance apply`. Trusted publishing on GitHub-hosted or GitLab.com runners is the default. The command does not publish or configure npmjs.com. See [npm provenance](npm-provenance.md).
 
 Jira, Wrike, documentation services, and REST/MCP decision providers can be integrated through an organization's existing CLI returning the check-result contract. Dedicated native connectors and two-way synchronization are not implemented in this preview. Documentation authority is recorded in policy/configuration; the framework does not publish pages or resolve external-platform conflicts yet.

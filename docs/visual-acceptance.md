@@ -11,15 +11,16 @@ Verify that the real user interface fulfills its intended concept and behavior. 
 
 UI-affecting changes require applicable visual and behavioral evidence. Work without a UI impact can record a reasoned not-applicable result under project policy. Scope evidence to the affected journeys; do not require every screen to be retested for every small change.
 
-## Three equally valid starting points
+## Equally valid starting points
 
 | Input | Derive acceptance from | Evidence of success |
 | --- | --- | --- |
 | Reference image or mockup | Identified reference revision, intended layout and hierarchy, component states, relevant visual constraints | Real screenshots in corresponding states, criterion-level findings, annotated comparison or overlay where meaningful |
+| Wireframe HTML | Visual-plan surface, declared fidelity (`wireframe`, `design`, or `prototype`), hashed fragment, intended states | Real screenshots against concept criteria. Sketch look and placeholder color are not requirements unless fidelity is `design` |
 | User story | Actor, goal, preconditions, actions, expected states, and observable visual/behavioral criteria | Browser journey plus screenshots proving those criteria; no reference image is necessary |
 | Bug report | Reproduction steps, environment, actual versus expected behavior, and affected viewports/states | Reproduction evidence when possible, corrected behavior, before/after evidence, and a durable regression check |
 
-Examples: an image shows a summary beside a form; a story requires the primary action to remain visible at 360px without horizontal scrolling; a bug says the validation message overlaps the submit button when a long address is entered. Each can produce a valid acceptance contract without inventing a mockup.
+Examples: an image shows a summary beside a form; a wireframe HTML fragment shows the empty-cart state at browser surface; a story requires the primary action to remain visible at 360px without horizontal scrolling; a bug says the validation message overlaps the submit button when a long address is entered. Each can produce a valid acceptance contract without inventing a mockup.
 
 If inputs conflict, identify the conflicting criteria and follow the project's chosen authority/decision route. Do not silently treat a reference image as more authoritative than explicit accessibility or functional requirements. If a report cannot be reproduced, record that limitation; never fabricate a failing-before run. If wording is vague, propose concrete criteria and record assumptions or seek clarification according to the autonomy policy before claiming conformance.
 
@@ -50,7 +51,7 @@ The workflow and skill are both named **frontend acceptance**, using the identif
 
 The reusable skill guides the agent to derive criteria, plan browser checks, implement, inspect screenshots, explain findings, and improve regression coverage. Framework code owns execution contracts, pipeline aggregation, policy resolution, and artifact provenance. Skill prose is not an executable CI evaluator. Reusable method changes belong upstream in agenthouse-skills. The rename changes naming and package identity, not the acceptance method.
 
-1. Define: extract criteria from the image, story, or bug report and resolve material ambiguity.
+1. Define: extract criteria from the image, wireframe, story, or bug report and resolve material ambiguity. If a direction must be seen before code, record a local visual plan (HTML wireframes and/or mermaid) and declare fidelity.
 2. Plan: select relevant states/viewports and evidence methods before changing the UI.
 3. Implement: make the scoped change and exercise the real application.
 4. Verify: run behavioral/accessibility checks, capture screenshots, compare applicable baselines, and inspect concept conformance criterion by criterion.

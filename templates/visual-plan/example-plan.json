@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "example-checkout",
+  "workItem": "checkout",
+  "fidelity": "wireframe",
+  "summary": "Empty cart and the order records it writes.",
+  "surfaces": [
+    {
+      "id": "empty-cart",
+      "kind": "wireframe",
+      "surface": "browser",
+      "path": "templates/visual-plan/empty-cart.html",
+      "state": "empty"
+    }
+  ],
+  "diagrams": [
+    {
+      "id": "orders",
+      "kind": "erDiagram",
+      "path": "templates/visual-plan/orders.mmd"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "guest-checkout",
+      "question": "Allow checkout without an account?",
+      "options": ["Yes, guest checkout", "No, sign-in required"],
+      "recommended": "Yes, guest checkout",
+      "status": "open"
+    }
+  ]
+}

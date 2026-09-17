@@ -1,6 +1,6 @@
 ---
 name: ah-hook
-description: "Use agenthouse hook when the user requests this framework operation. Process only the actual hook event supplied by the host or an explicitly requested fixture."
+description: "Process a native or normalized hook event through the pinned hooks runtime. Use when handling a host hook payload, a CI event, or an explicit fixture."
 license: MIT
 ---
 

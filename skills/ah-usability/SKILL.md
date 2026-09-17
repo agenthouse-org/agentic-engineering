@@ -1,6 +1,6 @@
 ---
 name: ah-usability
-description: "Use agenthouse usability when the user requests this framework operation. Run the bundled upstream audit only after explicit usability setup."
+description: "Provision optional locked browser tooling, then run the upstream web-usability audit against a URL or fixture. Use when collecting usability evidence; the process exit code is not a conformity certificate."
 license: MIT
 ---
 

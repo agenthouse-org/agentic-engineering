@@ -1,6 +1,6 @@
 ---
 name: ah-restore
-description: "Use agenthouse restore when the user requests this framework operation. Restore the exact recorded version set and agents."
+description: "Recreate owned generated assets from the exact recorded pin and agents. Use when generated skills or projections are missing, or to opt into generated-file ignore rules."
 license: MIT
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: ah-init
-description: "Use agenthouse init when the user requests this framework operation. Use the requested target and agent selection."
+description: "Install the pinned runtime, lifecycle skill, and required frontend-acceptance dependency. Use when installing or reinstalling after agents and autonomy are already chosen."
 license: MIT
 ---
 

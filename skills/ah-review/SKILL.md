@@ -1,6 +1,6 @@
 ---
 name: ah-review
-description: "Use agenthouse review when the user requests this framework operation. Use review with the actual item, commit and evidence reports."
+description: "Map work-item criteria to build and policy evidence for an exact commit. Use when checking requirement coverage; a technical pass is not independent review approval."
 license: MIT
 ---
 
@@ -12,7 +12,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Use review with the actual item, commit and evidence reports. Inspect missing coverage and stale build/policy evidence. Perform a substantive code review as well; technical coverage is not independent approval.
+Use review with the actual item, commit and evidence reports. Inspect missing coverage and stale build/policy evidence. Perform a substantive code review as well; technical coverage is not independent approval. Lead with pass / fail / incomplete and required findings; expand only if the user asks.
 
 CLI reference:
 

@@ -1,6 +1,6 @@
 ---
 name: ah-uninstall
-description: "Use agenthouse uninstall when the user requests this framework operation. Use only for an intended removal."
+description: "Remove unchanged managed agenthouse files while keeping configuration, work records, and evidence. Use when removing the framework from a repository."
 license: MIT
 ---
 

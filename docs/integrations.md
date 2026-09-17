@@ -55,7 +55,7 @@ Potential paid services include centralized delegation/exception workflows, orga
 ## Skills and stacks
 
 
-Use frontend-acceptance as the agent-facing frontend acceptance method when work affects a UI; its display name in the framework is frontend acceptance. Extend reusable acceptance guidance upstream in agenthouse-skills rather than maintaining a fork here. Version 0.2.0 is published in the skills release-2026-09-13; existing installations can migrate now.
+Use frontend-acceptance as the agent-facing frontend acceptance method when work affects a UI; its display name in the framework is frontend acceptance. Extend reusable acceptance guidance upstream in agenthouse-skills rather than maintaining a fork here. Version 0.2.0 is published in the skills release-2026-09-13; existing installations can migrate now. Visual-plan authoring is a framework workflow plus an optional upstream skill; enrolled projects check local files with `visual-plan check`.
 
 Other candidate optional skills are web-usability-conformity, skill-antivirus, and AI content disclosure where a consuming project's obligations call for them. Select skills by work and policy applicability; do not make every skill mandatory for every repository. Visual inspection alone does not establish accessibility conformity.
 

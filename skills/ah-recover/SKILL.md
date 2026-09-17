@@ -1,6 +1,6 @@
 ---
 name: ah-recover
-description: "Use agenthouse recover when the user requests this framework operation. Inspect the interrupted transaction and use the CLI recovery contract."
+description: "Finish an interrupted installation transaction without overwriting later user edits. Use when onboard, update, or restore stopped mid-way."
 license: MIT
 ---
 

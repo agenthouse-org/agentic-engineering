@@ -1,6 +1,6 @@
 ---
 name: ah-frontend-acceptance
-description: "Use the pinned upstream frontend acceptance method."
+description: "Verify UI work with the pinned frontend-acceptance method, using the story, bug, wireframe, or reference image and real screenshots. Use when checking visual design, screens, or frontend acceptance."
 license: MIT
 ---
 
@@ -12,4 +12,4 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Run dependencies status, then read .agents/skills/frontend-acceptance/SKILL.md and follow its supporting resources. Derive evidence from the reference image, story, or bug. Do not substitute regression equality for concept conformance. If the upstream dependency is missing or modified, report the problem rather than inventing an alternative method.
+Run dependencies status, then read .agents/skills/frontend-acceptance/SKILL.md and follow its supporting resources. Derive evidence from the reference image, wireframe, story, or bug. Do not substitute regression equality for concept conformance. If the upstream dependency is missing or modified, report the problem rather than inventing an alternative method.

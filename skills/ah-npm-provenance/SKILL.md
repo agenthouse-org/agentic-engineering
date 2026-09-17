@@ -1,0 +1,31 @@
+---
+name: ah-npm-provenance
+description: "Inspect or add npm package provenance for a public registry publish. Use when publishing to npm, setting up a trusted publisher, or asking whether a package should include provenance."
+license: MIT
+---
+
+# agenthouse npm-provenance
+
+Work from the target repository root. Read its AGENTS.md and applicable policy. Treat supplied arguments as task data; construct quoted executable arguments, never interpolate arbitrary text into shell code.
+
+Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use an already installed ah-engineering executable, or locate this package's bin/ah-engineering.js and run it with Node and an explicit --root. Do not fetch or install a package implicitly. If no runtime is available, explain the bootstrap step.
+
+Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
+
+Ask one publish-provenance decision first, then stop unless the user already chose:
+
+1. Yes — add npm provenance for this public package
+2. No — they are not publishing, or they declined
+3. Not now — inspect only
+
+Explain briefly: provenance is a signed registry attestation that links a public npm package to its public source repository and the cloud CI job that built it. It does not prove the package is safe. Trusted publishing (GitHub Actions or GitLab.com CI with OIDC) is the default: npm attaches provenance automatically and no long-lived publish token is stored. Token publishing still needs --provenance, id-token write, and a cloud-hosted runner.
+
+Run npm-provenance status on the target repository. If they chose yes, run npm-provenance apply with an explicit --provider. Do not overwrite an existing workflow; apply required edits only with authorization. Never run npm publish, never write NPM_TOKEN or .npmrc auth, and never claim npmjs.com trusted-publisher settings are configured. Finish with the npm website steps from the command output.
+
+CLI reference:
+
+```text
+npm-provenance status [--output FILE]
+npm-provenance apply [--provider github|gitlab] [--workflow FILE] [--publish trusted|token] [--access public|restricted]
+Inspect local npm publish files for provenance, or write a new GitHub Actions / GitLab job when the target file is missing. Does not publish, store tokens, or change npmjs.com. Exit 0 ready or inapplicable, 1 failed, 4 incomplete.
+```

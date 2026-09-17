@@ -1,6 +1,6 @@
 ---
 name: ah-hook-config
-description: "Use agenthouse hook-config when the user requests this framework operation. Print native settings and inspect existing host configuration before activation."
+description: "Print, install, or remove owned coding-agent hook settings without disturbing unrelated hooks. Use when enabling or disabling agenthouse hooks in a supported host."
 license: MIT
 ---
 

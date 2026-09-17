@@ -1,6 +1,6 @@
 ---
 name: ah-work
-description: "Use agenthouse work when the user requests this framework operation. Choose new, show, or advance from the request."
+description: "Create, show, or advance local lifecycle work records. Use when filing a story, inspecting a work item, or moving work to a new stage."
 license: MIT
 ---
 

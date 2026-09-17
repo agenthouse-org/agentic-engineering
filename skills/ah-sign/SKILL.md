@@ -1,6 +1,6 @@
 ---
 name: ah-sign
-description: "Use agenthouse sign when the user requests this framework operation. Sign only the exact reviewed artifact using a key the user has authorized you to use."
+description: "Sign a reviewed governance decision or data bundle with an authorized private key. Use when a human has authorized signing; invoking this skill is not itself approval."
 license: MIT
 ---
 

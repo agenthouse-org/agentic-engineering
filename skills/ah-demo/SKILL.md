@@ -1,6 +1,6 @@
 ---
 name: ah-demo
-description: "Use agenthouse demo when the user requests this framework operation. Use a new or empty directory chosen for the demonstration."
+description: "Run an isolated failing-then-passing acceptance example in a new empty directory. Use when trying agenthouse for the first time or showing evaluation reports. Does not validate the user's application."
 license: MIT
 ---
 

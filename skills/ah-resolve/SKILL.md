@@ -1,6 +1,6 @@
 ---
 name: ah-resolve
-description: "Use agenthouse resolve when the user requests this framework operation. Use --frozen for a verification request."
+description: "Refresh or verify the composed policy snapshot. Use when policy sources changed, checking a frozen snapshot, or before evaluation that needs current rules."
 license: MIT
 ---
 

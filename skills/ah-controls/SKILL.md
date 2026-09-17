@@ -1,6 +1,6 @@
 ---
 name: ah-controls
-description: "Use agenthouse controls when the user requests this framework operation. Explain the resolved rule-to-mechanism map and identify guidance without enforcement."
+description: "Explain which policy rules have executable checks versus advisory guidance. Use when asking what is enforced, how a rule is implemented, or which guidance has no control."
 license: MIT
 ---
 

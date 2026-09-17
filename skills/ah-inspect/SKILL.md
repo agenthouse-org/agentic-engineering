@@ -1,6 +1,6 @@
 ---
 name: ah-inspect
-description: "Use agenthouse inspect when the user requests this framework operation. Resolve the requested commit or range and use inspect to establish affected files, candidate tests and review signals."
+description: "Analyze a commit or change range for affected files, candidate tests, suppressions, and residue. Use when reviewing what a change touched or selecting checks for a diff."
 license: MIT
 ---
 

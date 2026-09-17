@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**0.1.6 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling and marketplace manifests are included. See [implementation status](docs/implementation-status.md).
+**0.1.7 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling, marketplace manifests, visual plans, and npm provenance setup are included. See [implementation status](docs/implementation-status.md).
 
 
 ## Install on your computer
@@ -20,7 +20,7 @@ npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-To pin the CLI version, use `npm install --global @agenthouse/engineering@0.1.6 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@0.1.7 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
 
 Versioned GitHub release downloads are pending. For an offline installation, obtain a reviewed `.tgz` package as described below.
 
@@ -31,7 +31,7 @@ Update the CLI with `npm install --global @agenthouse/engineering@latest --ignor
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-engineering-0.1.6.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-0.1.7.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -45,7 +45,7 @@ To package the source yourself, run these commands in a tools directory outside 
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-engineering-0.1.6.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-0.1.7.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -99,11 +99,11 @@ Enterprise teams can add `--policy /path/to/approved-policy.json`. Teams retain 
 
 Every CLI operation is also available as an `ah-` agent skill. Try `/ah-help`, `/ah-onboard`, or `/ah-review-change` in hosts with slash commands; in Codex select the named skill or use `$ah-help`. Project enrollment installs the appropriate entry points.
 
-Story drafting, readiness, scope validation, commit checking, and review workflows are included. See [all agent commands and host-specific usage](docs/agent-commands.md). CLI-only global installation does not register project commands before enrollment.
+Story drafting, readiness, scope validation, visual planning, commit checking, and review workflows are included. See [all agent commands and host-specific usage](docs/agent-commands.md). CLI-only global installation does not register project commands before enrollment.
 
 ### Included skills
 
-The framework ships **38 agent-facing skills**, plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
+The framework ships **41 agent-facing skills** (40 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
 
 | Skill | Purpose |
 | --- | --- |
@@ -117,6 +117,7 @@ The framework ships **38 agent-facing skills**, plus pinned upstream **frontend-
 | `ah-draft-user-story` | Draft outcomes and acceptance criteria |
 | `ah-assess-story-readiness` | Assess whether work is ready to implement |
 | `ah-validate-scope` | Check scope against the intended outcome |
+| `ah-visual-plan` | Draft or check local wireframes and mermaid diagrams |
 | `ah-check-commit` | Verify behavior affected by a commit |
 | `ah-review-change` | Review requirements, changes, and evidence |
 | `ah-frontend-acceptance` | Invoke the pinned upstream frontend skill |
@@ -138,6 +139,7 @@ The framework ships **38 agent-facing skills**, plus pinned upstream **frontend-
 | `ah-dependencies` | Inspect, pin, unpin, and update dependencies |
 | `ah-update` | Update the framework |
 | `ah-bundle` | Create an offline distribution bundle |
+| `ah-npm-provenance` | Inspect or add npm package provenance for a public publish |
 | `ah-rollback` | Restore the previous version set |
 | `ah-restore` | Recreate generated assets from the exact project pin |
 | `ah-recover` | Recover an interrupted installation |
@@ -198,6 +200,7 @@ npm installs **one executable: `ah-engineering`**. Everything below is a subcomm
 | `resolve`, `session` | Resolve policy and start a session with approved updates |
 | `dependencies status`, `pin`, `unpin`, `update` | Inspect and manage the required skill version |
 | `init`, `update`, `bundle`, `rollback` | Install, distribute, and update the framework |
+| `npm-provenance` | Inspect or add npm package provenance; does not publish |
 | `recover`, `uninstall` | Recover interrupted installation or remove managed assets |
 | `module`, `skill` | Explore stack check templates and import additional skills |
 | `keygen`, `sign` | Manage keys and sign authorized decisions |
@@ -222,14 +225,14 @@ flowchart LR
 ```
 
 - **This framework** owns lifecycle records, governance contracts, evaluation, and distribution.
-- **agenthouse-skills** owns specialist methods. `frontend-acceptance 0.2.0` is a required, bundled upstream dependency with source commit and hashes. It guides UI acceptance from images, stories, and bugs.
+- **agenthouse-skills** owns specialist methods. `frontend-acceptance 0.2.0` is a required, bundled upstream dependency with source commit and hashes. It guides UI acceptance from images, stories, and bugs. Visual-plan authoring is also published there as an optional skill; enrolled projects check local files with `visual-plan check`.
 - **agenthouse-hooks** owns native event execution. The framework bundles a content-pinned engineering event export; native hooks are activated explicitly.
 
 The Playwright adapter captures browser evidence and regression results. Concept review still requires inspection against the intended outcome; unchanged pixels alone do not prove that a design is correct. Browser provisioning is separate. See [visual acceptance](docs/visual-acceptance.md).
 
 ## CI, updates, and compatibility
 
-The same `evaluate` command works without an interactive agent. `--ci` freezes policy resolution and never updates dependencies. Exit codes are **0 passed, 1 failed, 2 error, 3 approval pending, 4 incomplete**. Use the supplied [GitHub Actions](templates/ci/github.yml) or [GitLab CI](templates/ci/gitlab.yml) templates and retain reports on failure.
+The same `evaluate` command works without an interactive agent. `--ci` freezes policy resolution and never updates dependencies. Exit codes are **0 passed, 1 failed, 2 error, 3 approval pending, 4 incomplete**. Use the supplied [GitHub Actions](templates/ci/github.yml) or [GitLab CI](templates/ci/gitlab.yml) templates and retain reports on failure. For a public npm publish, [npm provenance](docs/npm-provenance.md) inspects or adds trusted-publishing files without publishing.
 
 Framework and skill updates use trusted checksums or signatures, project pins, and rollback. Approved local or mirrored bundles can update between sessions; upstream HEAD is never implicitly fetched during evaluation. See [dependency operations](docs/dependencies.md).
 
@@ -241,6 +244,7 @@ Instruction files are generated for Claude Code, Codex, OpenCode, Cursor, Windsu
 - [Implementation status](docs/implementation-status.md) and [delivery roadmap](docs/delivery-plan.md)
 - [Architecture](docs/blueprint.md), [governance](docs/governance.md), and [decision records](docs/adr/README.md)
 - [Distribution](docs/distribution.md), [integrations](docs/integrations.md), and [migration](docs/migration.md)
+- [npm provenance](docs/npm-provenance.md) for public registry publishes
 
 To validate changes from a checkout:
 

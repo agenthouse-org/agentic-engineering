@@ -30,6 +30,18 @@ test('existing unowned native alias is not overwritten',t=>{
   const root=temp(t),file=path.join(root,'.opencode/commands/ah-help.md');write(file,'user owned');
   assert.throws(()=>install(root,{agents:['opencode']}),/Existing/);assert.equal(fs.readFileSync(file,'utf8'),'user owned');
 });
+test('agent skill descriptions tell a person what the skill does and when to use it',()=>{
+  for(const command of ['help',...Object.keys(topics)])assert.ok(agentSkills()[`ah-${command}`]);
+  for(const [name,content] of Object.entries(agentSkills())) {
+    const description=JSON.parse(content.match(/^description:\s*(.+)$/m)[1]);
+    assert.equal(typeof description,'string');
+    assert.ok(description.length>0 && description.length<=1024,name);
+    assert.doesNotMatch(description,/when the user requests this framework operation/);
+    assert.doesNotMatch(description,/^Use --/);
+    assert.match(description,/Use when |Use at /,`${name} needs a when-to-use clause`);
+    assert.doesNotMatch(description,/\bI can\b|\bYou can use this\b/);
+  }
+});
 test('rollback projection removes only owned command assets no longer bundled',t=>{
   const root=temp(t);install(root,{agents:['claude','windsurf','opencode']});const data=payload();
   for(const name of Object.keys(agentSkills()))delete data.files[`skills/${name}/SKILL.md`];

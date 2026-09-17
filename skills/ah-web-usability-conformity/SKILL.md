@@ -1,6 +1,6 @@
 ---
 name: ah-web-usability-conformity
-description: "Run an installed upstream web usability conformity assessment."
+description: "Run the installed upstream web-usability audit and report real findings. Use when checking UI usability; this is separate from frontend-acceptance visual checks."
 license: MIT
 ---
 

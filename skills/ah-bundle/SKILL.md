@@ -1,6 +1,6 @@
 ---
 name: ah-bundle
-description: "Use agenthouse bundle when the user requests this framework operation. Choose the requested output location and optionally an authorized signing key."
+description: "Package this framework and required skills for offline distribution, optionally signed. Use when creating an installable package or signed update bundle."
 license: MIT
 ---
 
@@ -12,7 +12,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Choose the requested output location and optionally an authorized signing key. Creating a bundle does not authorize uploading it or publishing a release.
+Choose the requested output location and optionally an authorized signing key. Creating a bundle does not authorize uploading it or publishing a release. If the user wants to publish an npm package, use ah-npm-provenance rather than this command.
 
 CLI reference:
 

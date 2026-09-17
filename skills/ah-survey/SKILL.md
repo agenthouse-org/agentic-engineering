@@ -1,6 +1,6 @@
 ---
 name: ah-survey
-description: "Use agenthouse survey when the user requests this framework operation. Inspect the actual target repository before proposing commands."
+description: "Inspect Git state, stacks, scripts, agent files, pipelines, and backlog locations without executing discovered commands. Use when exploring an unfamiliar repository before proposing commands."
 license: MIT
 ---
 

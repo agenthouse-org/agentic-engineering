@@ -1,6 +1,6 @@
 ---
 name: ah-backlog
-description: "Use agenthouse backlog when the user requests this framework operation. Import the requested markdown or exported JSON item with its external identity."
+description: "Import one markdown or exported JSON work item while preserving external identity. Use when bringing a tracker card or markdown story into local agenthouse records."
 license: MIT
 ---
 

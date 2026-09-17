@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {assert,read,write,inside,hash,exclusive} from './io.js';
 import {resolve,approval} from './policy.js';
 import {run} from './process.js';
+import {checkVisualPlan} from './visual-plan.js';
 
 export const CRITERIA={ready:['outcome','scope','acceptance','verification','dependencies','risks'],done:['changes','evidence','acceptanceEvidence','releasePlan','rollbackPlan']};
 export function gate(root,{item,phase='ready',decision,policyFile}={}) {
@@ -14,6 +15,14 @@ export function gate(root,{item,phase='ready',decision,policyFile}={}) {
   assert(Array.isArray(record.criteria),'Work item requires criteria');
   assert(record.criteria.every(c=>typeof c.id==='string' && c.id.trim() && typeof c.expectation==='string' && c.expectation.trim()) && new Set(record.criteria.map(c=>c.id)).size===record.criteria.length,'Invalid or duplicate acceptance criteria');
   if(!record.criteria.length)findings.push({id:'criteria',status:'incomplete',reason:'No observable criteria'});
+  if(phase==='ready' && typeof record.fields?.visualPlan==='string' && record.fields.visualPlan.trim()) {
+    try {
+      const checked=checkVisualPlan(root,{item});
+      findings.push(...checked.findings.filter(f=>f.status!=='passed'));
+    } catch(error) {
+      findings.push({id:'visualPlan',status:'incomplete',reason:error.message});
+    }
+  }
   const evidence=[];
   if(phase==='done') {
     for(const file of record.evidence || []) {

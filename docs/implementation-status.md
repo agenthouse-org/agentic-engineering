@@ -1,12 +1,12 @@
 # Implementation and verification status
 
-Version 0.1.6 developer preview. Updated 2026-09-15.
+Version 0.1.7 developer preview. Updated 2026-09-17.
 
-Local release checks: 68 core/workflow tests passed; real visual regression and usability pass/fail browser scenarios passed. The upstream hooks suite passed all eight test files.
+Local core/workflow tests: 91 passed. Real visual regression and usability pass/fail browser scenarios, and the upstream hooks suite (eight test files), were last recorded as passing on 2026-09-15.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
-| CLI and agent commands | 38 framework skills; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership and removal tests |
+| CLI and agent commands | 41 framework skills (40 generated plus lifecycle); every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership and removal tests |
 | Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; commit/range/merge-base analysis; candidate tests and review signals | Root commit, deletion and merge-base fixtures; no discovered scripts executed |
 | Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions | Missing/stale evidence, self-review rejection and invalidated signatures |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |
@@ -17,7 +17,9 @@ Local release checks: 68 core/workflow tests passed; real visual regression and 
 | Local hooks | Content-pinned agenthouse-hooks export; session context, command signals, touched-file checks; owned Claude settings installation/removal | Event fixtures, preserved permissions/settings, duplicate avoidance and conflicts |
 | Skills and updates | Pinned frontend-acceptance 0.2.0 and web-usability-conformity 0.1.0 from agenthouse-skills | Commit/file integrity, pins, trusted updates and rollback; hook export pins included |
 | Browser usability | Explicit locked runtime setup and upstream audit runner | Real Chromium clean/failing fixtures, failure exit 1 and desktop/narrow screenshots |
-| Visual acceptance | Image/story/bug contracts, concept review, Playwright capture and regression | Missing/stale concept evidence; real baseline/broken/restored browser scenario |
+| Visual acceptance | Image/story/bug/wireframe contracts, concept review, Playwright capture and regression | Missing/stale concept evidence; real baseline/broken/restored browser scenario |
+| Visual plans | Local visual-plan JSON, semantic HTML wireframes, mermaid ERD/UML lint, optional ready-gate check | Pass/fail/incomplete fixtures; shipped example plan |
+| npm provenance | Inspect package.json and CI; write a missing GitHub/GitLab publish job for trusted or token provenance | Missing package, private package, overwrite refusal, repository mismatch, trusted vs token templates |
 | Stack modules | Node/TypeScript and PHP/Laravel standards, evaluator and touched-file templates | Module delivery tested; consuming projects select actual tools |
 | Marketplace packages | Claude and Codex manifests/indexes | Claude Code 2.1.270 validators passed; Claude and Codex 0.154.0-alpha.6.2 installed/enabled the packed plugin in isolated Windows profiles |
 | Distribution | npm tarball, offline framework bundles, signed/checksummed updates, recovery and rollback | Managed-file conflicts, interrupted transactions and tampering tests |

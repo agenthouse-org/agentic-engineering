@@ -8,6 +8,8 @@ export const topics={
   'hook-config':'hook-config [--vendor claude] [--install | --remove]\nPrint settings, or install/remove owned hook entries while preserving other settings. Activate once per repository after reviewing host requirements. Run from the enrolled repository root.',
   usability:'usability setup [--npm-cli PATH] [--offline]\nusability run (--url URL | --fixture FILE) [--output NEW_REPORT_PATH]\nSetup provisions locked optional tooling and Chromium. Offline setup uses the npm cache and a separately provided browser. Run collects upstream evidence without installing anything; it does not certify conformity.',
   survey:'survey [--output FILE]\nInspect Git state, stacks, scripts, agent files, pipelines and backlog locations. No discovered command is executed.',
+  'visual-plan':'visual-plan check (--item FILE | --plan FILE) [--output FILE]\nValidate a local visual-plan record, hashed wireframe HTML fragments, and mermaid diagrams. Exit 0 passed, 1 failed, 4 incomplete. Does not render, host, or publish a review UI.',
+  'npm-provenance':'npm-provenance status [--output FILE]\nnpm-provenance apply [--provider github|gitlab] [--workflow FILE] [--publish trusted|token] [--access public|restricted]\nInspect local npm publish files for provenance, or write a new GitHub Actions / GitLab job when the target file is missing. Does not publish, store tokens, or change npmjs.com. Exit 0 ready or inapplicable, 1 failed, 4 incomplete.',
   inspect:'inspect [--ref HEAD|BASE..HEAD] [--base BRANCH] [--output FILE]\nAnalyze committed changes, candidate tests, added suppressions and residue. --base compares from the merge base.',
   review:'review --item FILE --evidence REPORT_JSON[,REPORT_JSON] [--baseline REPORT_JSON] [--ref HEAD|BASE..HEAD] [--base BRANCH] [--output FILE]\nMap criterion IDs to checks for the exact commit and frozen policy. Technical coverage does not grant review approval. Exit 0 passed, 1 failed, 4 incomplete.',
   gate:'gate --item FILE --phase ready|done [--decision FILE] [--policy-file FILE] [--output FILE]\nEvaluate configured lifecycle criteria, evidence and independent signed approval. Exit 0 passed, 1 failed, 3 pending, 4 incomplete.',
@@ -91,6 +93,7 @@ Start here
 
 Daily work
   survey        Discover repository conventions and available tooling
+  visual-plan   Check local wireframes and mermaid architecture diagrams
   inspect       Analyze a commit or change range
   review        Map requirements to build and policy evidence
   gate, spec    Evaluate readiness/completion and capture red/green tests
@@ -109,6 +112,7 @@ Installation and maintenance
   skill         Import an additional specialist skill
   module        Discover stack-specific check templates
   keygen, sign  Create keys and sign authorized decisions
+  npm-provenance  Inspect or add npm publish provenance; does not publish
 
 Agent skills: use help ah-SKILL, help agents, or .agenthouse/agent-commands.md.
 npm installs one executable: ah-engineering. These are its subcommands.

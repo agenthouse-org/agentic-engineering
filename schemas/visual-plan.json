@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "fidelity"],
+  "properties": {
+    "schemaVersion": {"enum": [1]},
+    "id": {"type": "string", "minLength": 1},
+    "workItem": {"type": "string", "minLength": 1},
+    "fidelity": {"enum": ["wireframe", "design", "prototype"]},
+    "summary": {"type": "string"},
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "path"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["wireframe", "design", "prototype"]},
+          "surface": {"enum": ["browser", "desktop", "mobile", "popover", "panel"]},
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "state": {"type": "string"}
+        }
+      }
+    },
+    "diagrams": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "path"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["erDiagram", "classDiagram", "sequenceDiagram", "stateDiagram", "stateDiagram-v2", "flowchart", "C4Context", "C4Container", "C4Component"]},
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "question", "options", "status"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "question": {"type": "string", "minLength": 1},
+          "options": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}},
+          "recommended": {"type": "string"},
+          "status": {"enum": ["open", "decided"]},
+          "choice": {"type": "string"}
+        }
+      }
+    }
+  }
+}

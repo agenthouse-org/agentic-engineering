@@ -1,6 +1,6 @@
 ---
 name: ah-skill
-description: "Use agenthouse skill when the user requests this framework operation. Import only the specified reviewed source."
+description: "Import one reviewed specialist skill unchanged from a local source. Use when adding an extra skill; required frontend-acceptance is managed through dependencies."
 license: MIT
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: ah-dependencies
-description: "Use agenthouse dependencies when the user requests this framework operation. Choose status, pin, unpin, or update."
+description: "Show, pin, unpin, or update bundled upstream skills such as frontend-acceptance. Use when checking skill integrity or applying a trusted dependency bundle."
 license: MIT
 ---
 
