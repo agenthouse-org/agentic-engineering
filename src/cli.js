@@ -10,6 +10,7 @@ import {resolve,signed} from './policy.js';
 import {evaluate} from './evaluate.js';
 import {newItem,advance,STAGES} from './lifecycle.js';
 import {update,rollback,session} from './update.js';
+import {housekeep} from './housekeep.js';
 import {importSkill} from './skills.js';
 import {dependencyStatus} from './dependencies.js';
 import {pinDependency,updateDependency} from './dependency-update.js';
@@ -42,6 +43,7 @@ allowed.work.push('gate-decision','path');
 allowed['visual-plan']=['item','plan','output'];
 allowed['npm-provenance']=['provider','workflow','publish','access','output'];
 allowed.dependencies.push('name');
+allowed.housekeep=['check'];
 export async function main(args) {
   const {o,pos}=parse(args),command=pos.shift();
   if(!command || o.help || command==='help') {
@@ -88,6 +90,11 @@ export async function main(args) {
       if(fs.existsSync(inside(root,'.agenthouse/transaction.json')))problems.push('Interrupted installation: run recover');
       const state=fs.existsSync(inside(root,'.agenthouse/installation.json'))?read(inside(root,'.agenthouse/installation.json')):null;
       if(!state)problems.push('No installed runtime');
+      if(fs.existsSync(inside(root,'.agenthouse/installation.json'))) {
+        const keep=housekeep(root,{check:true});
+        if(keep.missingIgnore.length)problems.push(`Missing housekeeping ignore rules (${keep.missingIgnore.join(', ')}); run housekeep`);
+        if(keep.tracked.length)problems.push(`Tracked inspection captures require untracking: ${keep.tracked.join(', ')}`);
+      }
       result={version:VERSION,platform:process.platform,detectedAgents:detect(root),installed:state?.agents || [],problems,scope:config?.project,limitations:['Agent instruction adapters are advisory; native host loading is not certified.','External platform integrations use organization-owned CLI evaluators.']};
       console.log(JSON.stringify(result,null,2));return problems.length?2:0;
     }
@@ -105,6 +112,7 @@ export async function main(args) {
     case 'update':assert(o.bundle,'--bundle required');result=update(root,{bundle:o.bundle,sha256:o.sha256,publicKey:o['public-key'],check:o.check,allowBreaking:o['allow-breaking']});break;
     case 'rollback':result=rollback(root);break;
     case 'session':result=session(root);break;
+    case 'housekeep':result=housekeep(root,{check:o.check});break;
     case 'recover':result={recovered:recover(root)};break;
     case 'uninstall':result=uninstall(root);break;
     case 'keygen': {

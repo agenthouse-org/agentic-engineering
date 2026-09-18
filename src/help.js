@@ -20,14 +20,15 @@ export const topics={
   init:'init [--agents claude,codex,cursor,windsurf,opencode,openclaw] [--policy FILE]\n     [--project NAME] [--autonomy supervised|bounded|delegated] [--scope project|user]\nInstall the runtime, lifecycle skill, and required frontend-acceptance dependency.\nDefault autonomy: supervised. User scope creates a separate defaults workspace.',
   work:'work new --id ID --title "Outcome" [--kind feature|bug|incident|change|investigation|documentation] [--path NAME]\nwork show --id ID\nwork advance --id ID --to STAGE [--decision REPOSITORY_RELATIVE_FILE] [--gate-decision FILE] [--policy-file FILE]\nEdit fields in .agenthouse/work/ID.json. Stages require evidence and applicable approvals.',
   evaluate:'evaluate [--profile pull-request] [--ci] [--frozen] [--subject BUILD_ID]\n         [--base-url URL] [--output PATH] [--policy-file FILE]\nRun configured checks and write JSON, JUnit, and HTML evidence reports.\nExit codes: 0 passed; 1 failed; 2 error; 3 approval pending; 4 incomplete.\n--ci implies --frozen and never updates dependencies. BUILD_ID must identify the tested build.',
-  doctor:'doctor\nCheck installation, policy snapshot, and required skill integrity.\nExit 0: healthy installation; exit 2: problems. This does not certify application quality.',
+  doctor:'doctor\nCheck installation, policy snapshot, required skill integrity, and housekeeping ignore/tracked-capture rules.\nExit 0: healthy installation; exit 2: problems. This does not certify application quality.',
   resolve:'resolve [--frozen] [--policy-file FILE]\nResolve configured policy sources. --frozen verifies the existing snapshot without refreshing it.',
-  session:'session\nCheck configured approved updates between commands and record the active version set.',
+  session:'session\nCheck configured approved updates between commands, apply housekeeping rules, and record the active version set.',
   dependencies:'dependencies status\ndependencies pin | unpin [--name frontend-acceptance|web-usability-conformity|hooks]\ndependencies update --bundle FILE (--sha256 HASH | --public-key FILE) [--check] [--allow-breaking]\nManage bundled upstream skills. Pins bind version and digest; updates preserve upstream ownership.',
   update:'update --bundle FILE (--sha256 HASH | --public-key FILE) [--check] [--allow-breaking]\nVerify and activate an approved framework bundle, respecting project pins.',
   bundle:'bundle --output FILE [--key PRIVATE_KEY]\nPackage this framework and required skill for offline distribution. Optionally sign with Ed25519.',
   rollback:'rollback\nRestore the previous complete runtime and dependency set. Conflicting dependency pins must be removed first.',
   restore:'restore [--bundle FILE] [--ignore-generated]\nRecreate owned assets from the exact active pin and recorded agents. Uses the cached runtime, exact executing package, or original unsigned bundle. --ignore-generated opts an existing installation into owned-file ignore rules. Preserves policy snapshots and refuses edits; recover handles interrupted transactions.',
+  housekeep:'housekeep [--check]\nApply housekeeping rules: add missing ignore paths for generated agenthouse files and inspection captures, then delete untracked inspection dumps. Does not delete evaluation reports, work records, or Git-tracked files. --check reports without changing the repository. Exit 0 passed, 1 tracked leftovers, 4 missing ignore rules.',
   recover:'recover\nRecover an interrupted installation transaction without overwriting subsequent user edits.',
   uninstall:'uninstall\nRemove unchanged managed files. Preserve configuration, policies, keys, work records, and evidence.',
   skill:'skill --source DIRECTORY [--name ID] [--sha256 HASH]\nImport another reviewed specialist skill unchanged. Required frontend-acceptance is managed by dependencies.',
@@ -105,7 +106,8 @@ Daily work
   evaluate      Run your checks locally or in CI
   doctor        Diagnose installation and dependency problems
   resolve       Refresh or verify the policy snapshot
-  session       Apply approved updates between commands
+  session       Apply approved updates and housekeeping between commands
+  housekeep     Apply ignore rules and remove untracked inspection captures
 
 Installation and maintenance
   init, dependencies, update, bundle, rollback, restore, recover, uninstall

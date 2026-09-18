@@ -7,6 +7,7 @@ import {assert,read,write,create,hash,inside,walk,exclusive,PACKAGE,VERSION,cano
 import {resolve} from './policy.js';
 import {hookSettings} from './hooks.js';
 import {bundledDependency,hookLock,bundledDependencies,SOURCES,checkDependencyPin,checkPresentPins} from './dependencies.js';
+import {gitignoreBody} from './housekeep.js';
 
 export const AGENTS={claude:'CLAUDE.md',codex:'AGENTS.md',opencode:'AGENTS.md',cursor:'.cursor/rules/agenthouse.mdc',windsurf:'.windsurf/rules/agenthouse.md',openclaw:'AGENTS.md'};
 const START='<!-- agenthouse:start -->',END='<!-- agenthouse:end -->';
@@ -143,12 +144,12 @@ export function install(root,options={}) {
     }
     const health=spawnSync(process.execPath,[inside(root,`${runtime}/bin/ah-engineering.js`),'--help'],{encoding:'utf8',timeout:10000,windowsHide:true});
     assert(health.status===0,`New runtime failed health check: ${health.stderr || health.error?.message}`);
-    const guidance='## agenthouse engineering\nDiscover agent commands in `.agenthouse/agent-commands.md`; every CLI operation has an ah-prefixed skill. At task start run `node .agenthouse/run.mjs session` and read `.agenthouse/resolved.json` plus `.agenthouse/lifecycle.md`. Use the lifecycle record and its acceptance criteria; never invent approval or evidence. For UI changes read and follow `.agents/skills/frontend-acceptance/SKILL.md` from agenthouse-skills and inspect real screenshots. Use `node .agenthouse/run.mjs evaluate --profile pull-request --frozen` for the configured checks. These instructions are advisory; CI and signed decisions supply boundary controls.';
+    const guidance='## agenthouse engineering\nDiscover agent commands in `.agenthouse/agent-commands.md`; every CLI operation has an ah-prefixed skill. At task start run `node .agenthouse/run.mjs session` and read `.agenthouse/resolved.json` plus `.agenthouse/lifecycle.md`. Use the lifecycle record and its acceptance criteria; never invent approval or evidence. For UI changes read and follow `.agents/skills/frontend-acceptance/SKILL.md` from agenthouse-skills and inspect real screenshots, then run `node .agenthouse/run.mjs housekeep`. Use `node .agenthouse/run.mjs evaluate --profile pull-request --frozen` for the configured checks. These instructions are advisory; CI and signed decisions supply boundary controls.';
     const desired={
       '.agenthouse/run.mjs':{content:`import fs from 'node:fs';\nimport {fileURLToPath} from 'node:url';\nconst active=JSON.parse(fs.readFileSync(new URL('./active.json',import.meta.url),'utf8'));\nconst target=new URL('./'+active.runtime+'/bin/ah-engineering.js',import.meta.url);\nawait import(target.href);\n`},
       '.agenthouse/lifecycle.md':{content:Buffer.from(data.files['docs/lifecycle.md'],'base64').toString('utf8')},
       'AGENTS.md':{block:true,content:guidance},
-      '.gitignore':{block:true,content:'.agenthouse/local/\n.agenthouse/runtime/\n.agenthouse/transaction.json\n.agenthouse/mutation.lock\n.agenthouse/sessions/\nartifacts/agenthouse/'}
+      '.gitignore':{block:true,content:gitignoreBody()}
     };
     for(const a of agents)if(AGENTS[a]!=='AGENTS.md')desired[AGENTS[a]]={block:!AGENTS[a].endsWith('.mdc') && a!=='windsurf',content:a==='cursor'?`---\ndescription: agenthouse engineering lifecycle\nalwaysApply: true\n---\n${guidance}\n`:a==='windsurf'?`---\ntrigger: always_on\n---\n${guidance}\n`:guidance};
     for(const [file,b64] of Object.entries(data.files))if(file.startsWith('skills/'))desired[`.agents/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};

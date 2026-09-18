@@ -29,7 +29,7 @@ export default class AcceptanceReporter {
     assert(process.env.AH_SUBJECT && process.env.AH_POLICY_DIGEST,'Playwright evaluation requires AH_SUBJECT and AH_POLICY_DIGEST');
     const assessment={schemaVersion:1,subject:process.env.AH_SUBJECT,policyDigest:process.env.AH_POLICY_DIGEST,contractDigest:hash(this.contract),environment:this.environment,
       runnerStatus:result.status,criteria:[...this.results.values()]};
-    write(inside(this.root,this.options.output || '.agenthouse/browser-assessment.json'),assessment);
+    write(inside(this.root,this.options.output || 'artifacts/agenthouse/browser-assessment.json'),assessment);
   }
 }
 

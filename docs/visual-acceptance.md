@@ -82,7 +82,7 @@ Include the contract and source revisions; commit/build ID; capture environment;
 
 Provide an HTML report with reference/actual/difference views and criterion findings, plus machine-readable output via the CLI. When no image reference exists, show the story/bug criterion beside its screenshot evidence. Reference and actual evidence must remain inspectable rather than reduced to a single score.
 
-Use synthetic or approved test data. Screenshot retention, access, and any external visual-provider transmission follow project policy. A CI integration must not upload images to a service merely because a visual check was enabled.
+Use synthetic or approved test data. Screenshot retention, access, and any external visual-provider transmission follow project policy. A CI integration must not upload images to a service merely because a visual check was enabled. Inspection captures used by an agent during a session are not Git evidence; they belong under ignored paths and should be deleted after review. Retained verification evidence is the evaluation bundle under `artifacts/agenthouse/` (archived by CI) plus reviewed Playwright snapshots and work-record findings.
 
 ## Verification scenarios required for release
 

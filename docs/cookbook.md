@@ -182,6 +182,8 @@ The required `frontend-acceptance` skill is installed during enrollment. For a U
 $ah-frontend-acceptance Verify this UI against the story and inspect real screenshots.
 ```
 
+Inspect the screenshots, then run `node .agenthouse/run.mjs housekeep`. Do not commit `.agenthouse/evidence/` galleries. Evaluation reports stay under `artifacts/agenthouse/` and are archived by CI.
+
 For the separate web-usability audit:
 
 ```text

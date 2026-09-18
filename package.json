@@ -1,6 +1,6 @@
 {
   "name": "@agenthouse/engineering",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Portable agentic SDLC, policy and evidence evaluation for developers and CI/CD",
   "type": "module",
   "license": "MIT",

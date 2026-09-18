@@ -9,7 +9,7 @@ import {onboard,demo,documentationFiles,openDocumentation,showDocumentation} fro
 const temp=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah-onboard-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 const cli=(args)=>spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),...args],{encoding:'utf8',timeout:20000,windowsHide:true});
 test('command help works without enrollment and unknown topics fail',()=>{
-  for(const command of ['onboard','demo','init','work','evaluate','doctor','resolve','session','dependencies','update','bundle','rollback','recover','uninstall','skill','module','keygen','sign','npm-provenance']) {
+  for(const command of ['onboard','demo','init','work','evaluate','doctor','resolve','session','housekeep','dependencies','update','bundle','rollback','recover','uninstall','skill','module','keygen','sign','npm-provenance']) {
     assert.equal(cli(['help',command]).status,0);assert.equal(cli([command,'--help']).status,0);
   }
   for(const topic of ['agents','cookbook','extended','ah-validate-scope','validate-scope'])assert.equal(cli(['help',topic]).status,0);

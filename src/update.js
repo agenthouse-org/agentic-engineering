@@ -3,6 +3,7 @@ import {dependencyStatus,hookLock,bundledDependencies,checkDependencyPin,checkPr
 import fs from 'node:fs';
 import path from 'node:path';
 import {assert,read,write,inside,hash,VERSION} from './io.js';
+import {housekeep} from './housekeep.js';
 import {install,verifyPayload,installationStatus} from './install.js';
 import {verifyEnvelope} from './policy.js';
 
@@ -44,7 +45,7 @@ export function rollback(root) {
   assert(hash(data)===previous.active.digest,'Previous runtime has been modified');
   return install(root,{payload:data});
 }
-export function session(root) {
+export function session(root,options={}) {
   installationStatus(root);
   const file=inside(root,'.agenthouse/update.json');
   let updateResult={status:'not-configured'};
@@ -69,7 +70,8 @@ export function session(root) {
   const active=read(inside(root,'.agenthouse/active.json'));
   // A subsequent launcher invocation selects a newly activated runtime. The
   // current process never loads newly downloaded code midway through a task.
-  const result={id,active,executingVersion:VERSION,update:updateResult,dependencyUpdate,dependencies};
+  const housekeeping=housekeep(root,{env:options.env});
+  const result={id,active,executingVersion:VERSION,update:updateResult,dependencyUpdate,dependencies,housekeeping};
   write(inside(root,`.agenthouse/sessions/${id}.json`),result);
   return result;
 }

@@ -18,6 +18,6 @@ CLI reference:
 
 ```text
 doctor
-Check installation, policy snapshot, and required skill integrity.
+Check installation, policy snapshot, required skill integrity, and housekeeping ignore/tracked-capture rules.
 Exit 0: healthy installation; exit 2: problems. This does not certify application quality.
 ```

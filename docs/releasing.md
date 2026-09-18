@@ -4,7 +4,7 @@ The `Publish to npm` workflow runs when a GitHub Release is published. It checks
 
 1. Update the version in `package.json`, the root lockfile, and both plugin manifests. Keep the usability runtime lockfile's local framework entry aligned. Run `npm run check` and the tests.
 2. Commit and push the release changes.
-3. Create and publish a GitHub Release with a matching tag, such as `v0.1.7` for version `0.1.7`.
+3. Create and publish a GitHub Release with a matching tag, such as `v0.1.8` for version `0.1.8`.
 4. Check the **Publish to npm** workflow. A published GitHub Release alone does not mean the npm publish succeeded.
 
 Stable versions publish to `latest`. Prereleases must have a version such as `0.2.0-beta.1` and be marked as prereleases on GitHub; they publish to `next`. Draft releases do not publish. npm versions are immutable; do not reuse `0.1.4`, which was already published manually.

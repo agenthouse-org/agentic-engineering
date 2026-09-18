@@ -5,6 +5,8 @@
 /work/
 /dist/
 /node_modules/
+/test-results/
+/playwright-report/
 /.agenthouse/cache/
 /.agenthouse/credentials/
 *.log

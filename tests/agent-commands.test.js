@@ -7,7 +7,8 @@ import {spawnSync} from 'node:child_process';
 import {install,uninstall,payload} from '../src/install.js';
 import {topics} from '../src/help.js';
 import {agentSkills} from '../src/agent-commands.js';
-import {read,write} from '../src/io.js';
+import {PACKAGE,read,write} from '../src/io.js';
+import {BROWSER_EPHEMERA,removeLocalFrontendEphemera} from '../src/housekeep.js';
 const temp=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah-commands-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 test('all CLI topics and engineering workflow roles have installed agent entry points',t=>{
   const root=temp(t);install(root,{agents:['claude','codex','cursor','opencode','windsurf','openclaw']});
@@ -41,6 +42,36 @@ test('agent skill descriptions tell a person what the skill does and when to use
     assert.match(description,/Use when |Use at /,`${name} needs a when-to-use clause`);
     assert.doesNotMatch(description,/\bI can\b|\bYou can use this\b/);
   }
+});
+test('frontend-acceptance treats inspection screenshots as ephemeral, not Git evidence',()=>{
+  const skill=agentSkills()['ah-frontend-acceptance'];
+  assert.match(skill,/not permission to commit screenshot dumps/);
+  assert.match(skill,/housekeep/);
+  assert.match(fs.readFileSync(path.join(PACKAGE,'skills/ah-lifecycle/SKILL.md'),'utf8'),/housekeep/);
+});
+test('enrollment ignores frontend inspection captures',t=>{
+  const root=temp(t);install(root,{agents:[]});
+  const ignore=fs.readFileSync(path.join(root,'.gitignore'),'utf8');
+  assert.match(ignore,/\.agenthouse\/evidence\//);
+  assert.match(ignore,/\.agenthouse\/browser-assessment\.json/);
+  assert.match(ignore,/artifacts\/agenthouse\//);
+});
+test('local frontend ephemera are removed except when CI keeps them',t=>{
+  const root=temp(t);
+  for(const rel of BROWSER_EPHEMERA) {
+    const target=path.join(root,rel);
+    fs.mkdirSync(path.dirname(target),{recursive:true});
+    if(rel.endsWith('.json'))fs.writeFileSync(target,'{}');
+    else {fs.mkdirSync(path.join(target,'shots'),{recursive:true});fs.writeFileSync(path.join(target,'shots','actual.png'),'x');}
+  }
+  assert.equal(removeLocalFrontendEphemera(root,{CI:'true'}),false);
+  assert.ok(fs.existsSync(path.join(root,'work/browser-results/shots/actual.png')));
+  assert.equal(removeLocalFrontendEphemera(root,{AH_KEEP_BROWSER_ARTIFACTS:'1'}),false);
+  assert.equal(removeLocalFrontendEphemera(root,{}),true);
+  assert.equal(fs.existsSync(path.join(root,'work/browser-results')),false);
+  assert.equal(fs.existsSync(path.join(root,'work/browser-baselines')),false);
+  assert.equal(fs.existsSync(path.join(root,'work/browser-assessment.json')),false);
+  assert.equal(fs.existsSync(path.join(root,'.agenthouse/evidence')),false);
 });
 test('rollback projection removes only owned command assets no longer bundled',t=>{
   const root=temp(t);install(root,{agents:['claude','windsurf','opencode']});const data=payload();
