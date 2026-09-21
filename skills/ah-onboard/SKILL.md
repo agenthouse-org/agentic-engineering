@@ -18,6 +18,7 @@ CLI reference:
 
 ```text
 onboard [--root PATH] [--agents claude,codex,cursor] [--policy FILE] [--autonomy supervised|bounded|delegated] [--docs open|show|skip]
-Guided setup asks whether to open the Markdown guides in the default app, show them in the terminal, or skip. Supply --agents (or --non-interactive) and --docs for scripts.
+        [--branch-pattern PATTERN] [--branch-example EXAMPLE] [--branch-base REF]
+Guided setup asks whether to open the Markdown guides in the default app, show them in the terminal, or skip. With Git present it asks for a branch naming pattern (for example {id}-{slug}) when unset. Supply --agents (or --non-interactive) and --docs for scripts.
 Existing installations receive the same documentation choice and a read-only next-step guide; configuration is preserved.
 ```

@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**0.1.8 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling, marketplace manifests, visual plans, and npm provenance setup are included. See [implementation status](docs/implementation-status.md).
+**0.1.9 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling, marketplace manifests, visual plans, and npm provenance setup are included. See [implementation status](docs/implementation-status.md).
 
 
 ## Install on your computer
@@ -20,7 +20,7 @@ npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-To pin the CLI version, use `npm install --global @agenthouse/engineering@0.1.8 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@0.1.9 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
 
 Versioned GitHub release downloads are pending. For an offline installation, obtain a reviewed `.tgz` package as described below.
 
@@ -31,7 +31,7 @@ Update the CLI with `npm install --global @agenthouse/engineering@latest --ignor
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-engineering-0.1.8.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-0.1.9.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -45,7 +45,7 @@ To package the source yourself, run these commands in a tools directory outside 
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-engineering-0.1.8.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-0.1.9.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -136,7 +136,7 @@ The framework ships **42 agent-facing skills** (41 generated commands plus the l
 | `ah-doctor` | Diagnose installation and dependency problems |
 | `ah-resolve` | Resolve or verify policy configuration |
 | `ah-session` | Start a session, apply housekeeping, and process approved updates |
-| `ah-housekeep` | Apply ignore rules and remove untracked inspection captures |
+| `ah-housekeep` | Apply ignore rules and remove untracked inspection dumps |
 | `ah-dependencies` | Inspect, pin, unpin, and update dependencies |
 | `ah-update` | Update the framework |
 | `ah-bundle` | Create an offline distribution bundle |
@@ -199,7 +199,7 @@ npm installs **one executable: `ah-engineering`**. Everything below is a subcomm
 | `evaluate` | Run checks locally or in CI |
 | `doctor` | Diagnose installation, policy, skill integrity, and housekeeping |
 | `resolve`, `session` | Resolve policy and start a session with approved updates and housekeeping |
-| `housekeep` | Apply ignore rules and remove untracked inspection captures |
+| `housekeep` | Apply ignore rules and remove untracked inspection dumps, including leftover `tests/output` galleries |
 | `dependencies status`, `pin`, `unpin`, `update` | Inspect and manage the required skill version |
 | `init`, `update`, `bundle`, `rollback` | Install, distribute, and update the framework |
 | `npm-provenance` | Inspect or add npm package provenance; does not publish |

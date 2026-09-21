@@ -29,6 +29,33 @@
       "type": "string",
       "minLength": 1
     },
+    "git": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "branchNaming": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pattern"
+          ],
+          "properties": {
+            "pattern": {
+              "type": "string",
+              "minLength": 1
+            },
+            "example": {
+              "type": "string",
+              "minLength": 1
+            },
+            "baseDefault": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
     "policySources": {
       "type": "array",
       "items": {
@@ -207,6 +234,13 @@
             },
             "requireGreen": {
               "type": "boolean"
+            },
+            "ticketSize": {
+              "type": "boolean"
+            },
+            "maxCriteria": {
+              "type": "integer",
+              "minimum": 1
             },
             "kindFields": {
               "type": "object",

@@ -17,7 +17,8 @@ Keep the reply short unless the user asks for more.
 Decide (only questions that change the work):
 1. Outcome and actor
 2. In / out of scope
-3. Visual plan: wireframe, mermaid, both, or neither — default wireframe for UI, mermaid for data/API, neither for copy/docs/one-line
-4. Remaining open choices, each with a recommended option
+3. Too large for one ticket? split / keep / need-input — if split, propose thin slices; never create work or branches until the user says yes
+4. Visual plan: wireframe, mermaid, both, or neither — default wireframe for UI, mermaid for data/API, neither for copy/docs/one-line
+5. Remaining open choices, each with a recommended option
 
-Then a compact draft: outcome, scope, 3–8 observable criteria, and for bugs reproduction / expected / observed. Distinguish stated requirements from proposed details. For UI work read the installed frontend-acceptance skill. Present a draft, not a readiness approval. Use work new only when creation is requested; external writes need authorization. If they pick a visual plan, follow ah-visual-plan and link fields.visualPlan.
+Then a compact draft: outcome, scope, 3–8 observable criteria, and for bugs reproduction / expected / observed. Distinguish stated requirements from proposed details. More than eight criteria or multiple independent outcomes usually means split; set fields.sizeRisk to oversized on the work record when keeping a draft that is still too large. For UI work read the installed frontend-acceptance skill. Present a draft, not a readiness approval. Use work new only when creation is requested; then offer work branch from a chosen base using git.branchNaming (ask and store the pattern if missing). External writes need authorization. If they pick a visual plan, follow ah-visual-plan and link fields.visualPlan.

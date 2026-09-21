@@ -15,6 +15,16 @@ export function gate(root,{item,phase='ready',decision,policyFile}={}) {
   assert(Array.isArray(record.criteria),'Work item requires criteria');
   assert(record.criteria.every(c=>typeof c.id==='string' && c.id.trim() && typeof c.expectation==='string' && c.expectation.trim()) && new Set(record.criteria.map(c=>c.id)).size===record.criteria.length,'Invalid or duplicate acceptance criteria');
   if(!record.criteria.length)findings.push({id:'criteria',status:'incomplete',reason:'No observable criteria'});
+  if(phase==='ready' && rules.ticketSize!==false) {
+    const maxCriteria=Number.isInteger(rules.maxCriteria)?rules.maxCriteria:8;
+    const override=typeof record.fields?.sizeOverride==='string' && record.fields.sizeOverride.trim();
+    if(!override && (record.criteria.length>maxCriteria || record.fields?.sizeRisk==='oversized')) {
+      const reason=record.fields?.sizeRisk==='oversized'
+        ?'Ticket marked oversized; split into thinner work items or record fields.sizeOverride after explicit user consent'
+        :`More than ${maxCriteria} criteria; split into thinner work items or record fields.sizeOverride after explicit user consent`;
+      findings.push({id:'ticketSize',status:'pending',reason});
+    }
+  }
   if(phase==='ready' && typeof record.fields?.visualPlan==='string' && record.fields.visualPlan.trim()) {
     try {
       const checked=checkVisualPlan(root,{item});

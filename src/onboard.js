@@ -77,13 +77,23 @@ To change agents on an existing installation, rerun init with the complete list,
 Explore: help evaluate, help dependencies, doctor, or demo in a NEW empty directory.
 Native agent loading/hooks still require host-specific verification.`;
 }
+export function writeBranchNaming(root,{pattern,example,baseDefault}={}) {
+  assert(typeof pattern==='string' && pattern.trim(),'Branch naming pattern is required');
+  const file=inside(root,'.agenthouse/config.json'),config=read(file);
+  config.git=config.git || {};
+  config.git.branchNaming={pattern:pattern.trim(),...(example?{example:String(example).trim()}:{}),...(baseDefault?{baseDefault:String(baseDefault).trim()}:{})};
+  write(file,config);
+  resolve(root);
+  return config.git.branchNaming;
+}
+
 export async function onboard(root,options={}) {
   if(options.docs!==undefined)assert(DOC_CHOICES.includes(options.docs),`Documentation choice must be ${DOC_CHOICES.join(', ')}`);
   const installed=fs.existsSync(inside(root,'.agenthouse/installation.json'));
   const interactive=!options.nonInteractive && process.stdin.isTTY && process.stdout.isTTY;
   let agents=options.agents,policy=options.policy,autonomy=options.autonomy;
   if(!installed && !agents && !options.nonInteractive)assert(interactive,'For scripted setup use onboard --agents codex (choose your agents), or --non-interactive. Run help onboard for options.');
-  const needsPrompt=interactive && ((!installed && !agents) || options.docs===undefined);
+  const needsPrompt=interactive && ((!installed && !agents) || options.docs===undefined || (options['branch-pattern']===undefined && options.branchPattern===undefined));
   const prompt=needsPrompt?createInterface({input:process.stdin,output:process.stdout}):null;
   try {
     if(!installed && !agents && !options.nonInteractive) {
@@ -93,6 +103,23 @@ export async function onboard(root,options={}) {
       if(!policy && !autonomy)autonomy=(await prompt.question('Autonomy: supervised, bounded, delegated (Enter for supervised): ')).trim() || 'supervised';
     }
     if(!installed)install(root,{agents:(agents || 'codex').split(',').map(a=>a.trim()),policy,autonomy,project:options.project});
+    const configPath=inside(root,'.agenthouse/config.json');
+    const hasGit=fs.existsSync(path.join(root,'.git'));
+    let config=read(configPath);
+    const branchPattern=options.branchPattern || options['branch-pattern'];
+    const branchExample=options.branchExample || options['branch-example'];
+    const branchBase=options.branchBase || options['branch-base'];
+    if(!config.git?.branchNaming?.pattern) {
+      if(branchPattern)writeBranchNaming(root,{pattern:branchPattern,example:branchExample,baseDefault:branchBase});
+      else if(hasGit && prompt) {
+        const pattern=(await prompt.question('Git branch naming pattern with {id}, {slug}, optional {kind} (Enter to skip, example {id}-{slug}): ')).trim();
+        if(pattern) {
+          const example=(await prompt.question('Example branch name (Enter to skip): ')).trim() || undefined;
+          const baseDefault=(await prompt.question('Default base branch when not branching from current (Enter for main): ')).trim() || 'main';
+          writeBranchNaming(root,{pattern,example,baseDefault});
+        }
+      }
+    }
     let choice=options.docs;
     if(choice===undefined && prompt)choice=(await prompt.question('Documentation: open in the default Markdown app, show in this terminal, or skip? (open/show/skip; Enter for open): ')).trim() || 'open';
     choice=choice || 'skip';

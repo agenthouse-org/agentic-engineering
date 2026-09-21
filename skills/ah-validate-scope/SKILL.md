@@ -14,11 +14,11 @@ Use CLI help to confirm supported options. Ask only for required information mis
 
 This is an agent assessment workflow, not a validate-scope CLI subcommand. Do not run validate-scope or infer its existence from this skill name. Use help to discover commands supported by the pinned runtime. A local work item is optional: use the supplied outcome and authoritative requirements; report missing inputs without creating records unless requested.
 
-Reply as Decide / Coverage / Gaps. Map the stated target to the supplied scope. Identify uncovered outcomes, unrelated work, dependencies, sequencing, and assumptions. A set of individually ready stories can still miss the target.
+Reply as Decide / Coverage / Gaps. Map the stated target to the supplied scope. Identify uncovered outcomes, unrelated work, dependencies, sequencing, and assumptions. A set of individually ready stories can still miss the target. When one item packs multiple independent outcomes, recommend split and ask whether to create follow-up work items and related branches.
 
 Decide:
 1. Does this set hit the outcome? yes / no / not-enough-input
-2. Must-have vs later
+2. Must-have vs later (and which slices need their own tickets)
 3. Visual plan for the overall product shape: mermaid, wireframe, both, or neither
 
 Do not invent commitments or approve scope changes. Keep it short unless the user asks for more.

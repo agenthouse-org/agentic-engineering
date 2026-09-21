@@ -8,7 +8,7 @@ import {assert,read,write,create,hash,inside,VERSION,PACKAGE,exclusive} from './
 import {install,uninstall,detect,payload,recover,transact,restore,installationStatus} from './install.js';
 import {resolve,signed} from './policy.js';
 import {evaluate} from './evaluate.js';
-import {newItem,advance,STAGES} from './lifecycle.js';
+import {newItem,advance,createBranch,STAGES} from './lifecycle.js';
 import {update,rollback,session} from './update.js';
 import {housekeep} from './housekeep.js';
 import {importSkill} from './skills.js';
@@ -39,11 +39,12 @@ allowed.controls=['policy-file'];
 allowed.hook=['vendor','input'];
 allowed['hook-config']=['vendor','install','remove'];
 allowed.usability=['url','fixture','output','npm-cli','offline'];
-allowed.work.push('gate-decision','path');
+allowed.work.push('gate-decision','path','from','parent');
 allowed['visual-plan']=['item','plan','output'];
 allowed['npm-provenance']=['provider','workflow','publish','access','output'];
 allowed.dependencies.push('name');
 allowed.housekeep=['check'];
+allowed.onboard.push('branch-pattern','branch-example','branch-base');
 export async function main(args) {
   const {o,pos}=parse(args),command=pos.shift();
   if(!command || o.help || command==='help') {
@@ -69,7 +70,7 @@ export async function main(args) {
     case 'gate':result=gate(root,{item:o.item,phase:o.phase,decision:o.decision,policyFile:o['policy-file']});break;
     case 'spec':result=await specification(root,{item:o.item,phase:o.phase,evaluator:o.evaluator});break;
     case 'backlog':result=importBacklog(root,{source:o.source,id:o.id,title:o.title,provider:o.provider,externalId:o['external-id']});break;
-    case 'onboard':console.log(await onboard(root,{agents:o.agents,policy:o.policy,autonomy:o.autonomy,project:o.project,docs:o.docs,nonInteractive:o['non-interactive']}));return 0;
+    case 'onboard':console.log(await onboard(root,{agents:o.agents,policy:o.policy,autonomy:o.autonomy,project:o.project,docs:o.docs,nonInteractive:o['non-interactive'],branchPattern:o['branch-pattern'],branchExample:o['branch-example'],branchBase:o['branch-base']}));return 0;
     case 'demo':assert(o.root,'Specify --root NEW_EMPTY_DIRECTORY for the demo');console.log(await demo(root));return 0;
     case 'init': {
       assert(!o.scope || ['project','user'].includes(o.scope),'Scope must be project or user');
@@ -83,27 +84,31 @@ export async function main(args) {
       console.log(`${result.status} · ${result.checks.length} checks · ${result.folder}`);return result.exitCode;
     }
     case 'doctor': {
-      const problems=[];let config;
+      const problems=[],warnings=[];let config;
       try {installationStatus(root);}catch(e){problems.push(e.message);}
       try {dependencyStatus(root);}catch(e){problems.push(e.message);}
       try {config=resolve(root,{frozen:true}).config;}catch(e){problems.push(e.message);}
       if(fs.existsSync(inside(root,'.agenthouse/transaction.json')))problems.push('Interrupted installation: run recover');
       const state=fs.existsSync(inside(root,'.agenthouse/installation.json'))?read(inside(root,'.agenthouse/installation.json')):null;
       if(!state)problems.push('No installed runtime');
+      if(config && !config.git?.branchNaming?.pattern && fs.existsSync(path.join(root,'.git')))warnings.push('Branch naming not configured (git.branchNaming.pattern); ask the team standard (for example {id}-{slug}) before work branch');
       if(fs.existsSync(inside(root,'.agenthouse/installation.json'))) {
         const keep=housekeep(root,{check:true});
         if(keep.missingIgnore.length)problems.push(`Missing housekeeping ignore rules (${keep.missingIgnore.join(', ')}); run housekeep`);
         if(keep.tracked.length)problems.push(`Tracked inspection captures require untracking: ${keep.tracked.join(', ')}`);
+        if(!keep.kept && (keep.dumps.length || keep.stray.length))problems.push(`Inspection screenshot dumps outside ${keep.canonical} (${[...keep.dumps,...keep.stray].join(', ')}); write captures under ${keep.canonical}/<work-id>/ then run housekeep`);
+        if(keep.notes.length)problems.push(`Scratch files at repository root (${keep.notes.join(', ')}); write GitHub bodies under .agenthouse/local/ then run housekeep`);
       }
-      result={version:VERSION,platform:process.platform,detectedAgents:detect(root),installed:state?.agents || [],problems,scope:config?.project,limitations:['Agent instruction adapters are advisory; native host loading is not certified.','External platform integrations use organization-owned CLI evaluators.']};
+      result={version:VERSION,platform:process.platform,detectedAgents:detect(root),installed:state?.agents || [],problems,warnings,scope:config?.project,limitations:['Agent instruction adapters are advisory; native host loading is not certified.','External platform integrations use organization-owned CLI evaluators.']};
       console.log(JSON.stringify(result,null,2));return problems.length?2:0;
     }
     case 'work': {
       const action=pos.shift();
-      if(action==='new')result=newItem(root,o.id,o.title || o.id,o.kind,o.path);
+      if(action==='new')result=newItem(root,o.id,o.title || o.id,o.kind,o.path,{parentWork:o.parent});
       else if(action==='advance')result=advance(root,o.id,o.to,o.decision,{policyFile:o['policy-file'],gateDecision:o['gate-decision']});
       else if(action==='show'){const item=read(inside(root,`.agenthouse/work/${o.id}.json`));result={...item,subjectHash:hash(item)};}
-      else throw new Error(`Work action must be new, advance, or show. Stages: ${STAGES.join(', ')}`);break;
+      else if(action==='branch')result=createBranch(root,o.id,{from:o.from,parentWork:o.parent});
+      else throw new Error(`Work action must be new, advance, show, or branch. Stages: ${STAGES.join(', ')}`);break;
     }
     case 'bundle': {
       assert(o.output,'--output required');const data=payload();const bundle=o.key?signed(data,fs.readFileSync(path.resolve(o.key),'utf8')):data;

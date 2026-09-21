@@ -16,13 +16,19 @@ Configure a command evaluator with `result: "exit-code"` and `specificationFiles
 
 ## Ready, done and review
 
-Configure `lifecycle.ready` and `lifecycle.done` in project configuration or an inherited rule named `lifecycle`. Each accepts `fields`, `kindFields`, `approval`, `independent`, `allowNotApplicable`, `requireRed` and `requireGreen`. Mandatory inherited definitions cannot be weakened locally.
+Configure `lifecycle.ready` and `lifecycle.done` in project configuration or an inherited rule named `lifecycle`. Each accepts `fields`, `kindFields`, `approval`, `independent`, `allowNotApplicable`, `requireRed`, `requireGreen`, `ticketSize`, and `maxCriteria`. Mandatory inherited definitions cannot be weakened locally.
 
-`gate --item FILE --phase ready` checks outcome, scope, acceptance, verification, dependencies, risks and criteria by default. `done` checks implementation, evidence, acceptance, release and rollback fields. Completion records include `build` and an `evidence` array of evaluation result paths. Every applicable criterion needs passing evidence for that build and the frozen policy. Evaluator `criteria` arrays map multiple IDs to a check; an identical check ID also matches.
+`gate --item FILE --phase ready` checks outcome, scope, acceptance, verification, dependencies, risks and criteria by default. When `ticketSize` is not disabled, more than `maxCriteria` criteria (default 8) or `fields.sizeRisk: "oversized"` yields a pending `ticketSize` finding unless `fields.sizeOverride` explains an explicit user override. `done` checks implementation, evidence, acceptance, release and rollback fields. Completion records include `build` and an `evidence` array of evaluation result paths. Every applicable criterion needs passing evidence for that build and the frozen policy. Evaluator `criteria` arrays map multiple IDs to a check; an identical check ID also matches.
 
 Approval defaults to required. The returned `subject` hash binds the record, phase and evidence bytes. A decision uses that hash, the policy digest, project scope and action `gate:ready` or `gate:done`. Independent review defaults to required when approval is enabled: record `author` and use a different authorized issuer.
 
 When configured, ready runs before Implement and done before Accept. `work advance --gate-decision FILE` supplies its decision; protected stage decisions use the separate `--decision FILE`. Gate exit codes: 0 passed, 1 failed, 3 pending, 4 incomplete; invalid input/signatures return 2.
+
+## Work items and related branches
+
+`work new`, `work show`, and `work advance` manage `.agenthouse/work/<id>.json`. `work new --parent ID` records `fields.parentWork` for a split or follow-up item. Agents must ask before creating work or branches.
+
+`work branch --id ID [--from REF] [--parent ID]` requires `git.branchNaming.pattern` in `.agenthouse/config.json`, a clean working tree, creates and checks out a branch from `--from` (default current HEAD), writes `fields.branch`, and does not push. Pattern placeholders: `{id}`, `{slug}` (from the title), `{kind}`. Onboard can set `--branch-pattern`, `--branch-example`, and `--branch-base`, or ask interactively when Git is present. `doctor` warns when Git exists without a pattern.
 
 `review --item FILE --evidence RESULT_JSON --ref HEAD` maps requirements to checks and rejects stale commit/policy evidence. Technical completeness does not establish code correctness or governance approval. An artifact-only CI job can retain this output without posting comments or modifying trackers.
 

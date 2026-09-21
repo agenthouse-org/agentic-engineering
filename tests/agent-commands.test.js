@@ -47,7 +47,11 @@ test('frontend-acceptance treats inspection screenshots as ephemeral, not Git ev
   const skill=agentSkills()['ah-frontend-acceptance'];
   assert.match(skill,/not permission to commit screenshot dumps/);
   assert.match(skill,/housekeep/);
-  assert.match(fs.readFileSync(path.join(PACKAGE,'skills/ah-lifecycle/SKILL.md'),'utf8'),/housekeep/);
+  assert.match(skill,/tests\/output/);
+  assert.match(skill,/\.agenthouse\/evidence\/<work-id>\//);
+  const lifecycle=fs.readFileSync(path.join(PACKAGE,'skills/ah-lifecycle/SKILL.md'),'utf8');
+  assert.match(lifecycle,/housekeep/);
+  assert.match(lifecycle,/tests\/output/);
 });
 test('enrollment ignores frontend inspection captures',t=>{
   const root=temp(t);install(root,{agents:[]});
@@ -55,6 +59,12 @@ test('enrollment ignores frontend inspection captures',t=>{
   assert.match(ignore,/\.agenthouse\/evidence\//);
   assert.match(ignore,/\.agenthouse\/browser-assessment\.json/);
   assert.match(ignore,/artifacts\/agenthouse\//);
+  assert.match(ignore,/tests\/output\//);
+  assert.match(ignore,/tests\/evidence\//);
+  assert.match(ignore,/test-results\//);
+  assert.match(ignore,/playwright-report\//);
+  assert.match(ignore,/^\/tmp\/$/m);
+  assert.match(ignore,/^\/tmp-\*$/m);
 });
 test('local frontend ephemera are removed except when CI keeps them',t=>{
   const root=temp(t);
@@ -72,6 +82,8 @@ test('local frontend ephemera are removed except when CI keeps them',t=>{
   assert.equal(fs.existsSync(path.join(root,'work/browser-baselines')),false);
   assert.equal(fs.existsSync(path.join(root,'work/browser-assessment.json')),false);
   assert.equal(fs.existsSync(path.join(root,'.agenthouse/evidence')),false);
+  assert.equal(fs.existsSync(path.join(root,'tests/output')),false);
+  assert.equal(fs.existsSync(path.join(root,'test-results')),false);
 });
 test('rollback projection removes only owned command assets no longer bundled',t=>{
   const root=temp(t);install(root,{agents:['claude','windsurf','opencode']});const data=payload();

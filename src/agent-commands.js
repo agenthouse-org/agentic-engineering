@@ -28,10 +28,10 @@ Screens: HTML fragments (no html/head/body/script), real product copy, one surfa
   onboard:'Guide setup conversationally: infer the target and coding agents from context, ask only for missing choices, and explain policy/autonomy options. Run onboard with explicit --agents or --non-interactive and --docs skip; never launch an interactive terminal wizard or open desktop applications from an agent unless the user requests it. Then point out the installed cookbook and agent-command guide and help the user formulate their first real outcome. Existing installations keep their configuration.',
   init:'Use the requested target and agent selection. Preserve existing policies and instructions. Do not enable unrelated integrations or weaken autonomy to make installation succeed.',
   demo:'Use a new or empty directory chosen for the demonstration. Explain the expected failed check and corrected passing check. A demo pass is not evidence about the user’s application.',
-  work:'Choose new, show, or advance from the request. Default to show when the action is unclear. Get missing identity/outcome from the user rather than fabricating it. Stage transitions require actual fields and applicable signed decisions; never manufacture approval.',
+  work:'Choose new, show, advance, or branch from the request. Default to show when the action is unclear. Get missing identity/outcome from the user rather than fabricating it. Never create a work item or Git branch unless the user explicitly says yes. When splitting oversized or out-of-scope work: ask to create the follow-up item, then offer work branch from a chosen base using git.branchNaming; if the pattern is missing, ask for the team standard and write it to config first. Stage transitions require actual fields and applicable signed decisions; never manufacture approval.',
   evaluate:'Use the project’s configured profile and actual build identity. Preserve failure, error, pending, and incomplete statuses. Explain report paths and missing evidence. Do not modify tests, policies, or checks merely to obtain a pass.',
-  doctor:'Inspect problems and explain their concrete impact. Diagnosis does not authorize unrelated repairs or policy changes.',
-  housekeep:'Apply housekeeping rules: ensure generated and inspection paths are gitignored, delete untracked inspection captures, and report tracked leftovers. Do not delete evaluation reports under artifacts/agenthouse/, work records, or application source. In CI or when AH_KEEP_BROWSER_ARTIFACTS is set, skip deletion. --check reports without writing.',
+  doctor:'Inspect problems and warnings (including missing git.branchNaming when Git is present) and explain their concrete impact. Diagnosis does not authorize unrelated repairs or policy changes.',
+  housekeep:'Apply housekeeping rules: ensure generated and inspection paths are gitignored, delete untracked inspection captures (including tests/output and invented screenshot galleries), delete untracked repository-root tmp-* drafts, and report tracked leftovers. Write captures only under .agenthouse/evidence/<work-id>/. Write GitHub issue/PR bodies under .agenthouse/local/ if a file is required, then remove them. Do not delete evaluation reports under artifacts/agenthouse/, work records, or application source. In CI or when AH_KEEP_BROWSER_ARTIFACTS is set, skip screenshot deletion. --check reports without writing.',
   resolve:'Use --frozen for a verification request. Refresh only when resolving reviewed configuration changes is intended; do not hide drift by automatically refreshing.',
   session:'Explain any applied or deferred approved updates, housekeeping, and the active version set. Respect configured update policies and pins.',
   dependencies:'Choose status, pin, unpin, or update. Default to status if unclear. For updates use a trusted bundle checksum or key, inspect --check first, and respect pins. Do not invent a new version or silently unpin.',
@@ -62,27 +62,30 @@ const workflows={
 Decide (only questions that change the work):
 1. Outcome and actor
 2. In / out of scope
-3. Visual plan: wireframe, mermaid, both, or neither — default wireframe for UI, mermaid for data/API, neither for copy/docs/one-line
-4. Remaining open choices, each with a recommended option
+3. Too large for one ticket? split / keep / need-input — if split, propose thin slices; never create work or branches until the user says yes
+4. Visual plan: wireframe, mermaid, both, or neither — default wireframe for UI, mermaid for data/API, neither for copy/docs/one-line
+5. Remaining open choices, each with a recommended option
 
-Then a compact draft: outcome, scope, 3–8 observable criteria, and for bugs reproduction / expected / observed. Distinguish stated requirements from proposed details. For UI work read the installed frontend-acceptance skill. Present a draft, not a readiness approval. Use work new only when creation is requested; external writes need authorization. If they pick a visual plan, follow ah-visual-plan and link fields.visualPlan.`],
-  'assess-story-readiness':['Assess whether one existing work item is complete enough to implement. Use when asking if a story is ready, blocked, or missing facts.', `Run gate --item FILE --phase ready against the actual item and policy; use its findings as the completeness baseline.
+Then a compact draft: outcome, scope, 3–8 observable criteria, and for bugs reproduction / expected / observed. Distinguish stated requirements from proposed details. More than eight criteria or multiple independent outcomes usually means split; set fields.sizeRisk to oversized on the work record when keeping a draft that is still too large. For UI work read the installed frontend-acceptance skill. Present a draft, not a readiness approval. Use work new only when creation is requested; then offer work branch from a chosen base using git.branchNaming (ask and store the pattern if missing). External writes need authorization. If they pick a visual plan, follow ah-visual-plan and link fields.visualPlan.`],
+  'assess-story-readiness':['Assess whether one existing work item is complete enough to implement. Use when asking if a story is ready, blocked, or missing facts.', `Run gate --item FILE --phase ready against the actual item and policy; use its findings as the completeness baseline, including ticketSize when present.
 
 Reply as Decide / Ready or Blocked / Missing. Cite each missing fact with suggested wording. Evaluate completeness separately from truth. Disclose authorship.
 
 Decide:
 1. Ready to implement? yes / no / blocked-on-X
-2. Visual plan needed? If UI or data-model work has no fields.visualPlan, offer wireframe, mermaid, both, or neither — do not invent screens unless they choose it
-3. Independent review required?
+2. If ticketSize is pending: split into new work items (ask before creating), or keep with an explicit fields.sizeOverride reason after user consent — do not invent the override
+3. If creating a split item: offer a related Git branch (work branch) from the current or chosen base; configure git.branchNaming first if missing
+4. Visual plan needed? If UI or data-model work has no fields.visualPlan, offer wireframe, mermaid, both, or neither — do not invent screens unless they choose it
+5. Independent review required?
 
 A readiness assessment is not a stage transition or signature. Expand only if the user asks.`],
   'validate-scope':['Assess whether a set of requirements covers an intended outcome, including gaps, unrelated work, and sequencing. Use when checking if stories or requirement files are enough before implementation.', `This is an agent assessment workflow, not a validate-scope CLI subcommand. Do not run validate-scope or infer its existence from this skill name. Use help to discover commands supported by the pinned runtime. A local work item is optional: use the supplied outcome and authoritative requirements; report missing inputs without creating records unless requested.
 
-Reply as Decide / Coverage / Gaps. Map the stated target to the supplied scope. Identify uncovered outcomes, unrelated work, dependencies, sequencing, and assumptions. A set of individually ready stories can still miss the target.
+Reply as Decide / Coverage / Gaps. Map the stated target to the supplied scope. Identify uncovered outcomes, unrelated work, dependencies, sequencing, and assumptions. A set of individually ready stories can still miss the target. When one item packs multiple independent outcomes, recommend split and ask whether to create follow-up work items and related branches.
 
 Decide:
 1. Does this set hit the outcome? yes / no / not-enough-input
-2. Must-have vs later
+2. Must-have vs later (and which slices need their own tickets)
 3. Visual plan for the overall product shape: mermaid, wireframe, both, or neither
 
 Do not invent commitments or approve scope changes. Keep it short unless the user asks for more.`],
@@ -100,14 +103,14 @@ Run relevant available checks through the configured CLI and inspect UI screensh
   'enroll-repository':['Enroll this repository through conversational agenthouse onboarding. Use when setting up agenthouse here by choosing coding agents, policy, and autonomy.', 'Use the ah-onboard skill. Inspect the target, infer known preferences, gather missing configuration, and call the existing onboarding CLI noninteractively. Preserve consumer configuration and explain the resulting commands.'],
   'frontend-acceptance':['Verify UI work with the pinned frontend-acceptance method, using the story, bug, wireframe, or reference image and real screenshots. Use when checking visual design, screens, or frontend acceptance.', `Run dependencies status, then read .agents/skills/frontend-acceptance/SKILL.md and follow its supporting resources. Derive evidence from the reference image, wireframe, story, or bug. Do not substitute regression equality for concept conformance. If the upstream dependency is missing or modified, report the problem rather than inventing an alternative method.
 
-The upstream evidence-record template is a written report, not permission to commit screenshot dumps. Inspection captures are ephemeral: write them only under artifacts/agenthouse/ or .agenthouse/evidence/. After inspecting, run node .agenthouse/run.mjs housekeep instead of inventing a screenshot directory or deleting files ad hoc. Housekeep adds missing ignore rules and removes untracked inspection captures; it does not delete evaluation reports under artifacts/agenthouse/ or Git-tracked files. Durable Git coverage is reviewed Playwright snapshots and tests. Record criterion findings, hashes, and evaluation report paths on the work item. CI archives artifacts/agenthouse/; that is retained verification evidence.`]
+The upstream evidence-record template is a written report, not permission to commit screenshot dumps. Inspection captures are ephemeral: write them only under .agenthouse/evidence/<work-id>/. Never write galleries to tests/output, tests/screenshots, screenshots/, or a newly invented dump folder. After inspecting, run node .agenthouse/run.mjs housekeep instead of inventing a screenshot directory or deleting files ad hoc. Housekeep adds missing ignore rules and removes untracked inspection captures, including leftover tests/output trees; it does not delete evaluation reports under artifacts/agenthouse/ or Git-tracked files. Durable Git coverage is reviewed Playwright snapshots and tests. Record criterion findings, hashes, and evaluation report paths on the work item. CI archives artifacts/agenthouse/; that is retained verification evidence.`]
 };
 const descriptions={
   help:'Explain installed agenthouse commands and recommend the next step for a goal. Use when asking what agenthouse can do, which skill to pick, or for the command map.',
   onboard:'Set up agenthouse in an existing repository: choose coding agents and policy, then enroll. Use when starting with agenthouse or adding it to a project.',
   demo:'Run an isolated failing-then-passing acceptance example in a new empty directory. Use when trying agenthouse for the first time or showing evaluation reports. Does not validate the user\'s application.',
   init:'Install the pinned runtime, lifecycle skill, and required frontend-acceptance dependency. Use when installing or reinstalling after agents and autonomy are already chosen.',
-  work:'Create, show, or advance local lifecycle work records. Use when filing a story, inspecting a work item, or moving work to a new stage.',
+  work:'Create, show, advance, or branch local lifecycle work records. Use when filing a story, inspecting a work item, moving work to a new stage, or creating a related Git branch for a work item.',
   evaluate:'Run the project\'s configured checks and write JSON, JUnit, and HTML evidence reports. Use when running local or CI evaluation, pull-request checks, or verifying a specific build.',
   doctor:'Diagnose installation, policy snapshot, and required skill integrity problems. Use when enrollment looks broken, skills are missing, or asking why agenthouse is unhealthy.',
   housekeep:'Ensure generated and inspection paths stay out of Git and remove untracked screenshot dumps. Use when leftover captures appear, after frontend-acceptance, or at session start.',

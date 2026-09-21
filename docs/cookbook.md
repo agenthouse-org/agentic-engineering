@@ -122,7 +122,20 @@ For the readiness of one structured work item, use the deterministic gate as a b
 node .agenthouse/run.mjs gate --item .agenthouse/work/first-change.json --phase ready
 ```
 
-Readiness completeness is not proof that the requirements are true or sufficient; the agent assessment supplies that judgment. Scoping skills ask a short Decide list (including whether a wireframe, mermaid, both, or neither is needed) and stay brief unless you ask for more.
+Readiness completeness is not proof that the requirements are true or sufficient; the agent assessment supplies that judgment. Scoping skills ask a short Decide list (including whether a wireframe, mermaid, both, or neither is needed) and stay brief unless you ask for more. When a ticket is too large, the ready gate reports a pending `ticketSize` finding; ask before creating split work items and offer `work branch` after `git.branchNaming` is set. Mid-flight out-of-scope asks: warn, stop, then Decide new work vs expand vs override.
+
+## Recipe: related branch for a split work item
+
+```text
+node .agenthouse/run.mjs work new --id login-slice --title "Add login form" --parent first-change
+node .agenthouse/run.mjs work branch --id login-slice --from HEAD --parent first-change
+```
+
+Configure naming once (onboard or edit `.agenthouse/config.json`):
+
+```json
+"git": { "branchNaming": { "pattern": "{id}-{slug}", "example": "login-slice-add-login-form", "baseDefault": "main" } }
+```
 
 ## Recipe: visual plan before UI or data-model work
 
@@ -182,7 +195,7 @@ The required `frontend-acceptance` skill is installed during enrollment. For a U
 $ah-frontend-acceptance Verify this UI against the story and inspect real screenshots.
 ```
 
-Inspect the screenshots, then run `node .agenthouse/run.mjs housekeep`. Do not commit `.agenthouse/evidence/` galleries. Evaluation reports stay under `artifacts/agenthouse/` and are archived by CI.
+Write inspection captures under `.agenthouse/evidence/<work-id>/` only. Inspect them, then run `node .agenthouse/run.mjs housekeep`. Do not write or commit galleries under `tests/output`, and do not leave `tmp-pr-*.md` drafts at the repository root. Evaluation reports stay under `artifacts/agenthouse/` and are archived by CI.
 
 For the separate web-usability audit:
 

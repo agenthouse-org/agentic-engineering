@@ -1,16 +1,40 @@
-import fs from 'node:fs';
 import {assert, read, write, create, hash, inside, safeId, exclusive} from './io.js';
 import {resolve, approval} from './policy.js';
 import {gate} from './gates.js';
+import {git} from './inspect.js';
+import {branchNaming,renderBranchName} from './branch-naming.js';
 
 export const STAGES=['discover','define','design','plan','implement','verify','accept','release','operate','learn','retire'];
 export const FIELDS={discover:['outcome'],define:['scope','acceptance'],design:['decisions'],plan:['verification'],implement:['changes'],verify:['evidence'],accept:['acceptanceEvidence'],release:['releasePlan','rollbackPlan'],operate:['serviceObjectives','runbook'],learn:['learning'],retire:['retirement']};
-export function newItem(root,id,title,kind='feature',pathName) {
+export function newItem(root,id,title,kind='feature',pathName,{parentWork}={}) {
   safeId(id);assert(['feature','bug','incident','change','investigation','documentation'].includes(kind),'Invalid work item kind');
   const item={schemaVersion:1,id,title,kind,stage:'discover',revision:1,fields:{outcome:''},criteria:[],evidence:[],history:[]};
   if(pathName){safeId(pathName);item.path=pathName;}
+  if(parentWork){safeId(parentWork);item.fields.parentWork=parentWork;}
   create(inside(root,`.agenthouse/work/${id}.json`),item);
   return item;
+}
+export function createBranch(root,id,{from,parentWork}={}) {
+  return exclusive(root,()=>{
+    const file=inside(root,`.agenthouse/work/${safeId(id)}.json`),item=read(file);
+    const {config}=resolve(root);
+    const naming=branchNaming(config);
+    assert(naming?.pattern,'Configure git.branchNaming.pattern in .agenthouse/config.json before work branch (ask the team standard, for example {id}-{slug})');
+    const dirty=git(root,['status','--porcelain=v1'],{optional:true});
+    assert(dirty!==null,'Git repository required for work branch');
+    assert(!dirty,'Working tree must be clean before work branch');
+    const base=from || git(root,['rev-parse','--abbrev-ref','HEAD']) || naming.baseDefault || 'HEAD';
+    assert(base,'Choose --from or set git.branchNaming.baseDefault');
+    const name=renderBranchName(naming.pattern,{id:item.id,title:item.title,kind:item.kind});
+    git(root,['rev-parse','--verify',base]);
+    git(root,['checkout','-b',name,base]);
+    item.fields=item.fields || {};
+    item.fields.branch=name;
+    if(parentWork){safeId(parentWork);item.fields.parentWork=parentWork;}
+    item.revision=(item.revision || 1)+1;
+    write(file,item);
+    return {id:item.id,branch:name,from:base,item};
+  });
 }
 export function readiness(item,stage=item.stage) {
   assert(STAGES.includes(stage),'Unknown lifecycle stage');

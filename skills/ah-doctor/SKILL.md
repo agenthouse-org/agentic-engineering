@@ -12,12 +12,12 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Inspect problems and explain their concrete impact. Diagnosis does not authorize unrelated repairs or policy changes.
+Inspect problems and warnings (including missing git.branchNaming when Git is present) and explain their concrete impact. Diagnosis does not authorize unrelated repairs or policy changes.
 
 CLI reference:
 
 ```text
 doctor
-Check installation, policy snapshot, required skill integrity, and housekeeping ignore/tracked-capture rules.
-Exit 0: healthy installation; exit 2: problems. This does not certify application quality.
+Check installation, policy snapshot, required skill integrity, and housekeeping ignore/tracked-capture/dump-path rules.
+Warns when Git is present without git.branchNaming.pattern. Exit 0: healthy installation; exit 2: problems. This does not certify application quality.
 ```

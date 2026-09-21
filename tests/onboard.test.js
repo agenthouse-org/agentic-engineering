@@ -24,6 +24,12 @@ test('noninteractive onboarding enrolls and repeat preserves configuration',asyn
   assert.match(await onboard(root,{agents:'claude'}),/Project ready/);assert.deepEqual(fs.readFileSync(file),before);
   assert.deepEqual(read(path.join(root,'.agenthouse/installation.json')).agents,['codex','cursor']);
 });
+test('noninteractive onboarding can store branch naming',async t=>{
+  const root=temp(t);
+  await onboard(root,{agents:'codex',docs:'skip',branchPattern:'{id}-{slug}',branchExample:'first-change-outcome',branchBase:'main'});
+  const config=read(path.join(root,'.agenthouse/config.json'));
+  assert.deepEqual(config.git.branchNaming,{pattern:'{id}-{slug}',example:'first-change-outcome',baseDefault:'main'});
+});
 test('piped onboarding explains explicit options without writing a project',t=>{
   const root=temp(t),result=cli(['onboard','--root',root]);
   assert.equal(result.status,2);assert.match(result.stderr,/--non-interactive/);assert.deepEqual(fs.readdirSync(root),[]);

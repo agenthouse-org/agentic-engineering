@@ -1,6 +1,6 @@
 # Agent commands
 
-Version 0.1.8 installs 41 generated agent-facing commands plus the lifecycle skill. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
+Version 0.1.9 installs 41 generated agent-facing commands plus the lifecycle skill. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
 
 ## Invoke them
 
@@ -25,7 +25,7 @@ Reload the host or start a fresh session after first enrollment if the command i
 | `ah-onboard` | `onboard` with conversational choices and noninteractive CLI arguments |
 | `ah-demo` | `demo` in a new/empty directory |
 | `ah-init` | `init` |
-| `ah-work` | `work new`, `show`, `advance` |
+| `ah-work` | `work new`, `show`, `advance`, `branch` |
 | `ah-visual-plan` | `visual-plan check` |
 | `ah-evaluate` | `evaluate` |
 | `ah-doctor` | `doctor` |

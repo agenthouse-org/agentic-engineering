@@ -16,5 +16,6 @@ The following product decisions were confirmed by the repository owner on 2026-0
 | [0008](0008-visual-plans-and-mermaid.md) | Local wireframe and mermaid visual plans at Define/Design |
 | [0009](0009-npm-provenance.md) | Optional npm package provenance setup for public publishes |
 | [0010](0010-ephemeral-frontend-captures.md) | Inspection screenshot galleries stay out of Git |
+| [0011](0011-ticket-size-and-scope-creep.md) | Ticket size gate, scope-creep stop, ask-first split work and related branches |
 
 Proposed implementation details live in the linked design documents until implemented or promoted to an accepted technical ADR.

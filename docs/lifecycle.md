@@ -18,8 +18,16 @@ Use the smallest evidence set that demonstrates the requested outcome. Keep work
 
 For a bug, record reproducible actual versus expected behavior and preserve failing-before evidence when available. For an incident, recovery may happen before ordinary implementation planning under the organization's emergency process; the lifecycle record is retrospective evidence, not permission to defer urgent authorized recovery.
 
-For frontend work derive acceptance from an image, wireframe, story, or bug report. Use the frontend-acceptance skill when installed. For UI layout or data-model shape that must be seen before code, use `ah-visual-plan` and `visual-plan check`; skip it for trivial work. Capture the real UI; inspect the screenshots; record findings on the work item; run `housekeep`. Do not commit inspection screenshot galleries. Baseline regression, design conformance, interaction correctness, and accessibility are complementary. Do not replace missing concept assessment with an image similarity number.
+For frontend work derive acceptance from an image, wireframe, story, or bug report. Use the frontend-acceptance skill when installed. For UI layout or data-model shape that must be seen before code, use `ah-visual-plan` and `visual-plan check`; skip it for trivial work. Capture the real UI; write inspection screenshots only under `.agenthouse/evidence/<work-id>/`; inspect them; record findings on the work item; run `housekeep`. Never write galleries to `tests/output`. Do not commit inspection screenshot galleries. Baseline regression, design conformance, interaction correctness, and accessibility are complementary. Do not replace missing concept assessment with an image similarity number.
 
 Never change a test, baseline, threshold, scope, or policy solely to make an evaluation green. A justified change belongs in the decision/evidence trail. When a requirement is wrong, record the correction and re-evaluate affected criteria.
+
+## Ticket size and scope creep
+
+Ready gates treat oversized work as a pending `ticketSize` finding when there are more than `lifecycle.ready.maxCriteria` criteria (default 8) or `fields.sizeRisk` is `oversized`, unless `fields.sizeOverride` records an explicit user reason to proceed. Disable with `lifecycle.ready.ticketSize: false`. Prefer splitting into thinner local work items.
+
+When splitting or opening follow-up work for scope creep: ask before `work new`; then offer a related Git branch with `work branch --id ID [--from REF] [--parent ID]`. Store the team's naming standard in `.agenthouse/config.json` as `git.branchNaming` (`pattern` with `{id}`, `{slug}`, optional `{kind}`; optional `example` and `baseDefault`). Mid-flight asks outside recorded scope: warn, stop, and Decide among new work, expand scope/criteria, or override with `fields.scopeNotes`.
+
+Optional linkage fields: `fields.parentWork`, `fields.relatedWork`, `fields.branch`.
 
 `work advance` verifies required record fields and applicable signed transition authority. Field completeness is not proof of product correctness; configure executable and assessment evaluators for that. Use organization policy for gate coverage and a protected CI job for authoritative technical checks. Local records and private signing keys are under the user's control; they are not a defense against a malicious repository owner.

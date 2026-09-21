@@ -1,23 +1,23 @@
 # Implementation and verification status
 
-Version 0.1.8 developer preview. Updated 2026-09-18.
+Version 0.1.9 developer preview. Updated 2026-09-21.
 
-Local core/workflow tests: 98 passed. Real visual regression and usability pass/fail browser scenarios, and the upstream hooks suite (eight test files), were last recorded as passing on 2026-09-15.
+Local core/workflow tests: 105 passed. Real visual regression and usability pass/fail browser scenarios, and the upstream hooks suite (eight test files), were last recorded as passing on 2026-09-15.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
 | CLI and agent commands | 42 framework skills (41 generated plus lifecycle); every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership and removal tests |
 | Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; commit/range/merge-base analysis; candidate tests and review signals | Root commit, deletion and merge-base fixtures; no discovered scripts executed |
-| Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions | Missing/stale evidence, self-review rejection and invalidated signatures |
+| Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions; ready-gate `ticketSize` with override | Missing/stale evidence, self-review rejection, invalidated signatures; oversized criteria and sizeOverride tested |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |
-| Lifecycle and small changes | Full lifecycle plus configured shorter paths, eligible kinds and rationale | Protected stages and invalid paths tested |
+| Lifecycle and small changes | Full lifecycle plus configured shorter paths, eligible kinds and rationale; ask-first split work and `work branch` with repo `git.branchNaming` | Protected stages and invalid paths tested; branch naming render and clean-tree branch create tested |
 | Backlog and review | Markdown/JSON import, retained external identity, criterion coverage, baseline outcome comparison | Idempotency, conflicts and stale evidence tested |
 | Governance | Frozen policy composition, mandatory definitions, signed decisions and direct delegation | Conflict, scope, expiry, omitted-check and delegation tests |
 | Control mapping | Rule provenance and explicit executable/guidance distinctions | Unenforced guidance is not reported as automated |
 | Local hooks | Content-pinned agenthouse-hooks export; session context, command signals, touched-file checks; owned Claude settings installation/removal | Event fixtures, preserved permissions/settings, duplicate avoidance and conflicts |
 | Skills and updates | Pinned frontend-acceptance 0.2.0 and web-usability-conformity 0.1.0 from agenthouse-skills | Commit/file integrity, pins, trusted updates and rollback; hook export pins included |
 | Browser usability | Explicit locked runtime setup and upstream audit runner | Real Chromium clean/failing fixtures, failure exit 1 and desktop/narrow screenshots |
-| Visual acceptance | Image/story/bug/wireframe contracts, concept review, Playwright capture and regression; housekeeping CLI for inspection captures | Missing/stale concept evidence; real baseline/broken/restored browser scenario; housekeep ignore/delete/tracked-file tests |
+| Visual acceptance | Image/story/bug/wireframe contracts, concept review, Playwright capture and regression; housekeeping CLI for inspection captures | Missing/stale concept evidence; real baseline/broken/restored browser scenario; housekeep ignore/delete/tracked-file and dump-root tests |
 | Visual plans | Local visual-plan JSON, semantic HTML wireframes, mermaid ERD/UML lint, optional ready-gate check | Pass/fail/incomplete fixtures; shipped example plan |
 | npm provenance | Inspect package.json and CI; write a missing GitHub/GitLab publish job for trusted or token provenance | Missing package, private package, overwrite refusal, repository mismatch, trusted vs token templates |
 | Stack modules | Node/TypeScript and PHP/Laravel standards, evaluator and touched-file templates | Module delivery tested; consuming projects select actual tools |
