@@ -1,6 +1,6 @@
 ---
 name: ah-demo
-description: "Run an isolated failing-then-passing acceptance example in a new empty directory. Use when trying agenthouse for the first time or showing evaluation reports. Does not validate the user's application."
+description: "Run a failing check, apply a fix, then a passing report in a new empty directory. Use when trying agenthouse for the first time or showing sample evaluation reports. Does not validate the user's application."
 license: MIT
 ---
 

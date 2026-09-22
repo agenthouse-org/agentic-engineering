@@ -1,6 +1,6 @@
 ---
 name: ah-backlog
-description: "Import one markdown or exported JSON work item while preserving external identity. Use when bringing a tracker card or markdown story into local agenthouse records."
+description: "Import one markdown or exported JSON work item into .agenthouse/work while keeping its external id. Use when bringing a tracker card or markdown story into local records."
 license: MIT
 ---
 

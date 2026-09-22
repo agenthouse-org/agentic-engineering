@@ -1,6 +1,6 @@
 ---
 name: ah-bundle
-description: "Package this framework and required skills for offline distribution, optionally signed. Use when creating an installable package or signed update bundle."
+description: "Build an offline install package of this framework and required skills, optionally signed. Use when creating a private distribution or signed update artifact."
 license: MIT
 ---
 

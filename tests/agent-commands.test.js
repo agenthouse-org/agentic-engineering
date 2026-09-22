@@ -41,6 +41,16 @@ test('agent skill descriptions tell a person what the skill does and when to use
     assert.doesNotMatch(description,/^Use --/);
     assert.match(description,/Use when |Use at /,`${name} needs a when-to-use clause`);
     assert.doesNotMatch(description,/\bI can\b|\bYou can use this\b/);
+    assert.doesNotMatch(description,/\bcomposed policy snapshot\b|\bexact resolved identity\b|\bpinned hooks runtime\b|\bowned generated assets\b|\bsuspected nominal test layers\b/,`${name} still uses opaque framework jargon`);
+  }
+});
+test('enrolled command catalog includes human-readable skill descriptions',t=>{
+  const root=temp(t);install(root,{agents:['claude']});
+  const catalog=fs.readFileSync(path.join(root,'.agenthouse/agent-commands.md'),'utf8');
+  for(const [name,content] of Object.entries(agentSkills())) {
+    const description=JSON.parse(content.match(/^description:\s*(.+)$/m)[1]);
+    assert.match(catalog,new RegExp(`\\*\\*${name}\\*\\* — `));
+    assert.ok(catalog.includes(description),`${name} description missing from catalog`);
   }
 });
 test('frontend-acceptance treats inspection screenshots as ephemeral, not Git evidence',()=>{

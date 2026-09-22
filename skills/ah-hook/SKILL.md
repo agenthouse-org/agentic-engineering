@@ -1,6 +1,6 @@
 ---
 name: ah-hook
-description: "Process a native or normalized hook event through the pinned hooks runtime. Use when handling a host hook payload, a CI event, or an explicit fixture."
+description: "Run one coding-agent or CI hook event through the installed hooks runtime against frozen project policy. Use when processing a host hook payload, a CI event, or an explicit fixture file."
 license: MIT
 ---
 

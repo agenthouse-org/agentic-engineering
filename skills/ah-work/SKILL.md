@@ -1,6 +1,6 @@
 ---
 name: ah-work
-description: "Create, show, advance, or branch local lifecycle work records. Use when filing a story, inspecting a work item, moving work to a new stage, or creating a related Git branch for a work item."
+description: "Create, show, advance, or branch a local lifecycle work item under .agenthouse/work. Use when filing a story, opening a work record, moving it to a new stage, or creating a related Git branch."
 license: MIT
 ---
 

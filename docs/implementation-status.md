@@ -1,12 +1,12 @@
 # Implementation and verification status
 
-Version 1.0.0 release line. Updated 2026-09-22.
+Version 1.1.0 release line. Updated 2026-09-23.
 
 Local core/workflow tests: 117 passed. Real visual regression and usability pass/fail browser scenarios, and the upstream hooks suite (eight test files), were last recorded as passing on 2026-09-15.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
-| CLI and agent commands | 42 framework skills (41 generated plus lifecycle); every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership and removal tests |
+| CLI and agent commands | 42 framework skills (41 generated plus lifecycle); plain-language picker descriptions and enrolled command catalog; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership, description and catalog tests |
 | Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; conservative test-layer evidence/gaps and nominal signals; local aliases; commit/range/merge-base analysis | Empty/multi-layer/nominal/alias fixtures, root commit, deletion and merge-base fixtures; no discovered scripts executed |
 | Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions; ready-gate `ticketSize` with override | Missing/stale evidence, self-review rejection, invalidated signatures; oversized criteria and sizeOverride tested |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |

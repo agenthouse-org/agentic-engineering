@@ -120,37 +120,37 @@ test('visual concept remains incomplete until inspected even if regression passe
 });
 
 test('signed update, pinning and breaking-version checks enforce declared trust',t=>{
-  const root=setup(t),pair=generateKeyPairSync('ed25519'),dir=temp(t),data=payload();
+  const root=setup(t),pair=generateKeyPairSync('ed25519'),dir=temp(t),data=payload(),current=data.version;
   data.version='2.0.0';const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;pkg.agenthouse.release.compatibleFrom='2.0.0';data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');
   const file=path.join(dir,'signed.json'),key=path.join(dir,'release.pub');write(file,signed(data,pair.privateKey));write(key,pair.publicKey.export({type:'spki',format:'pem'}));
   assert.throws(()=>update(root,{bundle:file,publicKey:key}),/Breaking/);
-  write(path.join(root,'.agenthouse/update.json'),{pin:'1.0.0'});assert.throws(()=>update(root,{bundle:file,publicKey:key,allowBreaking:true}),/pinned/);
+  write(path.join(root,'.agenthouse/update.json'),{pin:current});assert.throws(()=>update(root,{bundle:file,publicKey:key,allowBreaking:true}),/pinned/);
   write(path.join(root,'.agenthouse/update.json'),{pin:'2.0.0'});assert.equal(update(root,{bundle:file,publicKey:key,allowBreaking:true}).version,'2.0.0');
   const cli=spawnSync(process.execPath,[path.join(root,'.agenthouse/run.mjs'),'doctor','--root',root],{encoding:'utf8'});assert.equal(cli.status,0,cli.stdout+cli.stderr);
   const tampered=read(file);tampered.payload.files['README.md']=Buffer.from('changed').toString('base64');write(file,tampered);assert.throws(()=>update(root,{bundle:file,publicKey:key,allowBreaking:true}),/signature/);
 });
 test('unhealthy new runtime never activates or changes the snapshot',t=>{
   const root=setup(t),data=payload(),dir=temp(t);const before=read(path.join(root,'.agenthouse/active.json')),snapshot=read(path.join(root,'.agenthouse/resolved.json'));
-  data.version='1.0.1';const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');data.files['bin/ah-engineering.js']=Buffer.from('this is invalid javascript {{{').toString('base64');
+  data.version=data.version.split('.').map((v,i)=>i===2?String(Number(v)+1):v).join('.');const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');data.files['bin/ah-engineering.js']=Buffer.from('this is invalid javascript {{{').toString('base64');
   const file=path.join(dir,'bad.json');write(file,data);assert.throws(()=>update(root,{bundle:file,sha256:hash(fs.readFileSync(file))}),/health/);assert.deepEqual(read(path.join(root,'.agenthouse/active.json')),before);assert.deepEqual(read(path.join(root,'.agenthouse/resolved.json')),snapshot);
 });
 test('floating update falls back between verified candidates and records an exact runtime',t=>{
-  const root=setup(t),data=payload();data.version='1.0.1';const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');
+  const root=setup(t),data=payload();data.version=data.version.split('.').map((v,i)=>i===2?String(Number(v)+1):v).join('.');const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');
   configureUpdateTracking(root,'latest');
   const checked=updateFromChannel(root,{check:true,discoverers:{npm:()=>{throw new Error('registry unavailable');},github:()=>({source:'github',data,verification:{attestation:'verified'}})}});
-  assert.equal(checked.available,'1.0.1');assert.equal(checked.source,'github');assert.equal(checked.attempts[0].source,'npm');
-  const applied=updateFromChannel(root,{discoverers:{npm:()=>({source:'npm',data,verification:{provenance:'verified'}})}});assert.equal(applied.version,'1.0.1');assert.equal(applied.source,'npm');
-  assert.equal(read(path.join(root,'.agenthouse/installation.json')).version,'1.0.1');assert.equal(read(path.join(root,'.agenthouse/active.json')).version,'1.0.1');
+  assert.equal(checked.available,data.version);assert.equal(checked.source,'github');assert.equal(checked.attempts[0].source,'npm');
+  const applied=updateFromChannel(root,{discoverers:{npm:()=>({source:'npm',data,verification:{provenance:'verified'}})}});assert.equal(applied.version,data.version);assert.equal(applied.source,'npm');
+  assert.equal(read(path.join(root,'.agenthouse/installation.json')).version,data.version);assert.equal(read(path.join(root,'.agenthouse/active.json')).version,data.version);
 });
 test('floating tracking is opt-in and exact tracking pins the installed version',t=>{
   const root=setup(t);const latest=configureUpdateTracking(root,'latest');assert.equal(latest.automatic,true);assert.deepEqual(latest.sources,['npm','github']);
-  const exact=configureUpdateTracking(root,'exact');assert.equal(exact.automatic,false);assert.equal(exact.pin,'1.0.0');
+  const exact=configureUpdateTracking(root,'exact');assert.equal(exact.automatic,false);assert.equal(exact.pin,payload().version);
   assert.throws(()=>updateFromChannel(root,{discoverers:{npm:()=>{throw new Error('must not run');}}}),/preference is exact/);
 });
 test('update CLI selects latest or exact tracking without resolving the network channel',t=>{
   const root=setup(t),cli=track=>spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),'update','--root',root,'--track',track],{encoding:'utf8',windowsHide:true});
   const latest=cli('latest');assert.equal(latest.status,0,latest.stderr);assert.equal(JSON.parse(latest.stdout).track,'latest');
-  const exact=cli('exact');assert.equal(exact.status,0,exact.stderr);assert.equal(JSON.parse(exact.stdout).pin,'1.0.0');
+  const exact=cli('exact');assert.equal(exact.status,0,exact.stderr);assert.equal(JSON.parse(exact.stdout).pin,payload().version);
 });
 test('release-declared compatibility controls pre-1.0 updates',()=>{
   const compatible=payload(),pkg=JSON.parse(Buffer.from(compatible.files['package.json'],'base64'));compatible.version='0.1.10';pkg.version=compatible.version;compatible.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');

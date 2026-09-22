@@ -1,6 +1,6 @@
 ---
 name: ah-rollback
-description: "Restore the previous complete runtime and dependency set. Use when an update should be undone and the prior version set is still available."
+description: "Restore the previous complete runtime and dependency set. Use when an update should be undone and the prior version is still available."
 license: MIT
 ---
 

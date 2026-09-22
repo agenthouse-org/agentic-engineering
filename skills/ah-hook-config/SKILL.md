@@ -1,6 +1,6 @@
 ---
 name: ah-hook-config
-description: "Print, install, or remove owned coding-agent hook settings without disturbing unrelated hooks. Use when enabling or disabling agenthouse hooks in a supported host."
+description: "Print, install, or remove agenthouse-owned hook entries in Claude/Cursor settings without touching unrelated hooks. Use when enabling or disabling agenthouse hooks in a supported host."
 license: MIT
 ---
 

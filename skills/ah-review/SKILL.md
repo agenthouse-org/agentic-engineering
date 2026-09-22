@@ -1,6 +1,6 @@
 ---
 name: ah-review
-description: "Map work-item criteria to build and policy evidence for an exact commit. Use when checking requirement coverage; a technical pass is not independent review approval."
+description: "Match each work-item acceptance criterion to build and policy evidence for an exact commit. Use when checking requirement coverage before merge; a technical pass is not independent review approval."
 license: MIT
 ---
 

@@ -56,7 +56,7 @@ Run npm-provenance status on the target repository. If they chose yes, run npm-p
   sign:'Sign only the exact reviewed artifact using a key the user has authorized you to use. Possession of a key or invocation of this skill is not governance approval. Never invent an issuer, delegation, or allowed verdict.'
 };
 const workflows={
-  'web-usability-conformity':['Run the installed upstream web-usability audit and report real findings. Use when checking UI usability; this is separate from frontend-acceptance visual checks.', 'Locate .agents/skills/web-usability-conformity/SKILL.md from the pinned agenthouse-skills dependency and follow its resources. Verify dependencies status first. Use usability setup when authorized to provision tooling, then usability run to capture real evidence. Report actual findings, unavailable checks, and evidence. This is separate from the required frontend-acceptance method.'],
+  'web-usability-conformity':['Run the installed web-usability audit and report real findings against a URL or fixture. Use when checking UI usability; this is separate from frontend-acceptance visual checks.', 'Locate .agents/skills/web-usability-conformity/SKILL.md from the pinned agenthouse-skills dependency and follow its resources. Verify dependencies status first. Use usability setup when authorized to provision tooling, then usability run to capture real evidence. Report actual findings, unavailable checks, and evidence. This is separate from the required frontend-acceptance method.'],
   'draft-user-story':['Draft a story or bug with observable acceptance criteria, scope, and open questions. Use when writing requirements, turning an idea into a work item, or clarifying a bug.', `Keep the reply short unless the user asks for more.
 
 Decide (only questions that change the work):
@@ -100,45 +100,45 @@ Decide:
 3. Missing visual or mermaid artifacts if the work claimed a UI or data-model change
 
 Run relevant available checks through the configured CLI and inspect UI screenshots through frontend-acceptance when applicable. Distinguish baseline defects and missing evidence. Disclose if you authored the change. A review report does not approve, merge, or mark work done.`],
-  'enroll-repository':['Enroll this repository through conversational agenthouse onboarding. Use when setting up agenthouse here by choosing coding agents, policy, and autonomy.', 'Use the ah-onboard skill. Inspect the target, infer known preferences, gather missing configuration, and call the existing onboarding CLI noninteractively. Preserve consumer configuration and explain the resulting commands.'],
-  'frontend-acceptance':['Verify UI work with the pinned frontend-acceptance method, using the story, bug, wireframe, or reference image and real screenshots. Use when checking visual design, screens, or frontend acceptance.', `Run dependencies status, then read .agents/skills/frontend-acceptance/SKILL.md and follow its supporting resources. Derive evidence from the reference image, wireframe, story, or bug. Do not substitute regression equality for concept conformance. If the upstream dependency is missing or modified, report the problem rather than inventing an alternative method.
+  'enroll-repository':['Set up agenthouse in this repository by choosing coding agents, policy, and autonomy. Use when the project is not enrolled yet or when re-running conversational onboarding.', 'Use the ah-onboard skill. Inspect the target, infer known preferences, gather missing configuration, and call the existing onboarding CLI noninteractively. Preserve consumer configuration and explain the resulting commands.'],
+  'frontend-acceptance':['Compare UI work to the story, bug, wireframe, or reference image using real screenshots and the pinned frontend-acceptance method. Use when checking visual design, screens, or frontend acceptance.', `Run dependencies status, then read .agents/skills/frontend-acceptance/SKILL.md and follow its supporting resources. Derive evidence from the reference image, wireframe, story, or bug. Do not substitute regression equality for concept conformance. If the upstream dependency is missing or modified, report the problem rather than inventing an alternative method.
 
 The upstream evidence-record template is a written report, not permission to commit screenshot dumps. Inspection captures are ephemeral: write them only under .agenthouse/evidence/<work-id>/. Never write galleries to tests/output, tests/screenshots, screenshots/, or a newly invented dump folder. After inspecting, run node .agenthouse/run.mjs housekeep instead of inventing a screenshot directory or deleting files ad hoc. Housekeep adds missing ignore rules and removes untracked inspection captures, including leftover tests/output trees; it does not delete evaluation reports under artifacts/agenthouse/ or Git-tracked files. Durable Git coverage is reviewed Playwright snapshots and tests. Record criterion findings, hashes, and evaluation report paths on the work item. CI archives artifacts/agenthouse/; that is retained verification evidence.`]
 };
 const descriptions={
-  help:'Explain installed agenthouse commands and recommend the next step for a goal. Use when asking what agenthouse can do, which skill to pick, or for the command map.',
-  onboard:'Set up agenthouse in an existing repository: choose coding agents and policy, then enroll. Use when starting with agenthouse or adding it to a project.',
-  demo:'Run an isolated failing-then-passing acceptance example in a new empty directory. Use when trying agenthouse for the first time or showing evaluation reports. Does not validate the user\'s application.',
-  init:'Install the pinned runtime, lifecycle skill, and required frontend-acceptance dependency. Use when installing or reinstalling after agents and autonomy are already chosen.',
-  work:'Create, show, advance, or branch local lifecycle work records. Use when filing a story, inspecting a work item, moving work to a new stage, or creating a related Git branch for a work item.',
-  evaluate:'Run the project\'s configured checks and write JSON, JUnit, and HTML evidence reports. Use when running local or CI evaluation, pull-request checks, or verifying a specific build.',
-  doctor:'Diagnose installation, policy snapshot, and required skill integrity problems. Use when enrollment looks broken, skills are missing, or asking why agenthouse is unhealthy.',
-  housekeep:'Ensure generated and inspection paths stay out of Git and remove untracked screenshot dumps. Use when leftover captures appear, after frontend-acceptance, or at session start.',
-  resolve:'Refresh or verify the composed policy snapshot. Use when policy sources changed, checking a frozen snapshot, or before evaluation that needs current rules.',
-  session:'Record active versions, apply configured updates and housekeeping, and report policy drift without silently adopting it. Use at task start or when checking the active agenthouse version and policy snapshot.',
-  dependencies:'Show, pin, unpin, or update bundled upstream skills such as frontend-acceptance. Use when checking skill integrity or applying a trusted dependency bundle.',
-  update:'Select exact or latest tracking, or verify and activate an agenthouse update while retaining an exact resolved identity. Use when changing update preference or applying a reviewed/public-channel release.',
-  bundle:'Package this framework and required skills for offline distribution, optionally signed. Use when creating an installable package or signed update bundle.',
-  rollback:'Restore the previous complete runtime and dependency set. Use when an update should be undone and the prior version set is still available.',
-  restore:'Recreate owned generated assets from the exact recorded pin and agents. Use when generated skills or projections are missing, or to opt into generated-file ignore rules.',
-  recover:'Finish an interrupted installation transaction without overwriting later user edits. Use when onboard, update, or restore stopped mid-way.',
+  help:'List installed agenthouse skills and suggest which one fits a goal. Use when asking what agenthouse can do, which ah-* skill to pick, or for the command map.',
+  onboard:'Walk through coding-agent choice, policy, and autonomy, then enroll this repository. Use when starting with agenthouse or adding it to a project.',
+  demo:'Run a failing check, apply a fix, then a passing report in a new empty directory. Use when trying agenthouse for the first time or showing sample evaluation reports. Does not validate the user\'s application.',
+  init:'Install the pinned runtime, lifecycle skill, and required frontend-acceptance dependency without the conversational questionnaire. Use when agents and autonomy are already chosen, or when reinstalling.',
+  work:'Create, show, advance, or branch a local lifecycle work item under .agenthouse/work. Use when filing a story, opening a work record, moving it to a new stage, or creating a related Git branch.',
+  evaluate:'Run the project\'s configured checks and write JSON, JUnit, and HTML reports under artifacts/agenthouse. Use when running local or CI evaluation, pull-request checks, or verifying a specific build.',
+  doctor:'Diagnose broken enrollment, missing skills, policy snapshot problems, and housekeeping ignore gaps. Use when agenthouse looks unhealthy or skills fail to load.',
+  housekeep:'Add missing ignore rules for generated and inspection paths, then delete untracked screenshot dumps. Use when leftover captures appear, after frontend-acceptance, or at session start.',
+  resolve:'Rebuild or freeze-check the merged policy file at .agenthouse/resolved.json. Use when policy sources changed, verifying a frozen snapshot, or before evaluation that needs current rules.',
+  session:'Report the active agenthouse version, apply approved updates and housekeeping, and flag policy changes without adopting them silently. Use at task start or when asking which version and policy are active.',
+  dependencies:'Show, pin, unpin, or update bundled skills such as frontend-acceptance and web-usability. Use when a specialist skill is missing, integrity fails, or applying a trusted dependency bundle.',
+  update:'Switch latest vs exact update tracking, or verify and install a reviewed agenthouse release (bundle or public channel). Use when changing update preference or applying an approved upgrade.',
+  bundle:'Build an offline install package of this framework and required skills, optionally signed. Use when creating a private distribution or signed update artifact.',
+  rollback:'Restore the previous complete runtime and dependency set. Use when an update should be undone and the prior version is still available.',
+  restore:'Recreate missing generated skills and host projections from the exact recorded version and agents. Use when .agents/skills or command aliases disappeared, or to opt into generated-file ignore rules.',
+  recover:'Finish an interrupted onboard, update, or restore without overwriting later user edits. Use when installation stopped mid-way or a lock remains.',
   uninstall:'Remove unchanged managed agenthouse files while keeping configuration, work records, and evidence. Use when removing the framework from a repository.',
-  skill:'Import one reviewed specialist skill unchanged from a local source. Use when adding an extra skill; required frontend-acceptance is managed through dependencies.',
-  module:'Show stack templates or preview/apply a reviewed evaluator and adoption-profile configuration plan. Use when wiring repository test commands into agenthouse without hand-copying config.',
+  skill:'Import one reviewed specialist skill unchanged from a local folder. Use when adding an optional skill; required frontend-acceptance stays under dependencies.',
+  module:'Show a stack template, or preview/apply a reviewed plan that wires repository test commands into evaluate profiles. Use when connecting npm/php test scripts to agenthouse without hand-editing config.',
   keygen:'Create an Ed25519 key pair at a requested path without overwriting existing files. Use when setting up signing keys for governance decisions or bundles.',
   sign:'Sign a reviewed governance decision or data bundle with an authorized private key. Use when a human has authorized signing; invoking this skill is not itself approval.',
-  controls:'Explain which policy rules have executable checks versus advisory guidance. Use when asking what is enforced, how a rule is implemented, or which guidance has no control.',
-  hook:'Process a native or normalized hook event through the pinned hooks runtime. Use when handling a host hook payload, a CI event, or an explicit fixture.',
-  'hook-config':'Print, install, or remove owned coding-agent hook settings without disturbing unrelated hooks. Use when enabling or disabling agenthouse hooks in a supported host.',
-  usability:'Provision optional locked browser tooling, then run the upstream web-usability audit against a URL or fixture. Use when collecting usability evidence; the process exit code is not a conformity certificate.',
-  survey:'Inspect repository tooling and conservative test-layer evidence without executing discovered commands. Use when exploring an unfamiliar repository or identifying missing, ambiguous, or suspected nominal test layers.',
-  'visual-plan':'Draft or check local wireframe HTML and mermaid architecture diagrams for a work item. Use when planning UI layout, data models, or architecture before implementation, or when validating an existing visual plan.',
-  inspect:'Analyze a commit or change range for affected files, candidate tests, suppressions, and residue. Use when reviewing what a change touched or selecting checks for a diff.',
-  review:'Map work-item criteria to build and policy evidence for an exact commit. Use when checking requirement coverage; a technical pass is not independent review approval.',
-  gate:'Evaluate ready or done lifecycle criteria, evidence, and independent signed approval for a work item. Use when asking if a story is ready to implement or done.',
-  spec:'Capture a failing (red) then passing (green) run of the same configured test command. Use when recording specification evidence for a work item.',
-  backlog:'Import one markdown or exported JSON work item while preserving external identity. Use when bringing a tracker card or markdown story into local agenthouse records.',
-  'npm-provenance':'Inspect or add npm package provenance for a public registry publish. Use when publishing to npm, setting up a trusted publisher, or asking whether a package should include provenance.'
+  controls:'Show which policy rules map to real checks versus advisory text only. Use when asking what is enforced, how a rule is implemented, or which guidance has no automated control.',
+  hook:'Run one coding-agent or CI hook event through the installed hooks runtime against frozen project policy. Use when processing a host hook payload, a CI event, or an explicit fixture file.',
+  'hook-config':'Print, install, or remove agenthouse-owned hook entries in Claude/Cursor settings without touching unrelated hooks. Use when enabling or disabling agenthouse hooks in a supported host.',
+  usability:'Download locked browser tooling if needed, then run the upstream web-usability audit against a URL or fixture. Use when collecting usability evidence; exit code alone is not a conformity certificate.',
+  survey:'Read Git state, scripts, pipelines, and agent files to report which test layers look present, missing, or only nominally named—without running those commands. Use when exploring an unfamiliar repository or deciding what to wire into evaluate.',
+  'visual-plan':'Draft or validate wireframe HTML fragments and mermaid architecture diagrams for a work item. Use when planning UI layout, data models, or architecture before implementation, or checking an existing visual plan.',
+  inspect:'List files touched by a commit or range, candidate tests, new suppressions, and leftover residue. Use when reviewing what a change touched or choosing which checks to run for a diff.',
+  review:'Match each work-item acceptance criterion to build and policy evidence for an exact commit. Use when checking requirement coverage before merge; a technical pass is not independent review approval.',
+  gate:'Check ready or done criteria, evidence files, and independent signed approval for a work item. Use when asking if a story is ready to implement or done.',
+  spec:'Capture a failing (red) then passing (green) run of the same configured test command for a work item. Use when recording specification evidence that a check actually failed before the fix.',
+  backlog:'Import one markdown or exported JSON work item into .agenthouse/work while keeping its external id. Use when bringing a tracker card or markdown story into local records.',
+  'npm-provenance':'Inspect local publish files for npm provenance, or write a GitHub Actions / GitLab job that enables it. Use when publishing to npm, setting up a trusted publisher, or asking whether a package should include provenance.'
 };
 export function agentSkills() {
   const entries={};

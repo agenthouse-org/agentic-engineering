@@ -1,6 +1,6 @@
 ---
 name: ah-skill
-description: "Import one reviewed specialist skill unchanged from a local source. Use when adding an extra skill; required frontend-acceptance is managed through dependencies."
+description: "Import one reviewed specialist skill unchanged from a local folder. Use when adding an optional skill; required frontend-acceptance stays under dependencies."
 license: MIT
 ---
 

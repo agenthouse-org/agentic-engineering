@@ -1,6 +1,6 @@
 ---
 name: ah-recover
-description: "Finish an interrupted installation transaction without overwriting later user edits. Use when onboard, update, or restore stopped mid-way."
+description: "Finish an interrupted onboard, update, or restore without overwriting later user edits. Use when installation stopped mid-way or a lock remains."
 license: MIT
 ---
 

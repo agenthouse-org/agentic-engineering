@@ -1,6 +1,6 @@
 ---
 name: ah-doctor
-description: "Diagnose installation, policy snapshot, and required skill integrity problems. Use when enrollment looks broken, skills are missing, or asking why agenthouse is unhealthy."
+description: "Diagnose broken enrollment, missing skills, policy snapshot problems, and housekeeping ignore gaps. Use when agenthouse looks unhealthy or skills fail to load."
 license: MIT
 ---
 

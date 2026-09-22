@@ -1,6 +1,6 @@
 ---
 name: ah-npm-provenance
-description: "Inspect or add npm package provenance for a public registry publish. Use when publishing to npm, setting up a trusted publisher, or asking whether a package should include provenance."
+description: "Inspect local publish files for npm provenance, or write a GitHub Actions / GitLab job that enables it. Use when publishing to npm, setting up a trusted publisher, or asking whether a package should include provenance."
 license: MIT
 ---
 

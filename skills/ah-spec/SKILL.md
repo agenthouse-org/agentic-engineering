@@ -1,6 +1,6 @@
 ---
 name: ah-spec
-description: "Capture a failing (red) then passing (green) run of the same configured test command. Use when recording specification evidence for a work item."
+description: "Capture a failing (red) then passing (green) run of the same configured test command for a work item. Use when recording specification evidence that a check actually failed before the fix."
 license: MIT
 ---
 

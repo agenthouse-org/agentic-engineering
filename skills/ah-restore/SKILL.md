@@ -1,6 +1,6 @@
 ---
 name: ah-restore
-description: "Recreate owned generated assets from the exact recorded pin and agents. Use when generated skills or projections are missing, or to opt into generated-file ignore rules."
+description: "Recreate missing generated skills and host projections from the exact recorded version and agents. Use when .agents/skills or command aliases disappeared, or to opt into generated-file ignore rules."
 license: MIT
 ---
 

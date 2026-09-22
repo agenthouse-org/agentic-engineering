@@ -1,6 +1,6 @@
 ---
 name: ah-update
-description: "Select exact or latest tracking, or verify and activate an agenthouse update while retaining an exact resolved identity. Use when changing update preference or applying a reviewed/public-channel release."
+description: "Switch latest vs exact update tracking, or verify and install a reviewed agenthouse release (bundle or public channel). Use when changing update preference or applying an approved upgrade."
 license: MIT
 ---
 

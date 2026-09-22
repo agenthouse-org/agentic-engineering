@@ -1,6 +1,6 @@
 ---
 name: ah-resolve
-description: "Refresh or verify the composed policy snapshot. Use when policy sources changed, checking a frozen snapshot, or before evaluation that needs current rules."
+description: "Rebuild or freeze-check the merged policy file at .agenthouse/resolved.json. Use when policy sources changed, verifying a frozen snapshot, or before evaluation that needs current rules."
 license: MIT
 ---
 

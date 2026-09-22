@@ -1,6 +1,6 @@
 ---
 name: ah-gate
-description: "Evaluate ready or done lifecycle criteria, evidence, and independent signed approval for a work item. Use when asking if a story is ready to implement or done."
+description: "Check ready or done criteria, evidence files, and independent signed approval for a work item. Use when asking if a story is ready to implement or done."
 license: MIT
 ---
 

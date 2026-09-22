@@ -1,6 +1,6 @@
 ---
 name: ah-init
-description: "Install the pinned runtime, lifecycle skill, and required frontend-acceptance dependency. Use when installing or reinstalling after agents and autonomy are already chosen."
+description: "Install the pinned runtime, lifecycle skill, and required frontend-acceptance dependency without the conversational questionnaire. Use when agents and autonomy are already chosen, or when reinstalling."
 license: MIT
 ---
 

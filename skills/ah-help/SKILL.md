@@ -1,6 +1,6 @@
 ---
 name: ah-help
-description: "Explain installed agenthouse commands and recommend the next step for a goal. Use when asking what agenthouse can do, which skill to pick, or for the command map."
+description: "List installed agenthouse skills and suggest which one fits a goal. Use when asking what agenthouse can do, which ah-* skill to pick, or for the command map."
 license: MIT
 ---
 

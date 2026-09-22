@@ -1,6 +1,6 @@
 ---
 name: ah-onboard
-description: "Set up agenthouse in an existing repository: choose coding agents and policy, then enroll. Use when starting with agenthouse or adding it to a project."
+description: "Walk through coding-agent choice, policy, and autonomy, then enroll this repository. Use when starting with agenthouse or adding it to a project."
 license: MIT
 ---
 

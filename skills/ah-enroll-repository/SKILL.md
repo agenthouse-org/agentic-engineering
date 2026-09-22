@@ -1,6 +1,6 @@
 ---
 name: ah-enroll-repository
-description: "Enroll this repository through conversational agenthouse onboarding. Use when setting up agenthouse here by choosing coding agents, policy, and autonomy."
+description: "Set up agenthouse in this repository by choosing coding agents, policy, and autonomy. Use when the project is not enrolled yet or when re-running conversational onboarding."
 license: MIT
 ---
 

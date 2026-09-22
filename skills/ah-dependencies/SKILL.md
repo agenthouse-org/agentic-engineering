@@ -1,6 +1,6 @@
 ---
 name: ah-dependencies
-description: "Show, pin, unpin, or update bundled upstream skills such as frontend-acceptance. Use when checking skill integrity or applying a trusted dependency bundle."
+description: "Show, pin, unpin, or update bundled skills such as frontend-acceptance and web-usability. Use when a specialist skill is missing, integrity fails, or applying a trusted dependency bundle."
 license: MIT
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: ah-usability
-description: "Provision optional locked browser tooling, then run the upstream web-usability audit against a URL or fixture. Use when collecting usability evidence; the process exit code is not a conformity certificate."
+description: "Download locked browser tooling if needed, then run the upstream web-usability audit against a URL or fixture. Use when collecting usability evidence; exit code alone is not a conformity certificate."
 license: MIT
 ---
 

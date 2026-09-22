@@ -1,6 +1,6 @@
 ---
 name: ah-session
-description: "Record active versions, apply configured updates and housekeeping, and report policy drift without silently adopting it. Use at task start or when checking the active agenthouse version and policy snapshot."
+description: "Report the active agenthouse version, apply approved updates and housekeeping, and flag policy changes without adopting them silently. Use at task start or when asking which version and policy are active."
 license: MIT
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: ah-controls
-description: "Explain which policy rules have executable checks versus advisory guidance. Use when asking what is enforced, how a rule is implemented, or which guidance has no control."
+description: "Show which policy rules map to real checks versus advisory text only. Use when asking what is enforced, how a rule is implemented, or which guidance has no automated control."
 license: MIT
 ---
 

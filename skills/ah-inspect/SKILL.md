@@ -1,6 +1,6 @@
 ---
 name: ah-inspect
-description: "Analyze a commit or change range for affected files, candidate tests, suppressions, and residue. Use when reviewing what a change touched or selecting checks for a diff."
+description: "List files touched by a commit or range, candidate tests, new suppressions, and leftover residue. Use when reviewing what a change touched or choosing which checks to run for a diff."
 license: MIT
 ---
 

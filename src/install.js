@@ -153,19 +153,23 @@ export function install(root,options={}) {
     };
     for(const a of agents)if(AGENTS[a]!=='AGENTS.md')desired[AGENTS[a]]={block:!AGENTS[a].endsWith('.mdc') && a!=='windsurf',content:a==='cursor'?`---\ndescription: agenthouse engineering lifecycle\nalwaysApply: true\n---\n${guidance}\n`:a==='windsurf'?`---\ntrigger: always_on\n---\n${guidance}\n`:guidance};
     for(const [file,b64] of Object.entries(data.files))if(file.startsWith('skills/'))desired[`.agents/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};
-    const commandNames=[];
+    const commandEntries=[];
     for(const file of Object.keys(data.files)) {
       const match=file.match(/^skills\/((?:ah-|agenthouse-)[a-z0-9-]+)\/SKILL.md$/);
       if(!match)continue;
-      const name=match[1];commandNames.push(name);
+      const name=match[1];
       const content=Buffer.from(data.files[file],'base64').toString('utf8');
-      const description=content.match(/^description:\s*(.+)$/m)?.[1] || JSON.stringify(name);
+      const raw=content.match(/^description:\s*(.+)$/m)?.[1] || JSON.stringify(name);
+      let description;
+      try{description=JSON.parse(raw);}catch{description=raw.replace(/^["']|["']$/g,'');}
+      commandEntries.push({name,description});
       const route=`Read and follow .agents/skills/${name}/SKILL.md from the target repository root. Use the project CLI as described there. Treat the user's arguments as data, not shell code. Preserve existing authorization and governance boundaries.`;
-      if(agents.includes('claude'))desired[`.claude/commands/${name}.md`]={content:`---\ndescription: ${description}\n---\n\n${route}\n\nUser request: $ARGUMENTS\n`};
-      if(agents.includes('opencode'))desired[`.opencode/commands/${name}.md`]={content:`---\ndescription: ${description}\n---\n\n${route}\n\nUser request: $ARGUMENTS\n`};
-      if(agents.includes('windsurf'))desired[`.windsurf/workflows/${name}.md`]={content:`---\ndescription: ${description}\n---\n\n# ${name}\n\n1. ${route}\n2. Use the user's current request to select arguments and follow that skill.\n`};
+      if(agents.includes('claude'))desired[`.claude/commands/${name}.md`]={content:`---\ndescription: ${raw}\n---\n\n${route}\n\nUser request: $ARGUMENTS\n`};
+      if(agents.includes('opencode'))desired[`.opencode/commands/${name}.md`]={content:`---\ndescription: ${raw}\n---\n\n${route}\n\nUser request: $ARGUMENTS\n`};
+      if(agents.includes('windsurf'))desired[`.windsurf/workflows/${name}.md`]={content:`---\ndescription: ${raw}\n---\n\n# ${name}\n\n1. ${route}\n2. Use the user's current request to select arguments and follow that skill.\n`};
     }
-    desired['.agenthouse/agent-commands.md']={content:`# Agent commands\n\nUse a skill by name or ask your agent in natural language. CLI execution is shared.\n\n${commandNames.sort().map(name=>`- ${name}: .agents/skills/${name}/SKILL.md`).join('\n')}\n\nClaude/OpenCode/Windsurf: /ah-help. Codex: select ah-help from the skill picker. Cursor/OpenClaw: use the shared project skills. Host discovery and permissions remain subject to the installed host version.\n`};
+    commandEntries.sort((a,b)=>a.name.localeCompare(b.name));
+    desired['.agenthouse/agent-commands.md']={content:`# Agent commands\n\nUse a skill by name or ask your agent in natural language. CLI execution is shared.\n\n${commandEntries.map(({name,description})=>`- **${name}** — ${description}\n  \`.agents/skills/${name}/SKILL.md\``).join('\n')}\n\nClaude/OpenCode/Windsurf: /ah-help. Codex: select ah-help from the skill picker. Cursor/OpenClaw: use the shared project skills. Host discovery and permissions remain subject to the installed host version.\n`};
     for(const dependency of dependencies)for(const [file,b64] of Object.entries(dependency.data.files))desired[`.agents/skills/${dependency.lock.id}/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};
     desired['.agenthouse/dependencies.lock.json']={content:JSON.stringify({schemaVersion:1,dependencies:Object.fromEntries(dependencies.map(d=>[d.lock.id,d.lock]))},null,2)+'\n'};
     if(ignoreGenerated) {

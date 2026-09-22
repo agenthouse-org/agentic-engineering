@@ -1,6 +1,6 @@
 ---
 name: ah-visual-plan
-description: "Draft or check local wireframe HTML and mermaid architecture diagrams for a work item. Use when planning UI layout, data models, or architecture before implementation, or when validating an existing visual plan."
+description: "Draft or validate wireframe HTML fragments and mermaid architecture diagrams for a work item. Use when planning UI layout, data models, or architecture before implementation, or checking an existing visual plan."
 license: MIT
 ---
 

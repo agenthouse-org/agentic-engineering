@@ -1,6 +1,6 @@
 ---
 name: ah-module
-description: "Show stack templates or preview/apply a reviewed evaluator and adoption-profile configuration plan. Use when wiring repository test commands into agenthouse without hand-copying config."
+description: "Show a stack template, or preview/apply a reviewed plan that wires repository test commands into evaluate profiles. Use when connecting npm/php test scripts to agenthouse without hand-editing config."
 license: MIT
 ---
 

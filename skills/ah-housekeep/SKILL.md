@@ -1,6 +1,6 @@
 ---
 name: ah-housekeep
-description: "Ensure generated and inspection paths stay out of Git and remove untracked screenshot dumps. Use when leftover captures appear, after frontend-acceptance, or at session start."
+description: "Add missing ignore rules for generated and inspection paths, then delete untracked screenshot dumps. Use when leftover captures appear, after frontend-acceptance, or at session start."
 license: MIT
 ---
 

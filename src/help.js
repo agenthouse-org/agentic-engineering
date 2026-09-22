@@ -86,33 +86,33 @@ Turn a story or bug into a reviewable change with explicit criteria, checks,
 visual evidence, and governance decisions. Use your preferred coding agent.
 
 Start here
-  onboard       Set up a project and discover the next steps
-  demo          Try a failing check, fix, and passing report in an empty directory
+  onboard       Choose agents/policy and enroll a repository
+  demo          Failing check, fix, then passing report in an empty directory
   help COMMAND  Show options and examples (also COMMAND --help)
-  help agents   Explain coding-agent installation and invocation
+  help agents   Coding-agent skill installation and invocation
   help cookbook Longer setup and workflow recipes (alias: help extended)
 
 Daily work
-  survey        Discover repository conventions and available tooling
-  visual-plan   Check local wireframes and mermaid architecture diagrams
-  inspect       Analyze a commit or change range
-  review        Map requirements to build and policy evidence
-  gate, spec    Evaluate readiness/completion and capture red/green tests
-  backlog       Import markdown or exported work items
-  controls      Explain rule mechanisms and guidance
-  usability     Provision and run the upstream browser audit
-  hook, hook-config  Run and configure local engineering hooks
-  work          Create, inspect, and advance lifecycle records
-  evaluate      Run your checks locally or in CI
-  doctor        Diagnose installation and dependency problems
-  resolve       Refresh or verify the policy snapshot
-  session       Apply approved updates and housekeeping between commands
-  housekeep     Apply ignore rules and remove untracked inspection captures
+  survey        Read tooling and test-layer clues without running scripts
+  visual-plan   Draft or check wireframes and mermaid diagrams
+  inspect       Files, candidate tests, and suppressions for a commit/range
+  review        Match work-item criteria to build and policy evidence
+  gate, spec    Ready/done checks, or capture red-then-green test runs
+  backlog       Import a markdown or exported tracker work item
+  controls      Which rules have real checks vs advisory text
+  usability     Set up and run the upstream browser usability audit
+  hook, hook-config  Process host/CI hook events; install owned hook settings
+  work          Create, show, advance, or branch lifecycle work items
+  evaluate      Run configured checks locally or in CI; write evidence reports
+  doctor        Diagnose enrollment, skills, and housekeeping problems
+  resolve       Rebuild or freeze-check .agenthouse/resolved.json
+  session       Active version, approved updates, housekeeping, policy drift
+  housekeep     Ignore rules plus delete untracked screenshot dumps
 
 Installation and maintenance
   init, dependencies, update, bundle, rollback, restore, recover, uninstall
-  skill         Import an additional specialist skill
-  module        Discover stack-specific check templates
+  skill         Import an optional specialist skill from a local folder
+  module        Preview/apply wiring of repo tests into evaluate profiles
   keygen, sign  Create keys and sign authorized decisions
   npm-provenance  Inspect or add npm publish provenance; does not publish
 

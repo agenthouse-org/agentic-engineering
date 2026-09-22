@@ -1,6 +1,6 @@
 ---
 name: ah-frontend-acceptance
-description: "Verify UI work with the pinned frontend-acceptance method, using the story, bug, wireframe, or reference image and real screenshots. Use when checking visual design, screens, or frontend acceptance."
+description: "Compare UI work to the story, bug, wireframe, or reference image using real screenshots and the pinned frontend-acceptance method. Use when checking visual design, screens, or frontend acceptance."
 license: MIT
 ---
 

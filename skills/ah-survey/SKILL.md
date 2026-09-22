@@ -1,6 +1,6 @@
 ---
 name: ah-survey
-description: "Inspect repository tooling and conservative test-layer evidence without executing discovered commands. Use when exploring an unfamiliar repository or identifying missing, ambiguous, or suspected nominal test layers."
+description: "Read Git state, scripts, pipelines, and agent files to report which test layers look present, missing, or only nominally named—without running those commands. Use when exploring an unfamiliar repository or deciding what to wire into evaluate."
 license: MIT
 ---
 
