@@ -4,7 +4,7 @@ The `Publish to npm` workflow runs when a GitHub Release is published. It checks
 
 1. Update the version in `package.json`, the root lockfile, and both plugin manifests. Keep the usability runtime lockfile's local framework entry aligned. Run `npm run check` and the tests.
 2. Commit and push the release changes.
-3. Create and publish a GitHub Release with a matching tag, such as `v0.1.9` for version `0.1.9`.
+3. Create and publish a GitHub Release with a matching tag, such as `v1.0.0` for version `1.0.0`.
 4. Check the **Publish to npm** workflow. A published GitHub Release alone does not mean the npm publish succeeded.
 
 Stable versions publish to `latest`. Prereleases must have a version such as `0.2.0-beta.1` and be marked as prereleases on GitHub; they publish to `next`. Draft releases do not publish. npm versions are immutable; do not reuse `0.1.4`, which was already published manually.
@@ -21,4 +21,8 @@ Consumer packages can inspect or add the same local setup with `npm-provenance s
 
 ## Consumer updates
 
-Update the machine-wide CLI with `npm install --global @agenthouse/engineering@latest --ignore-scripts`. Enrolled projects retain their own runtime; CLI installation does not change it. Use verified framework bundles with `ah-engineering update` to update existing projects. Configured local bundle channels can apply approved updates between sessions; automatic npm discovery for project runtimes is not implemented.
+Update the machine-wide CLI with `npm install --global @agenthouse/engineering@latest --ignore-scripts`. Enrolled projects retain their own exact runtime; CLI installation does not change it. Projects may use verified framework bundles or opt into `update --track latest`. Public latest resolution verifies npm integrity, registry signatures, and provenance before activation, with independently attested GitHub bundle fallback. Configured local/offline bundle channels remain supported.
+
+The release workflow publishes npm through OIDC trusted publishing, builds a framework `.bundle.json`, generates a GitHub artifact attestation for that exact file, and attaches it to the release. A published release without the attested bundle remains installable from npm when npm verification succeeds but is ineligible as the GitHub fallback. Enable immutable releases when the release process is changed to attach assets before publication; artifact verification remains mandatory either way.
+
+Historical status: npm 0.1.9 has registry signatures, SHA-512 integrity, and an npm SLSA provenance attestation. GitHub v0.1.9 has no uploaded framework bundle asset and is not immutable, so it is not eligible for GitHub fallback. The workflow change applies to subsequent releases and does not retroactively attest v0.1.9 on GitHub.

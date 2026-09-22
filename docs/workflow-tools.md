@@ -4,7 +4,11 @@ Use `ah-engineering` or the enrolled `node .agenthouse/run.mjs`. Every command h
 
 ## Inspect and import
 
-`survey` reports Git state, stacks, package scripts, configuration, agents, pipelines and work locations without executing discovered scripts. `inspect --ref BASE..HEAD` compares those commits; `inspect --ref HEAD --base main` starts at their merge base. A bare commit compares with its first parent, including root commits. Affected files, filename-based test candidates, added suppressions and unfinished-work markers are review signals, not coverage proof. Uncommitted changes appear separately in the survey.
+`survey` reports Git state, stacks, package scripts, configuration, agents, pipelines, work locations, and static evidence for unit, component, integration, functional/API, end-to-end, regression, and contract layers without executing discovered scripts. Layer states are `present`, `absent`, `ambiguous`, or `suspected-nominal`. Empty/comment-only files, skipped-only suites, no apparent assertions, and unconditional-success signals can prompt nominal review; they do not prove poor tests. Configure consumer-reviewed layer selection and aliases under `testing.layers` and `testing.aliases` in project configuration.
+
+`inspect --ref BASE..HEAD` compares those commits; `inspect --ref HEAD --base main` starts at their merge base. A bare commit compares with its first parent, including root commits. Affected files, filename-based test candidates, added suppressions and unfinished-work markers are review signals, not coverage proof. Uncommitted changes appear separately in the survey.
+
+`module --name NAME --preview --output PLAN` maps discovered package/Composer test scripts to a reviewable target configuration. It proposes both an advisory `test-adoption` profile and selected required profile without executing either. Monorepo IDs use `tests.<workspace-key>.<layer>` plus explicit repository-relative `cwd`; declared workspace names are preferred, with normalized paths and collision digests as fallbacks. `module --apply PLAN` validates the target schema, refuses a stale base configuration or identifier conflict, and changes only project configuration. Run `resolve` and `evaluate` separately after review. The original `module --name NAME [--output FILE]` template output remains available.
 
 `backlog --source story.md --id example --provider local` imports markdown verbatim. JSON exports can supply title, kind, fields, criteria and externalId; the original object is retained. `--external-id` preserves platform identity. Repeating an identical import is a no-op; conflicting or edited records require explicit reconciliation.
 
@@ -45,5 +49,7 @@ When configured, ready runs before Implement and done before Accept. `work advan
 Teams can define `lifecycle.paths`, mapping names to ordered stage lists, with allowed work kinds in `lifecycle.pathKinds`. Use `work new --path NAME` and explain suitability in `fields.pathReason`. Paths must start at Discover and retain Verify, Accept, Release and Retire in order. Shorter paths preserve protected decisions; teams select relevant gate fields. The default remains the full lifecycle.
 
 `review --baseline REPORT_JSON` compares check outcomes against evidence for the merge/commit base under the same policy. It reports unchanged, improved and changed outcomes without suppressing current failures. `controls` maps policy rule IDs to concrete mechanisms and distinguishes guidance from automated checks.
+
+Profiles may record repository-owner milestone intent as `promotion: {status: "reached"|"deferred", reference, owner}`. A deferred enforced profile returns incomplete rather than green. The reference is intent evidence, not signed governance approval. `session` reports policy drift and leaves the frozen snapshot unchanged; adopt a reviewed revision explicitly with `resolve`.
 
 Ready defaults also require reproduction/expected/observed behavior for bugs, impact/mitigation for incidents, question/completion condition for investigations, and audience for documentation. Teams may configure `kindFields` to match their process.

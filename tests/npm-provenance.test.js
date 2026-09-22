@@ -99,6 +99,11 @@ test('trusted status treats this repository publish workflow as OIDC-ready',()=>
   assert.ok(result.findings.some(item=>item.id==='.github/workflows/publish.yml:runner' && item.status==='passed'));
   assert.doesNotMatch(fs.readFileSync(path.join(PACKAGE,'.github/workflows/publish.yml'),'utf8'),/--provenance/);
 });
+test('release workflow creates, attests, and uploads the GitHub update bundle',()=>{
+  const workflow=fs.readFileSync(path.join(PACKAGE,'.github/workflows/publish.yml'),'utf8');
+  assert.match(workflow,/attestations:\s*write/);assert.match(workflow,/actions\/attest-build-provenance@v3/);
+  assert.match(workflow,/\.bundle\.json/);assert.match(workflow,/gh release upload/);
+});
 test('CLI status and apply share the same contract',t=>{
   const root=temp(t);
   write(path.join(root,'package.json'),{name:'app',repository:'https://github.com/example/app.git'});

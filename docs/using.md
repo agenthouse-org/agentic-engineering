@@ -10,9 +10,9 @@ From this checkout:
 node C:/src/agenthouse-agentic-engineering/bin/ah-engineering.js init --root C:/path/to/project --agents claude,codex,cursor
 ```
 
-For normal use, install the CLI with `npm install --global @agenthouse/engineering --ignore-scripts`, then run `ah-engineering onboard --root /path/to/project`. Each application is enrolled separately; no framework checkout is needed. To pin the CLI, install `@agenthouse/engineering@0.1.9` instead.
+For normal use, install the CLI with `npm install --global @agenthouse/engineering --ignore-scripts`, then run `ah-engineering onboard --root /path/to/project`. Each application is enrolled separately; no framework checkout is needed. To pin the CLI, install `@agenthouse/engineering@1.0.0` instead.
 
-For a project-local CLI, use `npm install --save-dev --save-exact @agenthouse/engineering@0.1.9 --ignore-scripts`, then `npx --no-install ah-engineering onboard`. This updates the application's package manifest and lockfile; use the global option if you do not want a development dependency. A supplied archive can be installed with `npm install --global /path/to/agenthouse-engineering-0.1.9.tgz --ignore-scripts`. npm's registry, proxy and certificate configuration applies when distributing through internal registries. The dependency-free tarball can be installed offline with Node/npm already provisioned.
+For a project-local CLI, use `npm install --save-dev --save-exact @agenthouse/engineering@1.0.0 --ignore-scripts`, then `npx --no-install ah-engineering onboard`. This updates the application's package manifest and lockfile; use the global option if you do not want a development dependency. A supplied archive can be installed with `npm install --global /path/to/agenthouse-engineering-1.0.0.tgz --ignore-scripts`. npm's registry, proxy and certificate configuration applies when distributing through internal registries. The dependency-free tarball can be installed offline with Node/npm already provisioned.
 
 `init` detects agent directories when `--agents` is omitted. Explicit supported values are claude, codex, opencode, cursor, windsurf, and openclaw. OpenClaw enrollment must target its configured workspace. When no host is detected, generic AGENTS.md instructions and the lifecycle skill are still installed. All CLI commands accept `--root`; by default they use the current directory.
 
@@ -71,6 +71,8 @@ Runs have unique directories under `artifacts/agenthouse/`, containing result.js
 ## Policy and governance
 
 Policy layers have stable IDs/revisions, mandatory/default/advisory rules, public authority keys and required check IDs. `overrides` may specialize defaults but cannot weaken mandatory values. Mandatory `autonomy` and `documentation-authority` rules bind the corresponding config fields. A mandatory `evaluator.<id>` rule can hold the exact evaluator object to prevent substituting its command.
+
+Project configuration can select test layers and aliases under `testing`, and profiles can carry an optional repository-owner `promotion` reference. A deferred promoted profile is incomplete. This metadata never becomes a signed decision. At session start, policy drift is reported with current and available digests and affected rules/checks; the command does not replace the frozen snapshot. Run `resolve` only after choosing to adopt the reviewed revision.
 
 For a hostile contribution threat model, protect the framework binary and CI job and mount a trusted policy outside the checkout. Run both resolve and evaluate with `--policy-file /trusted/organization.json`. A policy committed in the same writable branch as an adversarial change is not a trust boundary. Required check IDs alone do not authenticate a modified evaluator; pin its definition and protect its executable or image too.
 

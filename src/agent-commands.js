@@ -6,7 +6,7 @@ const guidance={
   hook:'Process only the actual hook event supplied by the host or an explicitly requested fixture. Host hooks are supplementary controls; keep required checks in CI. Report malformed events as errors.',
   'hook-config':'Print native settings and inspect existing host configuration before activation. Merge the intended handlers, preserving unrelated hooks and avoiding duplicates. The host may require trust or review before activation.',
   usability:'Run the bundled upstream audit only after explicit usability setup. Setup downloads pinned tooling and its browser unless offline. Inspect technical and visual evidence and follow the upstream skill for manual criteria; do not claim conformity from the process exit code.',
-  survey:'Inspect the actual target repository before proposing commands. Report discovered tooling and uncertainty. The survey does not execute scripts or enroll the project.',
+  survey:'Inspect the actual target repository before proposing commands. Report test-layer evidence, absence, ambiguity, and suspected nominal signals with their limitations. Ask which layer names the organization uses when the portable vocabulary needs local aliases, and record only a consumer-reviewed mapping. The survey does not execute scripts or enroll the project.',
   'visual-plan':`Ask one visual-surface decision first, then stop unless the user already chose:
 
 1. Wireframe — UI layout or states to review
@@ -33,9 +33,9 @@ Screens: HTML fragments (no html/head/body/script), real product copy, one surfa
   doctor:'Inspect problems and warnings (including missing git.branchNaming when Git is present) and explain their concrete impact. Diagnosis does not authorize unrelated repairs or policy changes.',
   housekeep:'Apply housekeeping rules: ensure generated and inspection paths are gitignored, delete untracked inspection captures (including tests/output and invented screenshot galleries), delete untracked repository-root tmp-* drafts, and report tracked leftovers. Write captures only under .agenthouse/evidence/<work-id>/. Write GitHub issue/PR bodies under .agenthouse/local/ if a file is required, then remove them. Do not delete evaluation reports under artifacts/agenthouse/, work records, or application source. In CI or when AH_KEEP_BROWSER_ARTIFACTS is set, skip screenshot deletion. --check reports without writing.',
   resolve:'Use --frozen for a verification request. Refresh only when resolving reviewed configuration changes is intended; do not hide drift by automatically refreshing.',
-  session:'Explain any applied or deferred approved updates, housekeeping, and the active version set. Respect configured update policies and pins.',
+  session:'Explain any applied or deferred approved updates, housekeeping, and the active version set. If policyChange is changed, show the new revision and affected rules/checks, keep the current frozen snapshot, and ask whether this work should adopt it. Run resolve only after the user chooses adoption. Noninteractive work must report the mismatch rather than choose.',
   dependencies:'Choose status, pin, unpin, or update. Default to status if unclear. For updates use a trusted bundle checksum or key, inspect --check first, and respect pins. Do not invent a new version or silently unpin.',
-  update:'Inspect the requested trusted bundle with --check, then apply within the user’s authorized update scope. Explain breaking changes and preserve pins; do not add --allow-breaking unless that change is authorized.',
+  update:'For a supplied bundle, inspect with --check before applying. For the public channel, use --latest and report npm provenance/signature verification plus any GitHub fallback diagnostics. Use --track latest or exact only when the user chose that preference. Preserve the exact activated identity and pins; do not add --allow-breaking unless that change is authorized.',
   bundle:'Choose the requested output location and optionally an authorized signing key. Creating a bundle does not authorize uploading it or publishing a release. If the user wants to publish an npm package, use ah-npm-provenance rather than this command.',
   'npm-provenance':`Ask one publish-provenance decision first, then stop unless the user already chose:
 
@@ -51,7 +51,7 @@ Run npm-provenance status on the target repository. If they chose yes, run npm-p
   recover:'Inspect the interrupted transaction and use the CLI recovery contract. Report conflicts; do not delete locks or edited files to force recovery.',
   uninstall:'Use only for an intended removal. Explain retained configuration/evidence and let ownership checks preserve edits. Do not recursively delete the project.',
   skill:'Import only the specified reviewed source. Required frontend-acceptance is managed through dependencies, not a second editable import.',
-  module:'Show the requested stack template and explain needed adaptation. Do not automatically replace existing evaluators.',
+  module:'Show the requested stack template for exploration. For wiring, run --preview, show the diff and limitations, save the versioned target-state artifact for handoff when requested, and use --apply only after that exact artifact was reviewed. Ask for organization layer aliases when needed. Preview and apply never execute evaluators, refresh frozen policy, or create approval.',
   keygen:'Create keys only at the requested location. Never display private key contents or commit them.',
   sign:'Sign only the exact reviewed artifact using a key the user has authorized you to use. Possession of a key or invocation of this skill is not governance approval. Never invent an issuer, delegation, or allowed verdict.'
 };
@@ -115,23 +115,23 @@ const descriptions={
   doctor:'Diagnose installation, policy snapshot, and required skill integrity problems. Use when enrollment looks broken, skills are missing, or asking why agenthouse is unhealthy.',
   housekeep:'Ensure generated and inspection paths stay out of Git and remove untracked screenshot dumps. Use when leftover captures appear, after frontend-acceptance, or at session start.',
   resolve:'Refresh or verify the composed policy snapshot. Use when policy sources changed, checking a frozen snapshot, or before evaluation that needs current rules.',
-  session:'Record the active runtime and dependency versions, apply housekeeping rules, and apply configured approved updates. Use at task start, or when checking which agenthouse version this project is running.',
+  session:'Record active versions, apply configured updates and housekeeping, and report policy drift without silently adopting it. Use at task start or when checking the active agenthouse version and policy snapshot.',
   dependencies:'Show, pin, unpin, or update bundled upstream skills such as frontend-acceptance. Use when checking skill integrity or applying a trusted dependency bundle.',
-  update:'Verify and activate an approved agenthouse framework bundle, respecting project pins. Use when updating the pinned runtime from a reviewed bundle.',
+  update:'Select exact or latest tracking, or verify and activate an agenthouse update while retaining an exact resolved identity. Use when changing update preference or applying a reviewed/public-channel release.',
   bundle:'Package this framework and required skills for offline distribution, optionally signed. Use when creating an installable package or signed update bundle.',
   rollback:'Restore the previous complete runtime and dependency set. Use when an update should be undone and the prior version set is still available.',
   restore:'Recreate owned generated assets from the exact recorded pin and agents. Use when generated skills or projections are missing, or to opt into generated-file ignore rules.',
   recover:'Finish an interrupted installation transaction without overwriting later user edits. Use when onboard, update, or restore stopped mid-way.',
   uninstall:'Remove unchanged managed agenthouse files while keeping configuration, work records, and evidence. Use when removing the framework from a repository.',
   skill:'Import one reviewed specialist skill unchanged from a local source. Use when adding an extra skill; required frontend-acceptance is managed through dependencies.',
-  module:'Show Node/TypeScript or PHP/Laravel check templates to adapt before enabling. Use when choosing stack-specific evaluators or starting from a module template.',
+  module:'Show stack templates or preview/apply a reviewed evaluator and adoption-profile configuration plan. Use when wiring repository test commands into agenthouse without hand-copying config.',
   keygen:'Create an Ed25519 key pair at a requested path without overwriting existing files. Use when setting up signing keys for governance decisions or bundles.',
   sign:'Sign a reviewed governance decision or data bundle with an authorized private key. Use when a human has authorized signing; invoking this skill is not itself approval.',
   controls:'Explain which policy rules have executable checks versus advisory guidance. Use when asking what is enforced, how a rule is implemented, or which guidance has no control.',
   hook:'Process a native or normalized hook event through the pinned hooks runtime. Use when handling a host hook payload, a CI event, or an explicit fixture.',
   'hook-config':'Print, install, or remove owned coding-agent hook settings without disturbing unrelated hooks. Use when enabling or disabling agenthouse hooks in a supported host.',
   usability:'Provision optional locked browser tooling, then run the upstream web-usability audit against a URL or fixture. Use when collecting usability evidence; the process exit code is not a conformity certificate.',
-  survey:'Inspect Git state, stacks, scripts, agent files, pipelines, and backlog locations without executing discovered commands. Use when exploring an unfamiliar repository before proposing commands.',
+  survey:'Inspect repository tooling and conservative test-layer evidence without executing discovered commands. Use when exploring an unfamiliar repository or identifying missing, ambiguous, or suspected nominal test layers.',
   'visual-plan':'Draft or check local wireframe HTML and mermaid architecture diagrams for a work item. Use when planning UI layout, data models, or architecture before implementation, or when validating an existing visual plan.',
   inspect:'Analyze a commit or change range for affected files, candidate tests, suppressions, and residue. Use when reviewing what a change touched or selecting checks for a diff.',
   review:'Map work-item criteria to build and policy evidence for an exact commit. Use when checking requirement coverage; a technical pass is not independent review approval.',

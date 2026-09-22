@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "test-enforcement-adoption-profiles",
+  "title": "Adopt new test evaluators through explicit advisory and required profiles",
+  "kind": "feature",
+  "stage": "define",
+  "revision": 1,
+  "fields": {
+    "outcome": "A repository can start collecting visible results from a newly wired test evaluator before explicitly making that evaluator a required gate.",
+    "scope": "Use the existing named-profile and per-check required flag to represent advisory and enforced stages. Document and, where selected, generate both profile entries from the module wiring flow. A repository-owner comment or ADR may record that the milestone was reached or deferred; promotion remains a reviewed configuration, policy, or CI change.",
+    "acceptance": "Advisory failures stay visible without a successful result implying approval; the required profile blocks on the same failure; promotion is explicit and traceable.",
+    "decisions": "ADR-0013 assigns milestone declaration and deferral to the repository owner. A comment or ADR is intent evidence, not a signed decision. Active work keeps its frozen snapshot, warns about affected policy changes, and asks whether to adopt the new revision.",
+    "verification": "Evaluate the same failing and passing evaluator under advisory and required profiles, verify required organization checks cannot be weakened, and verify old configurations retain their behavior.",
+    "dependencies": "Implemented with module evaluator wiring. Automatic silent promotion remains out of scope.",
+    "risks": "A profile name alone does not enforce which profile CI selects; boundary enforcement still requires the repository's trusted CI or equivalent integration.",
+    "changes": "Implemented optional owner promotion metadata, incomplete results for deferred enforced profiles, advisory/required module profiles, and session policy-drift reporting that preserves the frozen snapshot.",
+    "evidence": "Evaluation and session tests cover deferred promotion, advisory/required behavior, policy digest drift, and unchanged frozen snapshots."
+  },
+  "criteria": [
+    {
+      "id": "advisory-visible",
+      "expectation": "A failing evaluator configured with required false remains visible in reports and does not by itself make the requested advisory profile fail."
+    },
+    {
+      "id": "required-blocks",
+      "expectation": "The same failing evaluator configured as required produces the documented nonzero result in the enforced profile."
+    },
+    {
+      "id": "explicit-promotion",
+      "expectation": "Moving repository CI or configuration from the advisory profile to the enforced profile is an explicit reviewable change linked to the repository-owner comment or ADR that reached or deferred the milestone."
+    },
+    {
+      "id": "governance-preserved",
+      "expectation": "A profile cannot omit or downgrade an organization-required check, and neither profile creates or implies a signed governance decision."
+    },
+    {
+      "id": "legacy-profiles",
+      "expectation": "Existing profiles and frozen snapshots keep their current meaning until a consumer explicitly adopts the new profile configuration."
+    },
+    {
+      "id": "active-work-warning",
+      "expectation": "When policy changes during active work, the user sees the new revision and affected checks and is asked whether to adopt it; the active frozen snapshot is not silently replaced."
+    },
+    {
+      "id": "noninteractive-policy-change",
+      "expectation": "A noninteractive run encountering an unadopted policy change reports the mismatch and required action without selecting a policy revision or claiming success."
+    }
+  ],
+  "evidence": [],
+  "history": []
+}

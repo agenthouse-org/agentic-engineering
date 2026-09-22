@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**0.1.9 developer preview.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and offline updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling, marketplace manifests, visual plans, and npm provenance setup are included. See [implementation status](docs/implementation-status.md).
+**Version 1.0.0.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and verified updates are implemented. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling, marketplace manifests, visual plans, test-framework establishment, and npm provenance verification are included. See [implementation status](docs/implementation-status.md).
 
 
 ## Install on your computer
@@ -20,18 +20,25 @@ npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-To pin the CLI version, use `npm install --global @agenthouse/engineering@0.1.9 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@1.0.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
 
 Versioned GitHub release downloads are pending. For an offline installation, obtain a reviewed `.tgz` package as described below.
 
-Update the CLI with `npm install --global @agenthouse/engineering@latest --ignore-scripts`. Existing projects retain their pinned runtime and use verified bundles for updates. Maintainers can publish new versions through GitHub Releases; see [release automation and updates](docs/releasing.md).
+Update the machine-wide CLI with `npm install --global @agenthouse/engineering@latest --ignore-scripts`. Existing projects retain an exact runtime. They can keep exact tracking or opt into a moving verified channel:
+
+```text
+node .agenthouse/run.mjs update --track latest
+node .agenthouse/run.mjs update --latest --check
+```
+
+Public discovery checks npm `latest` first and requires package integrity, registry signatures, and provenance verification. It can fall back to an independently attested GitHub update-bundle asset; releases without that asset fail closed. Activation still records an exact version and digest and occurs only explicitly or between sessions. Frozen/CI evaluation never updates. See [release automation and updates](docs/releasing.md).
 
 ### Install a supplied package
 
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-engineering-0.1.9.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.0.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -45,7 +52,7 @@ To package the source yourself, run these commands in a tools directory outside 
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-engineering-0.1.9.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.0.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -175,7 +182,15 @@ Give your coding agent this prompt:
 
 The work record lives in `.agenthouse/work/first-change.json`. Review the criteria and planned checks with your agent. Adapt `.agenthouse/config.json` to your repository's actual test commands; the initial readiness check measures record completeness and is expected to remain incomplete until populated.
 
-After reviewing configuration changes:
+Survey reports conservative evidence and gaps for unit, component, integration, functional/API, end-to-end, regression, and contract layers without executing discovered commands. To preview a safe evaluator/profile change instead of hand-copying a module template:
+
+```text
+node .agenthouse/run.mjs module --name node-typescript --preview --output .agenthouse/local/node-tests-plan.json
+# Review the printed diff and target-state artifact, then:
+node .agenthouse/run.mjs module --apply .agenthouse/local/node-tests-plan.json
+```
+
+The plan applies only against the configuration digest it was reviewed from. It does not run tests, resolve policy, or create approval. After reviewing configuration changes:
 
 ```text
 node .agenthouse/run.mjs resolve
@@ -236,7 +251,7 @@ The Playwright adapter captures browser evidence and regression results. Concept
 
 The same `evaluate` command works without an interactive agent. `--ci` freezes policy resolution and never updates dependencies. Exit codes are **0 passed, 1 failed, 2 error, 3 approval pending, 4 incomplete**. Use the supplied [GitHub Actions](templates/ci/github.yml) or [GitLab CI](templates/ci/gitlab.yml) templates and retain reports on failure. For a public npm publish, [npm provenance](docs/npm-provenance.md) inspects or adds trusted-publishing files without publishing.
 
-Framework and skill updates use trusted checksums or signatures, project pins, and rollback. Approved local or mirrored bundles can update between sessions; upstream HEAD is never implicitly fetched during evaluation. See [dependency operations](docs/dependencies.md).
+Framework and skill updates use registry provenance/signatures, attested release assets, trusted checksums or keys, exact resolved identities, and rollback. Approved public, local, or mirrored channels can update between sessions; upstream HEAD is never implicitly fetched and evaluation never updates. See [dependency operations](docs/dependencies.md).
 
 Instruction files are generated for Claude Code, Codex, OpenCode, Cursor, Windsurf, and OpenClaw. Claude and Codex packed-plugin installation and enablement were exercised in isolated native CLI profiles. Live-session hook delivery and all-host discovery/permission behavior still require environment-specific validation. Core verification has passed in GitHub Actions on Windows, Linux, and macOS, along with the Linux browser test. Dedicated external-service connectors and enterprise live pilots remain open.
 

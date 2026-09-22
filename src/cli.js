@@ -4,12 +4,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import {generateKeyPairSync} from 'node:crypto';
-import {assert,read,write,create,hash,inside,VERSION,PACKAGE,exclusive} from './io.js';
+import {assert,read,write,create,hash,inside,VERSION,PACKAGE,exclusive,validated} from './io.js';
 import {install,uninstall,detect,payload,recover,transact,restore,installationStatus} from './install.js';
 import {resolve,signed} from './policy.js';
 import {evaluate} from './evaluate.js';
 import {newItem,advance,createBranch,STAGES} from './lifecycle.js';
-import {update,rollback,session} from './update.js';
+import {update,updateFromChannel,configureUpdateTracking,rollback,session} from './update.js';
 import {housekeep} from './housekeep.js';
 import {importSkill} from './skills.js';
 import {dependencyStatus} from './dependencies.js';
@@ -22,8 +22,9 @@ import {hook,hookConfiguration,hookSettings} from './hooks.js';
 import {controls} from './controls.js';
 import {checkVisualPlan} from './visual-plan.js';
 import {statusNpmProvenance,applyNpmProvenance} from './npm-provenance.js';
+import {planModule,applyModulePlan} from './module-plan.js';
 
-const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated']);
+const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated','preview','latest']);
 function parse(args) {
   const o={},pos=[];
   for(let i=0;i<args.length;i++) {
@@ -33,7 +34,7 @@ function parse(args) {
   }
   return {o,pos};
 }
-const allowed={onboard:['agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking'],rollback:[],session:[],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output']};
+const allowed={onboard:['agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking','latest','track','npm-cli'],rollback:[],session:['npm-cli'],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output','preview','apply','workspace','layers','profile','advisory-profile','milestone-reference','milestone-owner','milestone-status']};
 Object.assign(allowed,{survey:['output'],inspect:['ref','base','output'],review:['ref','base','baseline','item','evidence','output'],gate:['item','phase','decision','policy-file','output'],spec:['item','phase','evaluator','output'],backlog:['source','id','title','provider','external-id','output']});
 allowed.controls=['policy-file'];
 allowed.hook=['vendor','input'];
@@ -88,6 +89,7 @@ export async function main(args) {
       try {installationStatus(root);}catch(e){problems.push(e.message);}
       try {dependencyStatus(root);}catch(e){problems.push(e.message);}
       try {config=resolve(root,{frozen:true}).config;}catch(e){problems.push(e.message);}
+      if(fs.existsSync(inside(root,'.agenthouse/update.json')))try {validated('update-policy',read(inside(root,'.agenthouse/update.json')));}catch(e){problems.push(`Invalid update policy: ${e.message}`);}
       if(fs.existsSync(inside(root,'.agenthouse/transaction.json')))problems.push('Interrupted installation: run recover');
       const state=fs.existsSync(inside(root,'.agenthouse/installation.json'))?read(inside(root,'.agenthouse/installation.json')):null;
       if(!state)problems.push('No installed runtime');
@@ -114,9 +116,15 @@ export async function main(args) {
       assert(o.output,'--output required');const data=payload();const bundle=o.key?signed(data,fs.readFileSync(path.resolve(o.key),'utf8')):data;
       write(path.resolve(o.output),bundle);result={file:path.resolve(o.output),sha256:hash(fs.readFileSync(path.resolve(o.output))),version:VERSION};break;
     }
-    case 'update':assert(o.bundle,'--bundle required');result=update(root,{bundle:o.bundle,sha256:o.sha256,publicKey:o['public-key'],check:o.check,allowBreaking:o['allow-breaking']});break;
+    case 'update': {
+      const modes=[!!o.bundle,!!o.latest,!!o.track].filter(Boolean).length;assert(modes===1,'Choose exactly one of --bundle FILE, --latest, or --track latest|exact');
+      if(o.track)result=configureUpdateTracking(root,o.track);
+      else if(o.latest)result=updateFromChannel(root,{check:o.check,allowBreaking:o['allow-breaking'],npmCli:o['npm-cli']});
+      else result=update(root,{bundle:o.bundle,sha256:o.sha256,publicKey:o['public-key'],check:o.check,allowBreaking:o['allow-breaking']});
+      break;
+    }
     case 'rollback':result=rollback(root);break;
-    case 'session':result=session(root);break;
+    case 'session':result=session(root,{npmCli:o['npm-cli']});break;
     case 'housekeep':result=housekeep(root,{check:o.check});break;
     case 'recover':result={recovered:recover(root)};break;
     case 'uninstall':result=uninstall(root);break;
@@ -141,10 +149,15 @@ export async function main(args) {
     }
     case 'skill':assert(o.source,'--source required');result=importSkill(root,o.source,{name:o.name,expectedDigest:o.sha256});break;
     case 'module': {
-      assert(['node-typescript','php-laravel'].includes(o.name),'Choose node-typescript or php-laravel');
-      const data=read(path.join(PACKAGE,'modules',o.name+'.json'));
-      if(data.standards)data.standardsText=fs.readFileSync(inside(PACKAGE,data.standards),'utf8');
-      if(o.output)create(path.resolve(root,o.output),data);result=data;break;
+      assert(!(o.apply && (o.name || o.preview)),'Use --apply PLAN by itself');
+      if(o.apply)result=applyModulePlan(root,o.apply);
+      else {
+        assert(['node-typescript','php-laravel'].includes(o.name),'Choose node-typescript or php-laravel');
+        if(o.preview)result=planModule(root,o.name,{workspace:o.workspace,layers:o.layers,profile:o.profile,advisoryProfile:o['advisory-profile'],milestoneReference:o['milestone-reference'],milestoneOwner:o['milestone-owner'],milestoneStatus:o['milestone-status']});
+        else {result=read(path.join(PACKAGE,'modules',o.name+'.json'));if(result.standards)result.standardsText=fs.readFileSync(inside(PACKAGE,result.standards),'utf8');}
+        if(o.output)create(path.resolve(root,o.output),result);
+      }
+      break;
     }
   }
   if(['survey','inspect','review','gate','spec','backlog','visual-plan','npm-provenance'].includes(command) && o.output)write(inside(root,o.output),result);

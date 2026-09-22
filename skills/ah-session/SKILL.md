@@ -1,6 +1,6 @@
 ---
 name: ah-session
-description: "Record the active runtime and dependency versions, apply housekeeping rules, and apply configured approved updates. Use at task start, or when checking which agenthouse version this project is running."
+description: "Record active versions, apply configured updates and housekeeping, and report policy drift without silently adopting it. Use at task start or when checking the active agenthouse version and policy snapshot."
 license: MIT
 ---
 
@@ -12,11 +12,11 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Explain any applied or deferred approved updates, housekeeping, and the active version set. Respect configured update policies and pins.
+Explain any applied or deferred approved updates, housekeeping, and the active version set. If policyChange is changed, show the new revision and affected rules/checks, keep the current frozen snapshot, and ask whether this work should adopt it. Run resolve only after the user chooses adoption. Noninteractive work must report the mismatch rather than choose.
 
 CLI reference:
 
 ```text
-session
-Check configured approved updates between commands, apply housekeeping rules, and record the active version set.
+session [--npm-cli PATH]
+Check configured approved updates between commands, report policy drift without replacing the frozen snapshot, apply housekeeping rules, and record the active version set.
 ```

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "id": "module-evaluator-wiring",
+  "title": "Apply a reviewed module evaluator plan without hand-copying configuration",
+  "kind": "bug",
+  "stage": "define",
+  "revision": 1,
+  "fields": {
+    "outcome": "A maintainer can turn selected module suggestions into preserved project configuration through a deterministic preview-and-apply flow.",
+    "scope": "Extend module rather than add a top-level command. Present an interactive diff, optionally save its target state as a versioned handoff artifact bound to the base configuration digest, require explicit apply, preserve unrelated configuration, and never execute the proposed evaluator during wiring.",
+    "acceptance": "The exact reviewed proposal is what gets applied; conflicts and stale inputs stop without partial writes; resolving policy and running evaluation remain separate explicit actions.",
+    "reproduction": "Run module --name node-typescript in an enrolled repository and observe that it can only print or save generic evaluator templates.",
+    "expected": "After adapting and reviewing a proposal, the maintainer can apply that exact proposal to project configuration with preservation and conflict checks.",
+    "observed": "The maintainer must currently hand-copy evaluator and profile entries, with no framework validation or safe merge path.",
+    "verification": "Cover preview-only operation, exact apply, duplicate IDs, changed config after preview, malformed proposals, user-owned fields, missing scripts, no-test repositories, frozen snapshots, and interrupted writes.",
+    "dependencies": "Implemented on the survey contract and ADR-0013 monorepo/profile decisions.",
+    "risks": "Treating a generic template as repository truth could configure nonexistent or unsafe commands; apply must never imply that an evaluator passed or was approved.",
+    "changes": "Implemented legacy-compatible templates plus preview/apply, human-readable diff, versioned target-state handoff, base digest, unrelated-config preservation, conflict/stale-base rejection, no-test degradation, adoption profiles, and deterministic workspace identities.",
+    "evidence": "Function and CLI tests cover preview/apply, target preservation, stale plans, missing tests, advisory/required profile additions, and frozen snapshot staleness."
+  },
+  "criteria": [
+    {
+      "id": "reviewable-preview",
+      "expectation": "Module presents a deterministic interactive diff and can save the identical target state as a versioned handoff artifact without modifying project configuration."
+    },
+    {
+      "id": "explicit-apply",
+      "expectation": "A separate explicit action applies only the exact reviewed proposal and rejects a proposal whose recorded base configuration has changed."
+    },
+    {
+      "id": "preserve-consumer-data",
+      "expectation": "Apply preserves unrelated evaluators, profiles, policy sources, lifecycle settings, hooks, and other consumer-owned configuration."
+    },
+    {
+      "id": "conflict-safety",
+      "expectation": "Duplicate identifiers, incompatible definitions, invalid schema, and write failures produce a conflict or error without a partial configuration change."
+    },
+    {
+      "id": "no-command-execution",
+      "expectation": "Preview and apply do not execute any discovered or proposed target-repository command; evaluation requires a later explicit command."
+    },
+    {
+      "id": "no-fabricated-evaluator",
+      "expectation": "When repository evidence does not identify a usable test command, module reports the missing choice and does not silently configure a guessed evaluator."
+    },
+    {
+      "id": "snapshot-separation",
+      "expectation": "Applying configuration does not rewrite a frozen resolved snapshot or create approval; resolve and evaluate remain explicit subsequent steps."
+    },
+    {
+      "id": "monorepo-identity",
+      "expectation": "Workspace evaluator IDs and cwd values are deterministic, collision-safe, and traceable to declared workspace names or canonical repository-relative paths."
+    }
+  ],
+  "evidence": [],
+  "history": []
+}

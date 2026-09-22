@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "id": "floating-latest-update-channel",
+  "title": "Let consumers follow the latest compatible agenthouse release",
+  "kind": "feature",
+  "stage": "define",
+  "revision": 1,
+  "fields": {
+    "outcome": "A consumer can opt into a moving latest release preference while every activated project runtime and frozen evaluation remains bound to an exact verified version and digest.",
+    "scope": "Add a consumer-owned update preference for a trusted latest channel, resolve it only at an explicit update check or between sessions, retain exact installed and rollback identities, and leave existing exact pins unchanged.",
+    "acceptance": "The preference is observable, reviewable, compatible with public, private, and offline-approved channels, and never turns latest into an unrecorded runtime dependency.",
+    "decisions": "ADR-0012 selects npm latest as the primary public discovery source with GitHub release fallback, verified integrity and provenance/attestations, release-declared compatibility, stable latest by default, and organization-defined channel overrides.",
+    "verification": "Exercise compatible update, no-update, unavailable-channel, tampered metadata, breaking-release, rollback, offline mirror, legacy exact-pin, and frozen-evaluation cases on supported platforms.",
+    "dependencies": "Implemented in the working tree; a subsequent signed/provenanced release is required before enrolled consumers can use it. Private/offline channels retain their existing approved trust contract.",
+    "risks": "A floating preference can weaken reproducibility or supply-chain trust if resolution is allowed during evaluation or if the resolved artifact identity is not retained.",
+    "changes": "Implemented exact/latest tracking, npm-first verified discovery, attested GitHub bundle fallback, release-declared compatibility, exact activation records, and future-release bundle attestation/upload. GitHub v0.1.9 remains intentionally ineligible because it has no bundle asset.",
+    "evidence": "Core tests cover fallback, exact tracking, compatibility, activation and CLI selection; live npm 0.1.9 verification found two registry signatures, SLSA provenance, SHA-512 integrity, and no invalid or missing audit attestations.",
+    "relatedWork": [
+      "survey-test-layer-gaps",
+      "module-evaluator-wiring",
+      "test-enforcement-adoption-profiles"
+    ]
+  },
+  "criteria": [
+    {
+      "id": "latest-opt-in",
+      "expectation": "A consumer can explicitly select a stable latest-compatible update preference and can return to an exact version preference."
+    },
+    {
+      "id": "exact-resolution",
+      "expectation": "After resolution, the active runtime, dependencies, session record, and rollback state identify exact versions and content digests."
+    },
+    {
+      "id": "session-boundary",
+      "expectation": "Latest resolution occurs only during an explicit update check or configured between-session update and never changes code during a running task."
+    },
+    {
+      "id": "frozen-isolation",
+      "expectation": "Frozen and CI evaluation performs no update discovery or activation and continues to validate the recorded exact snapshot."
+    },
+    {
+      "id": "trusted-channel",
+      "expectation": "Untrusted, tampered, unavailable, incompatible, or breaking channel results do not replace the current usable runtime and produce an actionable non-success result."
+    },
+    {
+      "id": "legacy-compatibility",
+      "expectation": "An already-enrolled repository with an exact pin or no new update preference retains its current behavior without migration."
+    }
+  ],
+  "evidence": [],
+  "history": []
+}

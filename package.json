@@ -1,6 +1,6 @@
 {
   "name": "@agenthouse/engineering",
-  "version": "0.1.9",
+  "version": "1.0.0",
   "description": "Portable agentic SDLC, policy and evidence evaluation for developers and CI/CD",
   "type": "module",
   "license": "MIT",
@@ -52,5 +52,12 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "agenthouse": {
+    "release": {
+      "schemaVersion": 1,
+      "channel": "stable",
+      "compatibleFrom": "0.1.0"
+    }
   }
 }

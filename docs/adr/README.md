@@ -17,5 +17,7 @@ The following product decisions were confirmed by the repository owner on 2026-0
 | [0009](0009-npm-provenance.md) | Optional npm package provenance setup for public publishes |
 | [0010](0010-ephemeral-frontend-captures.md) | Inspection screenshot galleries stay out of Git |
 | [0011](0011-ticket-size-and-scope-creep.md) | Ticket size gate, scope-creep stop, ask-first split work and related branches |
+| [0012](0012-floating-latest-update-preference.md) | Optional floating latest update intent with exact verified runtime resolution |
+| [0013](0013-test-framework-establishment.md) | Bounded survey, evaluator wiring, and advisory-to-required test adoption workflow |
 
 Proposed implementation details live in the linked design documents until implemented or promoted to an accepted technical ADR.

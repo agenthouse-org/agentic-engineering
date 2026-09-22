@@ -25,7 +25,7 @@ export function payload(source=PACKAGE) {
   return {schemaVersion:1,version:metadata.version,files};
 }
 export function verifyPayload(data) {
-  assert(data.schemaVersion===1 && /^\d+\.\d+\.\d+$/.test(data.version) && data.files && typeof data.files==='object','Invalid bundle');
+  assert(data.schemaVersion===1 && /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(data.version) && data.files && typeof data.files==='object','Invalid bundle');
   assert(Object.keys(data.files).length<5000,'Bundle file limit exceeded');
   let total=0;
   for(const [name,content] of Object.entries(data.files)) {

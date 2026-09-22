@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {install,payload,transact,uninstall} from '../src/install.js';
-import {write,read,hash} from '../src/io.js';
+import {write,read,hash,PACKAGE} from '../src/io.js';
 import {resolve,signed} from '../src/policy.js';
 import {newItem,advance,createBranch} from '../src/lifecycle.js';
 import {controls} from '../src/controls.js';
@@ -18,6 +18,8 @@ import {hookRuntime,hook,hookSettings} from '../src/hooks.js';
 import {dependencyStatus} from '../src/dependencies.js';
 import {pinDependency,updateDependency} from '../src/dependency-update.js';
 import {evaluate} from '../src/evaluate.js';
+import {planModule,applyModulePlan} from '../src/module-plan.js';
+import {session} from '../src/update.js';
 
 function temp(t){const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah workflow '));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;}
 function setup(t){const root=temp(t);install(root,{agents:[],project:'example',autonomy:'bounded'});return root;}
@@ -32,6 +34,51 @@ test('survey and commit analysis handle root commit, deleted files and merge bas
   assert.equal(inspectChange(root).comparison,'root-commit');assert.equal(survey(root).tools[0].command,'not executed');
   write(path.join(root,'widget.ts'),'// TODO investigate\n// @ts-ignore\nexport const value=2;\n');fs.unlinkSync(path.join(root,'tests/widget.test.ts'));git(root,'add','.');git(root,'commit','-m','change');
   const report=inspectChange(root,{base});assert.equal(report.base,base);assert.equal(report.findings.length,2);assert.ok(report.files.some(f=>f.status==='D'));assert.throws(()=>inspectChange(root,{ref:'--help'}));
+});
+test('survey reports test-layer gaps and conservative nominal evidence without executing scripts',t=>{
+  const root=temp(t);git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');
+  write(path.join(root,'package.json'),{scripts:{'test:unit':'node -e "require(\'fs\').writeFileSync(\'executed\',\'bad\')"','test:api':'vitest run tests/api'}});
+  write(path.join(root,'tests/unit/empty.test.js'),'// placeholder only\n');write(path.join(root,'tests/api/users.test.js'),'test("users",()=>expect(1).toBe(1));\n');
+  git(root,'add','.');git(root,'commit','-m','tests');
+  const result=survey(root),unit=result.testLayers.layers.find(item=>item.layer==='unit'),api=result.testLayers.layers.find(item=>item.layer==='functional-api');
+  assert.equal(unit.status,'suspected-nominal');assert.ok(unit.signals.some(item=>item.signal==='empty-or-comments-only'));
+  assert.equal(api.status,'present');assert.equal(result.testLayers.layers.find(item=>item.layer==='contract').status,'absent');
+  assert.equal(fs.existsSync(path.join(root,'executed')),false);
+});
+test('survey honors reviewed local layer selection and aliases',t=>{
+  const root=setup(t);git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');
+  const file=path.join(root,'.agenthouse/config.json'),c=read(file);c.testing={layers:['contract'],aliases:{consumer:'contract'}};write(file,c);resolve(root);
+  write(path.join(root,'tests/consumer/order.test.js'),'test("contract",()=>expect(true).toBe(true));');git(root,'add','.');git(root,'commit','-m','contract');
+  const result=survey(root);assert.deepEqual(result.testLayers.selectedLayers,['contract']);assert.equal(result.testLayers.layers[0].status,'present');
+});
+test('module preview and apply wire discovered tests through an exact reviewed target state',t=>{
+  const root=setup(t);write(path.join(root,'package.json'),{name:'@example/doc-service',scripts:{'test:unit':'node --test','test:api':'vitest run tests/api'}});
+  const plan=planModule(root,'node-typescript',{});assert.match(plan.diff,/tests\.example-doc-service\.unit/);assert.equal(plan.changes.evaluators.length,2);
+  assert.ok(plan.targetConfig.profiles['test-adoption'].checks.every(item=>item.required===false));assert.ok(plan.targetConfig.profiles['pull-request'].checks.some(item=>item.required===true));
+  const tampered=structuredClone(plan);tampered.targetConfig.documentationAuthority='other';const bad=path.join(root,'bad-plan.json');write(bad,tampered);assert.throws(()=>applyModulePlan(root,bad),/unrelated configuration/);
+  const artifact=path.join(root,'module-plan.json');write(artifact,plan);const applied=applyModulePlan(root,artifact);assert.equal(applied.status,'applied');
+  const configured=read(path.join(root,'.agenthouse/config.json'));assert.ok(configured.evaluators.some(item=>item.id==='tests.example-doc-service.functional-api'));
+  assert.throws(()=>resolve(root,{frozen:true}),/stale|modified/);assert.throws(()=>applyModulePlan(root,artifact),/changed after preview/);
+});
+test('module preview does not fabricate an evaluator when no test script exists',t=>{
+  const root=setup(t);write(path.join(root,'package.json'),{name:'empty',scripts:{start:'node app.js'}});
+  const plan=planModule(root,'node-typescript',{});assert.equal(plan.changes.evaluators.length,0);assert.match(plan.limitations.join(' '),/no evaluator.*fabricated/i);
+});
+test('module CLI saves and applies the reviewed handoff artifact',t=>{
+  const root=setup(t);write(path.join(root,'package.json'),{name:'cli-app',scripts:{'test:contract':'node --test tests/contracts'}});
+  const preview=spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),'module','--root',root,'--name','node-typescript','--preview','--output','plan.json'],{encoding:'utf8'});
+  assert.equal(preview.status,0,preview.stderr);assert.match(JSON.parse(preview.stdout).diff,/tests\.cli-app\.contract/);assert.ok(fs.existsSync(path.join(root,'plan.json')));
+  const apply=spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),'module','--root',root,'--apply','plan.json'],{encoding:'utf8'});
+  assert.equal(apply.status,0,apply.stderr);assert.equal(JSON.parse(apply.stdout).status,'applied');
+});
+test('deferred profile promotion remains visible and prevents a successful enforced result',async t=>{
+  const root=setup(t);write(path.join(root,'check.mjs'),'process.exit(0)');
+  config(root,c=>{c.evaluators=[{id:'tests.root.unit',kind:'command',executable:'node',args:['check.mjs'],result:'exit-code'}];c.profiles={enforced:{checks:[{evaluator:'tests.root.unit',required:true}],promotion:{status:'deferred',reference:'ADR-42',owner:'repo-owner'}}};});
+  const result=await evaluate(root,{profile:'enforced',frozen:true,subject:'build'});assert.equal(result.exitCode,4);assert.equal(result.promotion.status,'deferred');assert.ok(result.checks.some(item=>item.id==='profile-promotion'));
+});
+test('session reports policy drift without replacing the frozen snapshot',t=>{
+  const root=setup(t),before=read(path.join(root,'.agenthouse/resolved.json'));const file=path.join(root,'.agenthouse/config.json'),c=read(file);c.documentationAuthority='reviewed-docs';write(file,c);
+  const result=session(root);assert.equal(result.policyChange.status,'changed');assert.equal(read(path.join(root,'.agenthouse/resolved.json')).digest,before.digest);
 });
 test('ready gates separate incomplete fields from pending reviewer approval',t=>{
   const root=setup(t),record=item(root);assert.equal(gate(root,{item:'item.json'}).status,'pending');

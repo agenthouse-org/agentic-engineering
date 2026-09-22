@@ -1,13 +1,13 @@
 # Implementation and verification status
 
-Version 0.1.9 developer preview. Updated 2026-09-21.
+Version 1.0.0 release line. Updated 2026-09-22.
 
-Local core/workflow tests: 105 passed. Real visual regression and usability pass/fail browser scenarios, and the upstream hooks suite (eight test files), were last recorded as passing on 2026-09-15.
+Local core/workflow tests: 117 passed. Real visual regression and usability pass/fail browser scenarios, and the upstream hooks suite (eight test files), were last recorded as passing on 2026-09-15.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
 | CLI and agent commands | 42 framework skills (41 generated plus lifecycle); every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership and removal tests |
-| Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; commit/range/merge-base analysis; candidate tests and review signals | Root commit, deletion and merge-base fixtures; no discovered scripts executed |
+| Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; conservative test-layer evidence/gaps and nominal signals; local aliases; commit/range/merge-base analysis | Empty/multi-layer/nominal/alias fixtures, root commit, deletion and merge-base fixtures; no discovered scripts executed |
 | Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions; ready-gate `ticketSize` with override | Missing/stale evidence, self-review rejection, invalidated signatures; oversized criteria and sizeOverride tested |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |
 | Lifecycle and small changes | Full lifecycle plus configured shorter paths, eligible kinds and rationale; ask-first split work and `work branch` with repo `git.branchNaming` | Protected stages and invalid paths tested; branch naming render and clean-tree branch create tested |
@@ -20,10 +20,10 @@ Local core/workflow tests: 105 passed. Real visual regression and usability pass
 | Visual acceptance | Image/story/bug/wireframe contracts, concept review, Playwright capture and regression; housekeeping CLI for inspection captures | Missing/stale concept evidence; real baseline/broken/restored browser scenario; housekeep ignore/delete/tracked-file and dump-root tests |
 | Visual plans | Local visual-plan JSON, semantic HTML wireframes, mermaid ERD/UML lint, optional ready-gate check | Pass/fail/incomplete fixtures; shipped example plan |
 | npm provenance | Inspect package.json and CI; write a missing GitHub/GitLab publish job for trusted or token provenance | Missing package, private package, overwrite refusal, repository mismatch, trusted vs token templates |
-| Stack modules | Node/TypeScript and PHP/Laravel standards, evaluator and touched-file templates | Module delivery tested; consuming projects select actual tools |
+| Stack modules | Node/TypeScript and PHP/Laravel standards and templates; evidence-led preview/apply with diff, target-state handoff, stale-base/conflict safety, adoption profiles and deterministic monorepo IDs | Legacy template output, no-test degradation, preservation, CLI preview/apply and stale snapshot behavior tested |
 | Marketplace packages | Claude and Codex manifests/indexes | Claude Code 2.1.270 validators passed; Claude and Codex 0.154.0-alpha.6.2 installed/enabled the packed plugin in isolated Windows profiles |
-| Distribution | npm tarball, offline framework bundles, signed/checksummed updates, recovery and rollback | Managed-file conflicts, interrupted transactions and tampering tests |
-| CI | Deterministic evaluator templates and optional artifact-only agent-review recipe | CLI exit/report tests; browser/usability jobs included in repository CI |
+| Distribution | npm tarball, offline bundles, exact/latest tracking, npm signature/provenance verification, attested GitHub-bundle fallback, release-declared compatibility, recovery and rollback | Real npm 0.1.9 verification; mocked npm/GitHub fallback, exact identity, pins, breaking, managed-file conflicts, interruption and tampering tests; GitHub v0.1.9 correctly ineligible because it has no bundle asset |
+| CI | Deterministic evaluator templates, optional artifact-only agent-review recipe, and future-release GitHub update-bundle attestation/upload | CLI exit/report tests; release-workflow contract test; browser/usability jobs included in repository CI |
 
 Native live-session hook delivery and command discovery are not certified across all six hosts. Other agents can use the tested shared CLI and generated instruction projections. Local checks supplement server-side branch controls; the command matcher is not a shell sandbox.
 

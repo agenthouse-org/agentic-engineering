@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "survey-test-layer-gaps",
+  "title": "Report evidence and gaps for repository test layers",
+  "kind": "feature",
+  "stage": "define",
+  "revision": 1,
+  "fields": {
+    "outcome": "A maintainer can see which test layers have repository evidence, which appear absent, and which are only weakly or nominally represented before deciding how to improve testing.",
+    "scope": "Extend survey with read-only, stack-aware evidence for unit, component, integration, functional/API, end-to-end, regression, and contract layers. Core owns the generic result contract; optional stack modules own stack-specific signals; a coding agent may ask for and record consumer-reviewed local aliases and layer selections.",
+    "acceptance": "The report distinguishes evidence from proof, represents an empty-test repository honestly, and does not execute discovered project commands.",
+    "decisions": "ADR-0013 fixes the portable taxonomy and permits conservative suspected-nominal signals such as empty, skipped-only, assertion-free, or unconditional-success test artifacts. These are warnings with evidence, not semantic judgments.",
+    "verification": "Use fixtures for no tests, one layer, multiple layers, ambiguous naming, empty or skipped tests, assertion-like and assertion-free files, monorepos, malformed manifests, and paths with spaces.",
+    "dependencies": "Implemented in the working tree; local organization mappings are consumer-reviewed project configuration.",
+    "risks": "Static inspection cannot establish behavioral value or executed coverage; overconfident labels would fabricate a baseline.",
+    "changes": "Implemented additive survey test-layer evidence, portable/local taxonomy mapping, file/script/config/pipeline signals, and conservative suspected-nominal classifications without command execution.",
+    "evidence": "Workflow fixtures cover no-execution, present/absent layers, nominal files, and local aliases."
+  },
+  "criteria": [
+    {
+      "id": "layer-evidence",
+      "expectation": "Survey reports each supported test layer with the scripts, files, configuration, or pipeline references that caused its classification."
+    },
+    {
+      "id": "honest-status",
+      "expectation": "Each layer is classified using explicit states that distinguish present evidence, absent evidence, ambiguous evidence, and suspected nominal coverage without claiming semantic adequacy."
+    },
+    {
+      "id": "empty-repository",
+      "expectation": "A repository with no test evidence reports that state and missing layers without inventing commands, coverage, or a passing baseline."
+    },
+    {
+      "id": "no-execution",
+      "expectation": "Survey does not execute package scripts, test binaries, pipeline steps, or commands discovered in repository content."
+    },
+    {
+      "id": "module-signals",
+      "expectation": "Stack-specific detection can be supplied by a module without making the core depend on Node, a particular runner, or a hosted service."
+    },
+    {
+      "id": "local-taxonomy",
+      "expectation": "A consumer can review and retain organization-specific layer selections and aliases without changing the portable core vocabulary for other repositories."
+    },
+    {
+      "id": "backward-output",
+      "expectation": "Existing survey fields remain compatible and the new test-layer section is additive for consumers of schema version 1 output."
+    }
+  ],
+  "evidence": [],
+  "history": []
+}

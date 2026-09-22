@@ -78,6 +78,8 @@ export async function evaluate(root,options={}) {
       result.subject=subject(root,options.subject);result.policyDigest=snapshot.digest;
     const profile=config.profiles[result.profile];assert(profile,`Unknown profile: ${result.profile}`);
     assert(profile.checks.length>0,'Empty evaluation profile is not a gate');
+    result.promotion=profile.promotion || null;
+    if(profile.promotion?.status==='deferred')result.checks.push({id:'profile-promotion',required:true,status:'incomplete',reason:`Profile promotion deferred by ${profile.promotion.owner}: ${profile.promotion.reference}`});
     const selected=new Set(profile.checks.map(c=>c.evaluator));
     for(const id of snapshot.requiredChecks) if(!selected.has(id)) result.checks.push({id,required:true,status:'incomplete',reason:'Required organization check omitted from profile'});
     const context={schemaVersion:1,subject:result.subject,policyDigest:snapshot.digest,profile:result.profile,baseUrl:options.baseUrl || null};

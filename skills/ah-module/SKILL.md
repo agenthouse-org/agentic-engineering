@@ -1,6 +1,6 @@
 ---
 name: ah-module
-description: "Show Node/TypeScript or PHP/Laravel check templates to adapt before enabling. Use when choosing stack-specific evaluators or starting from a module template."
+description: "Show stack templates or preview/apply a reviewed evaluator and adoption-profile configuration plan. Use when wiring repository test commands into agenthouse without hand-copying config."
 license: MIT
 ---
 
@@ -12,11 +12,13 @@ Use node .agenthouse/run.mjs when the target is enrolled. Before enrollment, use
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Show the requested stack template and explain needed adaptation. Do not automatically replace existing evaluators.
+Show the requested stack template for exploration. For wiring, run --preview, show the diff and limitations, save the versioned target-state artifact for handoff when requested, and use --apply only after that exact artifact was reviewed. Ask for organization layer aliases when needed. Preview and apply never execute evaluators, refresh frozen policy, or create approval.
 
 CLI reference:
 
 ```text
 module --name node-typescript|php-laravel [--output FILE]
-Print or save check templates. Review and adapt them before adding to project configuration.
+module --name NAME --preview [--workspace PATH] [--layers LIST] [--profile NAME] [--advisory-profile NAME] [--output PLAN]
+module --apply PLAN
+Print the legacy template, preview an evidence-led interactive diff/target-state handoff artifact, or apply an exactly reviewed plan. Preview/apply never executes proposed evaluators; resolve and evaluate remain separate.
 ```

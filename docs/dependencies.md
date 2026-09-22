@@ -39,7 +39,22 @@ Organizations can distribute an approved bundle through Git, an internal artifac
 }
 ```
 
-Save this as `.agenthouse/dependency-policy.json`. `session` applies compatible approved updates between commands and records the resulting dependency set. Failed updates are reported as deferred; installed dependency corruption still fails validation. CI evaluation never updates dependencies. There is no public-registry polling or implicit tracking of upstream HEAD. Teams refresh the approved bundle and its checksum, or use `publicKey` with a repository-relative trusted key path. Configure either coordinated framework bundles or independent dependency bundles as the automatic source to avoid alternating between different version sets.
+Save this as `.agenthouse/dependency-policy.json`. `session` applies compatible approved updates between commands and records the resulting dependency set. Failed updates are reported as deferred; installed dependency corruption still fails validation. CI evaluation never updates dependencies. Specialist dependencies do not poll a public registry or track upstream HEAD. Teams refresh the approved bundle and its checksum, or use `publicKey` with a repository-relative trusted key path. Configure either coordinated framework bundles or independent dependency bundles as the automatic source to avoid alternating between different version sets.
+
+## Framework latest tracking
+
+Framework runtime tracking is separate from specialist dependency pins:
+
+```text
+node .agenthouse/run.mjs update --track latest
+node .agenthouse/run.mjs update --latest --check
+node .agenthouse/run.mjs update --latest
+node .agenthouse/run.mjs update --track exact
+```
+
+The public resolver checks npm first. It requires the expected package/version, registry integrity, registry signatures, a provenance attestation, and a successful `npm audit signatures` result before constructing the update payload. If npm is unavailable, GitHub fallback requires a `.bundle.json` release asset whose artifact attestation verifies against `agenthouse-org/agentic-engineering`; source archives and unattested assets are rejected. Release metadata declares compatibility. `--allow-breaking` remains explicit.
+
+`.agenthouse/update.json` stores `track`, `channel`, ordered `sources`, and `automatic`. Organizations can commit an approved ordering/channel or continue using `bundle`, `sha256`, and `publicKey` for private/offline distribution. npm supports organization-selected dist-tags; the GitHub fallback currently supports stable `latest` only. Every successful resolution activates and records immutable payload content; `latest` is never written as the active runtime identity.
 
 ## Preparing an upstream release
 
