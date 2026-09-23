@@ -62,6 +62,17 @@ test('a clone restores from an exact offline bundle into another machine cache',
   try {restore(clone,{bundle});installationStatus(clone);dependencyStatus(clone);assert.ok(fs.existsSync(projectContext(clone).skills['frontend-acceptance']));}
   finally {process.env.AGENTHOUSE_HOME=previous;}
 });
+test('Git checkout line endings do not invalidate unchanged managed text',t=>{
+  const root=setup(t),state=read(path.join(root,'.agenthouse/installation.json'));
+  for(const relative of Object.keys(state.files)) {
+    const file=path.join(root,relative),content=fs.readFileSync(file,'utf8');
+    fs.writeFileSync(file,content.replace(/\r?\n/g,'\r\n'));
+  }
+  installationStatus(root);
+  restore(root);
+  installationStatus(root);
+  assert.ok(fs.existsSync(path.join(root,'.agenthouse/run.mjs')));
+});
 test('central updates and rollback leave a second repository on its own exact version',t=>{
   const a=setup(t),b=setup(t),original=runtimeDirectory(b),data=payload();data.version=data.version.split('.').map((part,index)=>index===2?String(Number(part)+1):part).join('.');const pkg=JSON.parse(Buffer.from(data.files['package.json'],'base64'));pkg.version=data.version;data.files['package.json']=Buffer.from(JSON.stringify(pkg)).toString('base64');
   const bundle=path.join(temp(t),'update.json');write(bundle,data);update(a,{bundle,sha256:hash(fs.readFileSync(bundle))});assert.notEqual(runtimeDirectory(a),original);assert.equal(runtimeDirectory(b),original);

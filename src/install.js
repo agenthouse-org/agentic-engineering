@@ -74,6 +74,12 @@ export function verifyPayload(data) {
   return data;
 }
 function journalPath(root){return inside(root,'.agenthouse/transaction.json');}
+// Git can check out tracked text with different line endings on another OS.
+// Ownership still rejects every change other than LF/CRLF conversion.
+function ownedTextMatches(content,digest) {
+  const lf=content.replace(/\r\n/g,'\n');
+  return hash(content)===digest || hash(lf)===digest || hash(lf.replace(/\n/g,'\r\n'))===digest;
+}
 export function recover(root) {
   const file=journalPath(root);if(!fs.existsSync(file))return false;
   const journal=read(file);
@@ -108,13 +114,13 @@ function managed(root,desired,state) {
     if(entry.block) {
       const current=blocks(existing || '');
       assert(current.length<=1,`Duplicate managed block: ${relative}`);
-      if(current.length) assert(prior?.block && hash(current[0])===prior.digest,`Modified/unowned managed block: ${relative}`);
+      if(current.length) assert(prior?.block && ownedTextMatches(current[0],prior.digest),`Modified/unowned managed block: ${relative}`);
       else assert(!prior,`Managed block removed: ${relative}`);
       const b=block(content,relative);
       content=current.length?existing.replace(current[0],b):`${existing || ''}${existing?'\n\n':''}${b}\n`;
       ownership[relative]={block:true,digest:hash(b),created:prior?.created ?? existing===null};
     }else {
-      if(existing!==null)assert(prior && hash(existing)===prior.digest,`Existing or modified file: ${relative}`);
+      if(existing!==null)assert(prior && ownedTextMatches(existing,prior.digest),`Existing or modified file: ${relative}`);
       ownership[relative]={block:false,digest:hash(content)};
     }
     changes.push({path:relative,content});
@@ -131,7 +137,7 @@ export function installationStatus(root) {
     const content=fs.readFileSync(file,'utf8');
     const found=entry.block?blocks(content):null;
     assert(!entry.block || found?.length===1,`Missing/duplicate managed block: ${relative}`);
-    assert(hash(entry.block?found[0]:content)===entry.digest,`Modified managed file: ${relative}`);
+    assert(ownedTextMatches(entry.block?found[0]:content,entry.digest),`Modified managed file: ${relative}`);
   }
   if(active.storage==='machine') {
     const data=payload(runtimeDirectory(root,active));
@@ -260,7 +266,7 @@ export function install(root,options={}) {
     }
     const removed=[];
     for(const old of Object.keys(state.files))if(!desired[old] && (Object.keys(SOURCES).some(id=>old.startsWith('.agents/skills/'+id+'/')) || storage==='machine' && ['.agenthouse/lifecycle.md','.agenthouse/agent-commands.md'].includes(old) || /^\.(agents\/skills|claude\/commands|opencode\/commands|windsurf\/workflows)\/(?:ah-|agenthouse-)/.test(old))) {
-      assert(hash(fs.readFileSync(inside(root,old)))===state.files[old].digest,`Modified dependency file: ${old}`);
+      assert(ownedTextMatches(fs.readFileSync(inside(root,old),'utf8'),state.files[old].digest),`Modified dependency file: ${old}`);
       removed.push({path:old,content:null});
     }
     // Keep previously selected adapters on upgrade rather than orphaning their owned files.
@@ -314,10 +320,10 @@ export function uninstall(root) {
       const current=fs.readFileSync(dest,'utf8');
       if(entry.block) {
         const found=blocks(current);
-        assert(found?.length===1 && hash(found[0])===entry.digest,`Modified managed block: ${rel}`);
+        assert(found?.length===1 && ownedTextMatches(found[0],entry.digest),`Modified managed block: ${rel}`);
         const remaining=current.replace(found[0],'');
         changes.push({path:rel,content:entry.created && !remaining.trim()?null:remaining});
-      }else {assert(hash(current)===entry.digest,`Modified managed file: ${rel}`);changes.push({path:rel,content:null});}
+      }else {assert(ownedTextMatches(current,entry.digest),`Modified managed file: ${rel}`);changes.push({path:rel,content:null});}
     }
     changes.push({path:'.agenthouse/installation.json',content:null},{path:'.agenthouse/active.json',content:null});
     changes.push(...hookSettings(root,{remove:true}).changes);
