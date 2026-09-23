@@ -6,7 +6,7 @@ import path from 'node:path';
 import {generateKeyPairSync} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {read,write,hash,PACKAGE,inside} from '../src/io.js';
-import {install,uninstall,payload,recover,restore,installationStatus} from '../src/install.js';
+import {install as installActual,uninstall,payload,recover,restore,installationStatus} from '../src/install.js';
 import {resolve,approval,signed} from '../src/policy.js';
 import {evaluate} from '../src/evaluate.js';
 import {newItem,advance,STAGES} from '../src/lifecycle.js';
@@ -14,7 +14,7 @@ import {update,updateFromChannel,configureUpdateTracking,declaredCompatibility,r
 import {visual} from '../src/visual.js';
 import {importSkill} from '../src/skills.js';
 
-function temp(t) {const root=fs.mkdtempSync(path.join(os.tmpdir(),'agenthouse test '));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;}
+function temp(t) {const root=fs.mkdtempSync(path.join(os.tmpdir(),'agenthouse test '));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));spawnSync('git',['init',root],{windowsHide:true});return root;}
 function setup(t,agents=[]) {const root=temp(t);install(root,{agents,project:'pilot',autonomy:'bounded'});return root;}
 function config(root,edit) {const file=path.join(root,'.agenthouse/config.json'),data=read(file);edit(data);write(file,data);resolve(root);return data;}
 function commands(root,code,options={}) {
@@ -249,3 +249,5 @@ test('restore never upgrades an older pin and rejects interrupted transactions',
   assert.deepEqual(fs.readFileSync(path.join(root,'.agenthouse/active.json')),pin);
   recover(root);restore(root,{bundle});installationStatus(root);
 });
+
+function install(root,options={}) {return installActual(root,{storage:'project',...options});}

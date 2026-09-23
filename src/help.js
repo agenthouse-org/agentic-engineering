@@ -3,6 +3,7 @@ import path from 'node:path';
 import {assert,PACKAGE,VERSION} from './io.js';
 
 export const topics={
+  context:'context\nPrint this project’s pinned central lifecycle and skill paths. Read those files from any agent; no project skill copies or automatic host discovery are required.',
   controls:'controls [--policy-file FILE]\nMap resolved rule identifiers to actual runtime mechanisms and configured checks. Unknown rules remain guidance; deployment activation is not inferred.',
   hook:'hook [--vendor claude|cursor|ci] [--input FILE]\nProcess a native or normalized JSON event from stdin or FILE with the pinned hooks runtime. Uses frozen project policy; no check installs software.',
   'hook-config':'hook-config [--vendor claude] [--install | --remove]\nPrint settings, or install/remove owned hook entries while preserving other settings. Activate once per repository after reviewing host requirements. Run from the enrolled repository root.',
@@ -15,12 +16,12 @@ export const topics={
   gate:'gate --item FILE --phase ready|done [--decision FILE] [--policy-file FILE] [--output FILE]\nEvaluate configured lifecycle criteria, evidence and independent signed approval. Exit 0 passed, 1 failed, 3 pending, 4 incomplete.',
   spec:'spec --item FILE --phase red|green --evaluator ID [--output FILE]\nCapture an expected test failure (exit 1), then success (exit 0) with the same configured command and criteria. Review the failure cause; an exit code alone is not proof of a valid test.',
   backlog:'backlog --source MARKDOWN_OR_JSON --id ID [--title TITLE] [--provider ID] [--external-id ID] [--output FILE]\nImport one local record or exported platform item, preserving content and external identity. Existing items are never overwritten.',
-  onboard:'onboard [--root PATH] [--agents claude,codex,cursor] [--policy FILE] [--autonomy supervised|bounded|delegated] [--docs open|show|skip]\n        [--branch-pattern PATTERN] [--branch-example EXAMPLE] [--branch-base REF]\nGuided setup asks whether to open the Markdown guides in the default app, show them in the terminal, or skip. With Git present it asks for a branch naming pattern (for example {id}-{slug}) when unset. Supply --agents (or --non-interactive) and --docs for scripts.\nExisting installations receive the same documentation choice and a read-only next-step guide; configuration is preserved.',
+  onboard:'onboard [--integration shared|private] [--artifact-paths DIR,DIR] [--root PATH] [--agents claude,codex,cursor] [--policy FILE] [--autonomy supervised|bounded|delegated] [--docs open|show|skip]\n        [--branch-pattern PATTERN] [--branch-example EXAMPLE] [--branch-base REF]\nGuided setup asks whether to open the Markdown guides in the default app, show them in the terminal, or skip. With Git present it asks for a branch naming pattern (for example {id}-{slug}) when unset. For scripts, explicitly choose --integration shared|private, --agents (or --non-interactive), and --docs. Skills and runtime are central; private mode leaves existing agent instructions untouched.\nExisting installations receive the same documentation choice and a read-only next-step guide; configuration is preserved.',
   demo:'demo --root NEW_EMPTY_DIRECTORY\nRun an isolated example: a failing acceptance check, a fix, then a passing check.\nPrints the HTML report path. The demonstration does not validate your application.',
-  init:'init [--agents claude,codex,cursor,windsurf,opencode,openclaw] [--policy FILE]\n     [--project NAME] [--autonomy supervised|bounded|delegated] [--scope project|user]\nInstall the runtime, lifecycle skill, and required frontend-acceptance dependency.\nDefault autonomy: supervised. User scope creates a separate defaults workspace.',
+  init:'init [--agents claude,codex,cursor,windsurf,opencode,openclaw] [--policy FILE]\n     [--project NAME] [--autonomy supervised|bounded|delegated] [--scope project|user] [--integration shared|private] [--central]\nInstall the runtime, lifecycle skill, and required frontend-acceptance dependency.\nDefault autonomy: supervised. User scope caches runtime and skills centrally without touching a repository. New project setup requires --integration. Existing project installations retain storage until --central migrates unchanged owned files.',
   work:'work new --id ID --title "Outcome" [--kind feature|bug|incident|change|investigation|documentation] [--path NAME] [--parent ID]\nwork show --id ID\nwork advance --id ID --to STAGE [--decision REPOSITORY_RELATIVE_FILE] [--gate-decision FILE] [--policy-file FILE]\nwork branch --id ID [--from REF] [--parent ID]\nEdit fields in .agenthouse/work/ID.json. Stages require evidence and applicable approvals.\nwork branch requires git.branchNaming.pattern, a clean tree, creates and checks out the branch, and does not push.',
   evaluate:'evaluate [--profile pull-request] [--ci] [--frozen] [--subject BUILD_ID]\n         [--base-url URL] [--output PATH] [--policy-file FILE]\nRun configured checks and write JSON, JUnit, and HTML evidence reports.\nExit codes: 0 passed; 1 failed; 2 error; 3 approval pending; 4 incomplete.\n--ci implies --frozen and never updates dependencies. BUILD_ID must identify the tested build.',
-  doctor:'doctor\nCheck installation, policy snapshot, required skill integrity, and housekeeping ignore/tracked-capture/dump-path rules.\nWarns when Git is present without git.branchNaming.pattern. Exit 0: healthy installation; exit 2: problems. This does not certify application quality.',
+  doctor:'doctor\nCheck installation, policy snapshot, required skill integrity, and repository-specific output exclusions, indexed artifacts and ignored baseline paths.\nWarns when Git is present without git.branchNaming.pattern. Exit 0: healthy installation; exit 2: problems. This does not certify application quality.',
   resolve:'resolve [--frozen] [--policy-file FILE]\nResolve configured policy sources. --frozen verifies the existing snapshot without refreshing it.',
   session:'session [--npm-cli PATH]\nCheck configured approved updates between commands, report policy drift without replacing the frozen snapshot, apply housekeeping rules, and record the active version set.',
   dependencies:'dependencies status\ndependencies pin | unpin [--name frontend-acceptance|web-usability-conformity|hooks]\ndependencies update --bundle FILE (--sha256 HASH | --public-key FILE) [--check] [--allow-breaking]\nManage bundled upstream skills. Pins bind version and digest; updates preserve upstream ownership.',
@@ -28,7 +29,7 @@ export const topics={
   bundle:'bundle --output FILE [--key PRIVATE_KEY]\nPackage this framework and required skill for offline distribution. Optionally sign with Ed25519.',
   rollback:'rollback\nRestore the previous complete runtime and dependency set. Conflicting dependency pins must be removed first.',
   restore:'restore [--bundle FILE] [--ignore-generated]\nRecreate owned assets from the exact active pin and recorded agents. Uses the cached runtime, exact executing package, or original unsigned bundle. --ignore-generated opts an existing installation into owned-file ignore rules. Preserves policy snapshots and refuses edits; recover handles interrupted transactions.',
-  housekeep:'housekeep [--check]\nApply housekeeping rules: add missing ignore paths for generated agenthouse files and inspection captures, then delete untracked inspection dumps including tests/output, invented screenshot galleries, and repository-root tmp-* drafts. Does not delete evaluation reports, work records, or Git-tracked files. --check reports without changing the repository. Exit 0 passed, 1 tracked leftovers, 4 missing ignore rules or leftover dumps.',
+  housekeep:'housekeep [--check] [--clean]\nVerify configured output paths with Git, including staged/tracked files and ignore negations. --clean removes only explicitly configured artifacts.cleanup paths and preserves indexed files and CI evidence. No directory-name heuristics or automatic deletion. Exit 0 passed, 1 tracked output, 2 inspection error, 4 missing exclusions.',
   recover:'recover\nRecover an interrupted installation transaction without overwriting subsequent user edits.',
   uninstall:'uninstall\nRemove unchanged managed files. Preserve configuration, policies, keys, work records, and evidence.',
   skill:'skill --source DIRECTORY [--name ID] [--sha256 HASH]\nImport another reviewed specialist skill unchanged. Required frontend-acceptance is managed by dependencies.',
@@ -62,7 +63,8 @@ Invoke it after opening the enrolled repository in your coding agent:
   OpenCode:     /${name}
   Windsurf:     /${name} workflow
 
-Full installed instructions: .agents/skills/${name}/SKILL.md
+Locate pinned instructions: node .agenthouse/run.mjs context
+Native menu invocation requires separate host/plugin registration.
 Host setup and reload guidance: ah-engineering help agents`;
 }
 function suggestedSkill(topic,names) {
@@ -107,7 +109,7 @@ Daily work
   doctor        Diagnose enrollment, skills, and housekeeping problems
   resolve       Rebuild or freeze-check .agenthouse/resolved.json
   session       Active version, approved updates, housekeeping, policy drift
-  housekeep     Ignore rules plus delete untracked screenshot dumps
+  housekeep     Verify artifact exclusions; explicitly clean configured disposable paths
 
 Installation and maintenance
   init, dependencies, update, bundle, rollback, restore, recover, uninstall

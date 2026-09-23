@@ -2,6 +2,8 @@
 
 The `Publish to npm` workflow runs when a GitHub Release is published. It checks the release tag and package identity, runs the Windows, macOS, Linux and browser checks, and tests the packed archive before publishing it to npm.
 
+Version 1.2.0 introduces central skill storage and explicit repository integration. Its [release notes](releases/1.2.0.md) contain the consumer setup and migration commands. The npm package and GitHub release are separate publication results; verify both before telling consumers that the version is available.
+
 1. Update the version in `package.json`, the root lockfile, and both plugin manifests. Keep the usability runtime lockfile's local framework entry aligned. Run `npm run check` and the tests.
 2. Commit and push the release changes.
 3. Create and publish a GitHub Release with a matching tag, such as `v1.0.0` for version `1.0.0`.

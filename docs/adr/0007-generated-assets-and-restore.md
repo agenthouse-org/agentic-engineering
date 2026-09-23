@@ -1,6 +1,6 @@
 # ADR-0007: Generated project assets and exact-pin restoration
 
-Status: accepted by repository owner, 2026-09-15.
+Status: superseded for new enrollment by [ADR-0014](0014-central-storage-and-repository-integration.md). Retained for legacy project-copy compatibility.
 
 Project configuration, policy sources and snapshots, work records, installation ownership, and the active runtime/dependency identity remain project authority. Generated agenthouse skill resources and host command projections are disposable installation output.
 

@@ -1,3 +1,4 @@
+import {storeTree} from './storage.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {assert,read,write,inside,walk,hash,safeId,exclusive} from './io.js';
@@ -13,10 +14,13 @@ export function importSkill(root,source,{name,expectedDigest}={}) {
   return exclusive(root,()=>{
     const lockFile=inside(root,'.agenthouse/skills.json'),lock=fs.existsSync(lockFile)?read(lockFile):{};
     assert(!lock[id] || lock[id].digest===digest,'Skill already imported at another revision; remove it explicitly before replacement');
-    for(const f of files) {
+    const activeFile=inside(root,'.agenthouse/active.json');
+    const central=fs.existsSync(activeFile) && read(activeFile).storage==='machine';
+    if(central)storeTree(`skills/${id}/${digest}`,Object.fromEntries(files.map(f=>[f,fs.readFileSync(inside(source,f)).toString('base64')])));
+    else for(const f of files) {
       const dest=inside(root,`.agents/skills/${id}/${f}`),bytes=fs.readFileSync(inside(source,f));
       if(fs.existsSync(dest))assert(hash(fs.readFileSync(dest))===hash(bytes),`Skill file conflict: ${f}`);else write(dest,bytes);
     }
-    lock[id]={version:entry.match(/^version:\s*(.+)$/m)?.[1] || 'unspecified',digest,files:manifest,source};write(lockFile,lock);return {id,...lock[id]};
+    lock[id]={...(central?{storage:'machine'}:{}),version:entry.match(/^version:\s*(.+)$/m)?.[1] || 'unspecified',digest,files:manifest,source};write(lockFile,lock);return {id,...lock[id]};
   });
 }

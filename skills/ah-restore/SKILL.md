@@ -1,6 +1,6 @@
 ---
 name: ah-restore
-description: "Recreate missing generated skills and host projections from the exact recorded version and agents. Use when .agents/skills or command aliases disappeared, or to opt into generated-file ignore rules."
+description: "Restore missing central assets or legacy project projections from this project’s exact recorded version. Use when the pinned runtime or skills are missing after a clone or machine change."
 license: MIT
 ---
 

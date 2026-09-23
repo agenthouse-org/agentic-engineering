@@ -3,10 +3,11 @@ agenthouse-evaluate:
   stage: test
   script:
     - npm ci --ignore-scripts
-    - node node_modules/@agenthouse/engineering/bin/ah-engineering.js evaluate --profile pull-request --ci --frozen --subject "$CI_COMMIT_SHA"
+    - node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+    - node .agenthouse/run.mjs evaluate --profile pull-request --ci --frozen --subject "$CI_COMMIT_SHA"
   artifacts:
     when: always
     paths:
-      - artifacts/agenthouse/
+      - .agenthouse/local/reports/
     reports:
-      junit: artifacts/agenthouse/*/junit.xml
+      junit: .agenthouse/local/reports/*/junit.xml

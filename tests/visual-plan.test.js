@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {install} from '../src/install.js';
+import {install as installActual} from '../src/install.js';
 import {read,write,hash} from '../src/io.js';
 import {visual} from '../src/visual.js';
 import {gate} from '../src/gates.js';
@@ -77,3 +77,5 @@ test('shipped example visual plan checks cleanly from the package',()=>{
   const result=checkVisualPlan(process.cwd(),{plan:'templates/visual-plan/example-plan.json'});
   assert.equal(result.status,'passed',JSON.stringify(result.findings));
 });
+
+function install(root,options={}) {return installActual(root,{storage:'project',...options});}

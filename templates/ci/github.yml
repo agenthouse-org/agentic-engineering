@@ -13,12 +13,15 @@ jobs:
       # Add the reviewed framework tarball as a locked project dependency first.
       # npm ci honors the configured enterprise registry and certificate settings.
       - run: npm ci --ignore-scripts
+      - name: Restore the exact project runtime into the machine cache
+        run: node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
       - name: Evaluate
-        run: node node_modules/@agenthouse/engineering/bin/ah-engineering.js evaluate --profile pull-request --ci --frozen --subject "${{ github.sha }}"
+        run: node .agenthouse/run.mjs evaluate --profile pull-request --ci --frozen --subject "${{ github.sha }}"
       - name: Preserve evidence even when evaluation fails
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: agenthouse-evidence
-          path: artifacts/agenthouse/
+          path: .agenthouse/local/reports/
+          include-hidden-files: true
           if-no-files-found: warn

@@ -18,6 +18,7 @@ The following product decisions were confirmed by the repository owner on 2026-0
 | [0010](0010-ephemeral-frontend-captures.md) | Inspection screenshot galleries stay out of Git |
 | [0011](0011-ticket-size-and-scope-creep.md) | Ticket size gate, scope-creep stop, ask-first split work and related branches |
 | [0012](0012-floating-latest-update-preference.md) | Optional floating latest update intent with exact verified runtime resolution |
+| [0014](0014-central-storage-and-repository-integration.md) | Central machine storage, explicit repository integration, and classified artifact handling; supersedes 0007/0010 defaults |
 | [0013](0013-test-framework-establishment.md) | Bounded survey, evaluator wiring, and advisory-to-required test adoption workflow |
 
 Proposed implementation details live in the linked design documents until implemented or promoted to an accepted technical ADR.

@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**Version 1.1.0.** The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and verified updates are implemented. Agent skill picker text and the enrolled command catalog use plain-language what/when descriptions. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling, marketplace manifests, visual plans, test-framework establishment, and npm provenance verification are included. See [implementation status](docs/implementation-status.md).
+**Version 1.2.0.** New enrollments choose shared or private repository integration and load pinned skills from central machine storage. Artifact checks protect repository-specific test output and source baselines. The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and verified updates are implemented. Agent skill picker text and the enrolled command catalog use plain-language what/when descriptions. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling, marketplace manifests, visual plans, test-framework establishment, and npm provenance verification are included. See [implementation status](docs/implementation-status.md).
 
 
 ## Install on your computer
@@ -20,7 +20,7 @@ npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-To pin the CLI version, use `npm install --global @agenthouse/engineering@1.1.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@1.2.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
 
 Versioned GitHub release downloads are pending. For an offline installation, obtain a reviewed `.tgz` package as described below.
 
@@ -38,7 +38,7 @@ Public discovery checks npm `latest` first and requires package integrity, regis
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-engineering-1.1.0.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.2.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -52,7 +52,7 @@ To package the source yourself, run these commands in a tools directory outside 
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-engineering-1.1.0.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.2.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -90,12 +90,12 @@ The demo is a small CLI acceptance example. It does not approve a release or per
 ah-engineering onboard --root /path/to/your/project
 ```
 
-In a terminal, onboarding asks for your coding agents, an optional organization policy file, and autonomy preference. After setup it asks whether to open the cookbook and installed agent-command guide in the operating system's default Markdown app, show both in the terminal, or skip them. It then prints instructions for your first task. The default is supervised autonomy. Rerunning onboarding on an enrolled project offers the documentation choice and shows its next steps without modifying configuration.
+In a terminal, onboarding requires a shared/private repository integration choice, then asks for coding agents, generated test-output locations, an optional organization policy file, and autonomy preference. Skills and runtime live centrally in the current user’s `~/.agenthouse/` (or `AGENTHOUSE_HOME`, outside the target repository). Shared setup adds configuration, exact pins, and small instruction entry points for committing. Private setup writes only ignored `.agenthouse/` state and leaves existing instructions and root `.gitignore` untouched; ask the agent to run `node .agenthouse/run.mjs context` explicitly. After setup it asks whether to open the cookbook and installed agent-command guide in the operating system's default Markdown app, show both in the terminal, or skip them. It then prints instructions for your first task. The default is supervised autonomy. Rerunning onboarding on an enrolled project offers the documentation choice and shows its next steps without modifying configuration.
 
 For scripts or a setup without prompts:
 
 ```text
-ah-engineering onboard --root /path/to/your/project --agents claude,codex,cursor --docs skip
+ah-engineering onboard --root /path/to/your/project --integration shared --agents claude,codex,cursor --docs skip
 ```
 
 Scripts can select `--docs open`, `--docs show`, or `--docs skip` explicitly. `--non-interactive` defaults to skipping the guides when `--docs` is omitted.
@@ -104,17 +104,18 @@ Enterprise teams can add `--policy /path/to/approved-policy.json`. Teams retain 
 
 ## Agent commands
 
-Every CLI operation is also available as an `ah-` agent skill. Try `/ah-help`, `/ah-onboard`, or `/ah-review-change` in hosts with slash commands; in Codex select the named skill or use `$ah-help`. Project enrollment installs the appropriate entry points.
+Every CLI operation is also available as an `ah-` agent skill. Try `/ah-help`, `/ah-onboard`, or `/ah-review-change` in hosts with slash commands; in Codex select the named skill or use `$ah-help`. Run `node .agenthouse/run.mjs context` to locate the project’s exact central skills from any agent. Shared enrollment installs small instruction bridges; private enrollment requires explicit context loading. Native slash-command menus require separate host/plugin registration.
 
 Story drafting, readiness, scope validation, visual planning, commit checking, and review workflows are included. See [all agent commands and host-specific usage](docs/agent-commands.md). CLI-only global installation does not register project commands before enrollment.
 
 ### Included skills
 
-The framework ships **42 agent-facing skills** (41 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
+The framework ships **43 agent-facing skills** (42 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
 
 | Skill | Purpose |
 | --- | --- |
 | `ah-help` | Discover commands and features |
+| `ah-context` | Locate this project’s pinned lifecycle and central skills |
 | `ah-onboard` | Guided project setup |
 | `ah-enroll-repository` | Enroll an existing repository |
 | `ah-init` | Install framework assets |
@@ -143,7 +144,7 @@ The framework ships **42 agent-facing skills** (41 generated commands plus the l
 | `ah-doctor` | Diagnose installation and dependency problems |
 | `ah-resolve` | Resolve or verify policy configuration |
 | `ah-session` | Start a session, apply housekeeping, and process approved updates |
-| `ah-housekeep` | Apply ignore rules and remove untracked inspection dumps |
+| `ah-housekeep` | Verify configured output exclusions and explicitly clean disposable paths |
 | `ah-dependencies` | Inspect, pin, unpin, and update dependencies |
 | `ah-update` | Update the framework |
 | `ah-bundle` | Create an offline distribution bundle |
@@ -197,7 +198,7 @@ node .agenthouse/run.mjs resolve
 node .agenthouse/run.mjs evaluate --profile pull-request --ci
 ```
 
-Evaluation records the clean Git commit by default. For a separately built artifact, supply `--subject` with its actual build identity. Reports appear under `artifacts/agenthouse/`. Passing technical checks and authorized governance decisions remain separate. See [the operating guide](docs/using.md) for evidence fields and signed transitions.
+Evaluation records the clean Git commit by default. For a separately built artifact, supply `--subject` with its actual build identity. Central installations write reports under `.agenthouse/local/reports/`; legacy installations retain `artifacts/agenthouse/`. Use the printed report path. Passing technical checks and authorized governance decisions remain separate. See [the operating guide](docs/using.md) for evidence fields and signed transitions.
 
 ## What gets installed?
 
@@ -214,7 +215,7 @@ npm installs **one executable: `ah-engineering`**. Everything below is a subcomm
 | `evaluate` | Run checks locally or in CI |
 | `doctor` | Diagnose installation, policy, skill integrity, and housekeeping |
 | `resolve`, `session` | Resolve policy and start a session with approved updates and housekeeping |
-| `housekeep` | Apply ignore rules and remove untracked inspection dumps, including leftover `tests/output` galleries |
+| `housekeep` | Verify configured output exclusions and explicitly clean disposable paths, including leftover `tests/output` galleries |
 | `dependencies status`, `pin`, `unpin`, `update` | Inspect and manage the required skill version |
 | `init`, `update`, `bundle`, `rollback` | Install, distribute, and update the framework |
 | `npm-provenance` | Inspect or add npm package provenance; does not publish |
@@ -224,9 +225,9 @@ npm installs **one executable: `ah-engineering`**. Everything below is a subcomm
 
 Enrollment creates a project launcher, `node .agenthouse/run.mjs`, which selects the installed runtime. Prefer it for daily work and CI so a global CLI update does not silently change the project's runtime.
 
-New installations Git-ignore exact owned generated skill and command files. After cloning, run `ah-engineering restore`; an exact installed package or original offline bundle is required when the runtime cache is absent. Existing installations opt in with `restore --ignore-generated`. See [restoration and retained project state](docs/distribution.md#generated-files-and-restoring-a-clone).
+New installations store skills and runtime once per exact identity on the machine, with no per-project skill or command copies. After cloning a shared enrollment, run `ah-engineering restore`; the exact package or original offline bundle is required if the central cache is absent. Existing installations retain their layout until `ah-engineering init --central` explicitly migrates unchanged owned assets. See [central storage and repository integration](docs/central-installation.md).
 
-Managed assets include `.agenthouse/`, `.agents/skills/`, and instructions appropriate to the selected agents. Installation preserves unrelated content and refuses conflicting edits. It does not install coding agents, browsers, or native hooks.
+Repository assets are limited to `.agenthouse/` state and, in shared mode, small instructions appropriate to selected agents and narrow Git exclusions. Existing legacy installations may retain `.agents/skills/`. Installation preserves unrelated content and refuses conflicting edits. It does not install coding agents, browsers, or native hooks.
 
 ## How the pieces fit
 

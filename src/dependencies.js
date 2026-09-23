@@ -1,3 +1,4 @@
+import {runtimeDirectory,skillDirectory} from './storage.js';
 import fs from 'node:fs';
 import os from 'node:os';
 import {assert,hash,inside,read,walk} from './io.js';
@@ -59,7 +60,7 @@ export function hookLock(payload) {
 export function installedHooks(root) {
   const active=read(inside(root,'.agenthouse/active.json')),files={};
   for(const name of ['manifest.json','engineering.cjs','LICENSE']) {
-    const file=inside(root,`.agenthouse/${active.runtime}/dependencies/hooks/${name}`);
+    const file=inside(runtimeDirectory(root,active),`dependencies/hooks/${name}`);
     if(fs.existsSync(file))files[`dependencies/hooks/${name}`]=fs.readFileSync(file).toString('base64');
   }
   return hookLock({files});
@@ -67,10 +68,10 @@ export function installedHooks(root) {
 export function dependencyStatus(root) {
   const active=read(inside(root,'.agenthouse/active.json')),expected={};
   for(const id of Object.keys(SOURCES)) {
-    const file=inside(root,'.agenthouse/'+active.runtime+'/dependencies/'+id+'.json');
+    const file=inside(runtimeDirectory(root,active),'dependencies/'+id+'.json');
     if(!fs.existsSync(file)){assert(id!==DEPENDENCY,'Required frontend dependency missing');continue;}
     const entry=verifyDependency(read(file));expected[id]=entry;
-    const directory=inside(root,'.agents/skills/'+id);
+    const directory=skillDirectory(root,id,active);
     assert(fs.existsSync(directory) && hash(walk(directory).sort())===hash(Object.keys(entry.files).sort()),'Dependency file inventory changed');
     for(const [file,digest] of Object.entries(entry.files))assert(hash(fs.readFileSync(inside(directory,file)))===digest,'Dependency missing or modified: '+file);
     checkDependencyPin(root,entry);
@@ -78,5 +79,11 @@ export function dependencyStatus(root) {
   const lock=read(inside(root,'.agenthouse/dependencies.lock.json'));
   assert(hash(lock)===hash({schemaVersion:1,dependencies:expected}),'Dependency lock changed');
   const hooks=installedHooks(root);if(hooks)checkDependencyPin(root,hooks);
+  const imports=inside(root,'.agenthouse/skills.json');
+  if(fs.existsSync(imports))for(const [id,entry] of Object.entries(read(imports))) {
+    const directory=skillDirectory(root,id,active);
+    assert(fs.existsSync(directory) && hash(walk(directory).sort())===hash(Object.keys(entry.files).sort()),`Imported skill inventory changed: ${id}`);
+    for(const [file,digest] of Object.entries(entry.files))assert(hash(fs.readFileSync(inside(directory,file)))===digest,`Imported skill modified: ${id}/${file}`);
+  }
   return {...lock,runtimeDependencies:hooks?{hooks}:{}};
 }

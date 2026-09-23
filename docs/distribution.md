@@ -5,6 +5,10 @@
 
 Status: target distribution design. Local tarball installation, framework bundles, signature/checksum verification, local-channel updates and rollback are implemented; remote distribution services and full dependency closure remain open.
 
+## Current central installation
+
+The unreleased central-storage implementation supersedes the project-copy defaults below for new enrollment. See [central installation](central-installation.md) and [ADR-0014](adr/0014-central-storage-and-repository-integration.md). Existing installations preserve their layout until explicit migration.
+
 ## User experience
 
 One installer detects supported coding agents, offers project or user installation, selects an organization policy source when applicable, and enrolls the repository. It presents inherited defaults and asks only for missing decisions. Noninteractive installation must accept the same choices through configuration.
@@ -56,6 +60,8 @@ Do not load new executable hooks or remote skill instructions merely because an 
 
 
 ## Generated files and restoring a clone
+
+This section describes the retained **legacy project-copy mode**. New enrollments use central storage and `context`; restoration still requires the exact payload.
 
 New installations add exact owned paths under `.agents/skills/`, `.claude/commands/`, `.opencode/commands/`, and `.windsurf/workflows/` to the managed `.gitignore` block, according to selected hosts. Consumer-owned files are not ignored by these rules. Files already tracked by Git remain tracked; review and untrack only generated paths if adopting this workflow in an existing repository.
 

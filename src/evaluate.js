@@ -1,3 +1,4 @@
+import {housekeep,assertOutput} from './housekeep.js';
 import {dependencyStatus} from './dependencies.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -67,7 +68,10 @@ async function execute(root,e,context) {
   return {status,reason:`Process exit ${executed.code}`,findings:[{stdout:executed.stdout,stderr:executed.stderr}]};
 }
 export async function evaluate(root,options={}) {
-  const output=path.resolve(root,options.output || 'artifacts/agenthouse');
+  const activeFile=inside(root,'.agenthouse/active.json');
+  const central=fs.existsSync(activeFile) && read(activeFile).storage==='machine';
+  const output=path.resolve(root,options.output || (central?'.agenthouse/local/reports':'artifacts/agenthouse'));
+  if(central)assertOutput(root,output);
   fs.mkdirSync(output,{recursive:true});
   const runId=randomUUID(),folder=path.join(output,runId);
   fs.mkdirSync(folder);
@@ -98,6 +102,10 @@ export async function evaluate(root,options={}) {
       result.checks.push({...data,id,required,criteria:config.evaluators.find(x=>x.id===id)?.criteria || []});
     }
   } catch(error) { result.checks.push({id:'framework',required:true,status:'error',reason:error.message}); }
+  if(central) {
+    try {const check=housekeep(root,{check:true});result.checks.push({id:check.ruleId,required:true,status:check.status,reason:check.reason,findings:[check]});}
+    catch(error){result.checks.push({id:'AH-ARTIFACT-001',required:true,status:'error',reason:error.message});}
+  }
   Object.assign(result,summarize(result.checks),{finishedAt:new Date().toISOString()});
   reports(folder,result);
   write(path.join(output,'latest.json'),{runId,path:runId,exitCode:result.exitCode});

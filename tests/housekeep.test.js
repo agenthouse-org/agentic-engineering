@@ -1,138 +1,86 @@
-import test from 'node:test';
+import test,{after} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {install} from '../src/install.js';
-import {session} from '../src/update.js';
-import {housekeep} from '../src/housekeep.js';
-import {PACKAGE} from '../src/io.js';
-
-const temp=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah-housekeep-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
-function git(root,...args){const r=spawnSync('git',args,{cwd:root,encoding:'utf8',windowsHide:true});assert.equal(r.status,0,r.stderr);return r.stdout.trim();}
-function dump(root,rel,bytes='x') {
-  const target=path.join(root,rel);
-  fs.mkdirSync(path.dirname(target),{recursive:true});
-  fs.writeFileSync(target,bytes);
-  return target;
+import {housekeep,artifactPolicy,assertOutput} from '../src/housekeep.js';
+import {read,write} from '../src/io.js';
+import {resolve} from '../src/policy.js';
+import {evaluate} from '../src/evaluate.js';
+const home=fs.mkdtempSync(path.join(os.tmpdir(),'ah-artifact-store-'));
+process.env.AGENTHOUSE_HOME=home;after(()=>fs.rmSync(home,{recursive:true,force:true}));
+function git(root,...args){const r=spawnSync('git',['-C',root,...args],{encoding:'utf8',windowsHide:true});assert.equal(r.status,0,r.stderr);return r.stdout;}
+function setup(t,options={}) {
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah-artifacts-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  git(root,'init');install(root,{agents:[],...options});return root;
 }
-
-test('housekeep adds missing ignore rules and deletes untracked captures',t=>{
-  const root=temp(t);install(root,{agents:[]});
-  fs.writeFileSync(path.join(root,'.gitignore'),'node_modules\n<!-- agenthouse:start -->\n.agenthouse/local/\n.agenthouse/runtime/\n<!-- agenthouse:end -->\n');
-  const shot=dump(root,'.agenthouse/evidence/overview/shot.png');
-  const report=dump(root,'artifacts/agenthouse/run/result.json','{}');
-  const check=housekeep(root,{check:true,env:{}});
-  assert.equal(check.status,'incomplete');
-  assert.ok(check.missingIgnore.includes('.agenthouse/evidence/'));
-  assert.ok(fs.existsSync(shot));
-  const applied=housekeep(root,{env:{}});
-  assert.equal(applied.status,'passed');
-  assert.ok(applied.addedIgnore.includes('.agenthouse/evidence/'));
-  assert.ok(applied.removed.includes('.agenthouse/evidence'));
-  assert.equal(fs.existsSync(shot),false);
-  assert.ok(fs.existsSync(report));
-  assert.match(fs.readFileSync(path.join(root,'.gitignore'),'utf8'),/\.agenthouse\/evidence\//);
+function configure(root,artifacts) {const file=path.join(root,'.agenthouse/config.json'),config=read(file);config.artifacts=artifacts;write(file,config);resolve(root);}
+test('only framework outputs are ignored; new baselines and galleries survive',t=>{
+  const root=setup(t);
+  for(const file of ['tests/screenshots/new-baseline.png','docs/review/screen-1440-light.png','tmp-notes.md','.agenthouse/evidence/shot.png'])write(path.join(root,file),'keep');
+  assert.equal(housekeep(root).status,'passed');
+  assert.ok(fs.existsSync(path.join(root,'tests/screenshots/new-baseline.png')));
+  assert.ok(fs.existsSync(path.join(root,'.agenthouse/evidence/shot.png')));
+  assert.match(git(root,'ls-files','--others','--exclude-standard'),/new-baseline/);
+});
+test('repo-specific outputs use effective Git exclusions, including nested negations',t=>{
+  const root=setup(t);configure(root,{outputs:['custom-results'],baselines:['tests/screenshots']});
+  assert.equal(housekeep(root,{check:true}).status,'incomplete');
+  install(root);assert.equal(housekeep(root,{check:true}).status,'passed');
+  write(path.join(root,'custom-results/result.json'),'{}');
+  fs.appendFileSync(path.join(root,'.gitignore'),'\n!/custom-results/\n/custom-results/*\n!/custom-results/result.json\n');
+  assert.equal(housekeep(root,{check:true}).status,'incomplete');
+  assert.ok(housekeep(root,{check:true}).missingIgnore.includes('custom-results/result.json'));
+});
+test('force-staged generated reports fail diagnostics and evaluation; files survive',async t=>{
+  const root=setup(t);write(path.join(root,'.agenthouse/local/reports/staged.json'),'{}');
+  git(root,'add','-f','.agenthouse/local/reports/staged.json');
+  const result=housekeep(root,{clean:true});assert.equal(result.status,'failed');
+  assert.ok(result.tracked.includes('.agenthouse/local/reports/staged.json'));
+  assert.ok(fs.existsSync(path.join(root,'.agenthouse/local/reports/staged.json')));
+  await assert.rejects(()=>evaluate(root,{subject:'build'}),/staged or tracked/);
+});
+test('cleanup requires explicit classification and preserves indexed files and CI evidence',t=>{
+  const root=setup(t);configure(root,{outputs:['scratch'],cleanup:['scratch']});install(root);
+  write(path.join(root,'scratch/result.txt'),'keep');
+  housekeep(root);assert.ok(fs.existsSync(path.join(root,'scratch/result.txt')));
+  housekeep(root,{clean:true,env:{CI:'1'}});assert.ok(fs.existsSync(path.join(root,'scratch/result.txt')));
+  housekeep(root,{clean:true,env:{}});assert.equal(fs.existsSync(path.join(root,'scratch')),false);
+  write(path.join(root,'scratch/result.txt'),'keep');git(root,'add','-f','scratch/result.txt');
+  housekeep(root,{clean:true,env:{}});assert.ok(fs.existsSync(path.join(root,'scratch/result.txt')));
+});
+test('ambiguous, escaping, broad and baseline-overlapping output paths fail closed',t=>{
+  const root=setup(t);
+  for(const artifacts of [{outputs:['../outside']},{outputs:['.']},{outputs:['.agenthouse']},{outputs:['.agenthouse/config.json']},{outputs:['tests/*']},{outputs:['tests'],baselines:['tests/baselines']},{cleanup:['tests']}]) {
+    configure(root,artifacts);assert.throws(()=>artifactPolicy(root));
+  }
+});
+test('missing Git is an error and cleanup preserves files',t=>{
+  const root=setup(t);configure(root,{outputs:['scratch'],cleanup:['scratch']});write(path.join(root,'scratch/keep'),'x');
+  fs.renameSync(path.join(root,'.git'),path.join(root,'git-backup'));
+  assert.equal(housekeep(root,{clean:true}).status,'error');assert.ok(fs.existsSync(path.join(root,'scratch/keep')));
+});
+test('private integration ignores local evidence without editing shared files',t=>{
+  const root=setup(t,{integration:'private'});assert.equal(housekeep(root,{check:true}).status,'passed');
+  assert.equal(fs.existsSync(path.join(root,'.gitignore')),false);
+  assertOutput(root,'.agenthouse/local/reports');assert.throws(()=>assertOutput(root,'unclassified-results'),/not classified/);
+});
+test('evaluation rechecks artifacts after commands run and cannot report a passed gate',async t=>{
+  const root=setup(t),file=path.join(root,'.agenthouse/config.json'),config=read(file);
+  write(path.join(root,'check.mjs'),`import fs from 'node:fs';import {spawnSync} from 'node:child_process';fs.writeFileSync('.agenthouse/evidence/leak.txt','x');spawnSync('git',['add','-f','.agenthouse/evidence/leak.txt']);`);
+  fs.mkdirSync(path.join(root,'.agenthouse/evidence'),{recursive:true});
+  config.evaluators=[{id:'test',kind:'command',executable:'node',args:['check.mjs'],result:'exit-code'}];config.profiles={'pull-request':{checks:[{evaluator:'test'}]}};write(file,config);resolve(root);
+  const result=await evaluate(root,{subject:'build',frozen:true});assert.equal(result.exitCode,1);
+  assert.equal(result.checks.find(c=>c.id==='AH-ARTIFACT-001').status,'failed');
+  assert.ok(fs.existsSync(path.join(result.folder,'report.html')));
 });
 
-test('housekeep does not delete tracked captures and doctor reports them',t=>{
-  const root=temp(t);install(root,{agents:[]});
-  git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');
-  const rel='.agenthouse/evidence/tracked.png';
-  dump(root,rel);
-  git(root,'add','-f',rel);git(root,'commit','-m','tracked capture');
-  const applied=housekeep(root,{env:{}});
-  assert.equal(applied.status,'failed');
-  assert.equal(applied.exitCode,1);
-  assert.ok(applied.tracked.some(file=>file.endsWith('tracked.png')));
-  assert.ok(fs.existsSync(path.join(root,rel)));
-  const cli=spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),'doctor','--root',root],{encoding:'utf8',windowsHide:true});
-  assert.equal(cli.status,2);
-  assert.match(cli.stdout,/Tracked inspection captures/);
-});
-
-test('session applies housekeeping and CI keeps scratch',t=>{
-  const root=temp(t);install(root,{agents:[]});
-  const shot=dump(root,'.agenthouse/evidence/session.png');
-  assert.equal(housekeep(root,{env:{CI:'true'}}).kept,true);
-  assert.ok(fs.existsSync(shot));
-  const result=session(root,{env:{}});
-  assert.equal(result.housekeeping.status,'passed');
-  assert.ok(result.housekeeping.removed.includes('.agenthouse/evidence'));
-  assert.equal(fs.existsSync(shot),false);
-});
-
-test('housekeep CLI applies rules on an enrolled repository',t=>{
-  const root=temp(t);install(root,{agents:[]});
-  dump(root,'.agenthouse/evidence/cli.png');
-  const env={...process.env};delete env.CI;delete env.AH_KEEP_BROWSER_ARTIFACTS;
-  const cli=spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),'housekeep','--root',root],{encoding:'utf8',windowsHide:true,env});
-  assert.equal(cli.status,0,cli.stderr);
-  assert.match(cli.stdout,/"status": "passed"/);
-  assert.equal(fs.existsSync(path.join(root,'.agenthouse/evidence')),false);
-});
-
-test('housekeep deletes tests/output dumps and invented viewport galleries',t=>{
-  const root=temp(t);install(root,{agents:[]});
-  git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');
-  git(root,'add','.gitignore','.agenthouse');git(root,'commit','-m','enroll');
-  const dumpShot=dump(root,'tests/output/overview-ui/overview-1440-light.png');
-  const gallery=[
-    dump(root,'docs/ui-review/panel-1440-light.png'),
-    dump(root,'docs/ui-review/panel-768-dark.png'),
-    dump(root,'docs/ui-review/panel-390-light.png')
-  ];
-  const mockup=dump(root,'docs/mockups/hero.png');
-  const check=housekeep(root,{check:true,env:{}});
-  assert.equal(check.status,'incomplete');
-  assert.ok(check.dumps.includes('tests/output'));
-  assert.ok(check.stray.includes('docs/ui-review'));
-  assert.ok(fs.existsSync(dumpShot));
-  const applied=housekeep(root,{env:{}});
-  assert.equal(applied.status,'passed');
-  assert.ok(applied.removed.includes('tests/output'));
-  assert.ok(applied.removed.includes('docs/ui-review'));
-  assert.equal(fs.existsSync(path.join(root,'tests/output')),false);
-  for(const file of gallery)assert.equal(fs.existsSync(file),false);
-  assert.ok(fs.existsSync(mockup));
-  const doctor=spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),'doctor','--root',root],{encoding:'utf8',windowsHide:true,env:{...process.env,CI:'',AH_KEEP_BROWSER_ARTIFACTS:''}});
-  assert.equal(doctor.status,0,doctor.stdout);
-});
-
-test('housekeep does not delete tracked tests/output or a single mockup',t=>{
-  const root=temp(t);install(root,{agents:[]});
-  git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');
-  dump(root,'tests/output/golden.png');
-  git(root,'add','-f','tests/output/golden.png');git(root,'commit','-m','tracked output');
-  dump(root,'docs/mockups/hero.png');
-  const applied=housekeep(root,{env:{}});
-  assert.ok(fs.existsSync(path.join(root,'tests/output/golden.png')));
-  assert.ok(fs.existsSync(path.join(root,'docs/mockups/hero.png')));
-  assert.ok(applied.tracked.some(file=>file.endsWith('golden.png')));
-});
-
-test('housekeep deletes untracked root tmp drafts and keeps nested files',t=>{
-  const root=temp(t);install(root,{agents:[]});
-  git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');
-  dump(root,'tmp-pr-178.md','## Summary\n');
-  dump(root,'tmp-issue-178.md','## Issue\n');
-  dump(root,'tmp/draft.md','x');
-  const nested=dump(root,'docs/tmp-notes.md','keep');
-  git(root,'add','-f','docs/tmp-notes.md');git(root,'commit','-m','nested');
-  dump(root,'tmp-keep.md','tracked');
-  git(root,'add','-f','tmp-keep.md');git(root,'commit','-m','tracked tmp');
-  const check=housekeep(root,{check:true,env:{}});
-  assert.equal(check.status,'incomplete');
-  assert.ok(check.notes.includes('tmp-pr-178.md'));
-  assert.ok(check.notes.includes('tmp-issue-178.md'));
-  assert.ok(check.notes.includes('tmp'));
-  assert.ok(!check.notes.includes('tmp-keep.md'));
-  const applied=housekeep(root,{env:{CI:'true'}});
-  assert.equal(fs.existsSync(path.join(root,'tmp-pr-178.md')),false);
-  assert.equal(fs.existsSync(path.join(root,'tmp-issue-178.md')),false);
-  assert.equal(fs.existsSync(path.join(root,'tmp')),false);
-  assert.ok(fs.existsSync(nested));
-  assert.ok(fs.existsSync(path.join(root,'tmp-keep.md')));
-  assert.ok(applied.removed.includes('tmp-pr-178.md'));
+test('baseline exclusions are diagnosed and credentials cannot be classified for cleanup',t=>{
+  const root=setup(t);configure(root,{baselines:['tests/screenshots']});
+  fs.appendFileSync(path.join(root,'.gitignore'),'\ntests/screenshots/\n');
+  assert.equal(housekeep(root,{check:true}).status,'incomplete');
+  assert.ok(housekeep(root,{check:true}).ignoredBaselines.length);
+  configure(root,{outputs:['.agenthouse/local'],cleanup:['.agenthouse/local']});assert.throws(()=>artifactPolicy(root),/overlaps framework state/);
 });

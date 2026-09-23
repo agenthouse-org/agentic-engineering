@@ -1,6 +1,6 @@
 # 0010: Inspection captures stay out of Git
 
-Status: accepted by repository owner; implemented in this preview.
+Status: cleanup and ignore behavior superseded by [ADR-0014](0014-central-storage-and-repository-integration.md). The historical heuristics below must not be used by the current runtime.
 
 Frontend-acceptance requires real screenshots to be inspected. That does not put screenshot galleries in Git. Inspection captures are ephemeral working files under `.agenthouse/evidence/<work-id>/`. Evaluation reports stay under `artifacts/agenthouse/`. Agents must not invent dump folders such as `tests/output`.
 

@@ -1,6 +1,6 @@
 ---
 name: ah-evaluate
-description: "Run the project's configured checks and write JSON, JUnit, and HTML reports under artifacts/agenthouse. Use when running local or CI evaluation, pull-request checks, or verifying a specific build."
+description: "Run the project's configured checks and write JSON, JUnit, and HTML reports in the configured ignored output location. Use when running local or CI evaluation, pull-request checks, or verifying a specific build."
 license: MIT
 ---
 

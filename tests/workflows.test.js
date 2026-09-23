@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {install,payload,transact,uninstall} from '../src/install.js';
+import {install as installActual,payload,transact,uninstall} from '../src/install.js';
 import {write,read,hash,PACKAGE} from '../src/io.js';
 import {resolve,signed} from '../src/policy.js';
 import {newItem,advance,createBranch} from '../src/lifecycle.js';
@@ -238,3 +238,5 @@ test('kind-specific completion requirements are enforced and blank criteria reje
   assert.ok(gate(root,{item:'item.json',phase:'done'}).findings.some(f=>f.id==='runbook'));
   record.criteria[0].expectation=' ';write(path.join(root,'item.json'),record);assert.throws(()=>gate(root,{item:'item.json'}),/Invalid/);
 });
+
+function install(root,options={}) {return installActual(root,{storage:'project',...options});}

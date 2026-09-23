@@ -1,5 +1,7 @@
 # agenthouse engineering cookbook
 
+Version 1.2.0 uses central storage and explicit shared/private onboarding for new projects. See [central installation](central-installation.md) for context loading, migration, artifact classification and verification limits. Older project paths in examples apply to legacy installations.
+
 This guide shows the common paths from installation to a verified change. Commands use the globally installed `ah-engineering` executable for setup and the repository-pinned launcher for daily work.
 
 ## The two command types

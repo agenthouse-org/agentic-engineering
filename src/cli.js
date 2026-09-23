@@ -6,6 +6,7 @@ import os from 'node:os';
 import {generateKeyPairSync} from 'node:crypto';
 import {assert,read,write,create,hash,inside,VERSION,PACKAGE,exclusive,validated} from './io.js';
 import {install,uninstall,detect,payload,recover,transact,restore,installationStatus} from './install.js';
+import {cachePayload,projectContext} from './install.js';
 import {resolve,signed} from './policy.js';
 import {evaluate} from './evaluate.js';
 import {newItem,advance,createBranch,STAGES} from './lifecycle.js';
@@ -24,7 +25,7 @@ import {checkVisualPlan} from './visual-plan.js';
 import {statusNpmProvenance,applyNpmProvenance} from './npm-provenance.js';
 import {planModule,applyModulePlan} from './module-plan.js';
 
-const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated','preview','latest']);
+const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated','central','clean','preview','latest']);
 function parse(args) {
   const o={},pos=[];
   for(let i=0;i<args.length;i++) {
@@ -34,7 +35,7 @@ function parse(args) {
   }
   return {o,pos};
 }
-const allowed={onboard:['agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking','latest','track','npm-cli'],rollback:[],session:['npm-cli'],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output','preview','apply','workspace','layers','profile','advisory-profile','milestone-reference','milestone-owner','milestone-status']};
+const allowed={context:[],onboard:['integration','artifact-paths','agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['integration','central','agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking','latest','track','npm-cli'],rollback:[],session:['npm-cli'],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output','preview','apply','workspace','layers','profile','advisory-profile','milestone-reference','milestone-owner','milestone-status']};
 Object.assign(allowed,{survey:['output'],inspect:['ref','base','output'],review:['ref','base','baseline','item','evidence','output'],gate:['item','phase','decision','policy-file','output'],spec:['item','phase','evaluator','output'],backlog:['source','id','title','provider','external-id','output']});
 allowed.controls=['policy-file'];
 allowed.hook=['vendor','input'];
@@ -44,7 +45,7 @@ allowed.work.push('gate-decision','path','from','parent');
 allowed['visual-plan']=['item','plan','output'];
 allowed['npm-provenance']=['provider','workflow','publish','access','output'];
 allowed.dependencies.push('name');
-allowed.housekeep=['check'];
+allowed.housekeep=['check','clean'];
 allowed.onboard.push('branch-pattern','branch-example','branch-base');
 export async function main(args) {
   const {o,pos}=parse(args),command=pos.shift();
@@ -71,12 +72,14 @@ export async function main(args) {
     case 'gate':result=gate(root,{item:o.item,phase:o.phase,decision:o.decision,policyFile:o['policy-file']});break;
     case 'spec':result=await specification(root,{item:o.item,phase:o.phase,evaluator:o.evaluator});break;
     case 'backlog':result=importBacklog(root,{source:o.source,id:o.id,title:o.title,provider:o.provider,externalId:o['external-id']});break;
-    case 'onboard':console.log(await onboard(root,{agents:o.agents,policy:o.policy,autonomy:o.autonomy,project:o.project,docs:o.docs,nonInteractive:o['non-interactive'],branchPattern:o['branch-pattern'],branchExample:o['branch-example'],branchBase:o['branch-base']}));return 0;
+    case 'context':dependencyStatus(root);result=projectContext(root);break;
+    case 'onboard':console.log(await onboard(root,{integration:o.integration,artifactPaths:o['artifact-paths']?.split(',').filter(Boolean),agents:o.agents,policy:o.policy,autonomy:o.autonomy,project:o.project,docs:o.docs,nonInteractive:o['non-interactive'],branchPattern:o['branch-pattern'],branchExample:o['branch-example'],branchBase:o['branch-base']}));return 0;
     case 'demo':assert(o.root,'Specify --root NEW_EMPTY_DIRECTORY for the demo');console.log(await demo(root));return 0;
     case 'init': {
       assert(!o.scope || ['project','user'].includes(o.scope),'Scope must be project or user');
-      const target=o.scope==='user'?path.join(os.homedir(),'.agenthouse-defaults'):root;
-      result=install(target,{agents:o.agents?.split(','),policy:o.policy,project:o.project,autonomy:o.autonomy});break;
+      if(o.scope==='user'){result=cachePayload();break;}
+      assert(o.integration || fs.existsSync(inside(root,'.agenthouse/installation.json')),'Choose --integration shared or private; run onboard for guided setup');
+      result=install(root,{integration:o.integration,storage:o.central?'machine':undefined,agents:o.agents?.split(','),policy:o.policy,project:o.project,autonomy:o.autonomy});break;
     }
     case 'restore':result=restore(root,{bundle:o.bundle,ignoreGenerated:o['ignore-generated']});break;
     case 'resolve':result=resolve(root,{frozen:o.frozen,policyFile:o['policy-file']}).snapshot;break;
@@ -96,7 +99,9 @@ export async function main(args) {
       if(config && !config.git?.branchNaming?.pattern && fs.existsSync(path.join(root,'.git')))warnings.push('Branch naming not configured (git.branchNaming.pattern); ask the team standard (for example {id}-{slug}) before work branch');
       if(fs.existsSync(inside(root,'.agenthouse/installation.json'))) {
         const keep=housekeep(root,{check:true});
-        if(keep.missingIgnore.length)problems.push(`Missing housekeeping ignore rules (${keep.missingIgnore.join(', ')}); run housekeep`);
+        problems.push(...keep.errors);
+        if(keep.ignoredBaselines.length)problems.push(`Source baselines are ignored: ${keep.ignoredBaselines.join(', ')}`);
+        if(keep.missingIgnore.length)problems.push(`Generated output is not excluded (${keep.missingIgnore.join(', ')}); review artifacts.outputs and repository/local Git exclusions. Shared setups can rerun init after resolving configuration`);
         if(keep.tracked.length)problems.push(`Tracked inspection captures require untracking: ${keep.tracked.join(', ')}`);
         if(!keep.kept && (keep.dumps.length || keep.stray.length))problems.push(`Inspection screenshot dumps outside ${keep.canonical} (${[...keep.dumps,...keep.stray].join(', ')}); write captures under ${keep.canonical}/<work-id>/ then run housekeep`);
         if(keep.notes.length)problems.push(`Scratch files at repository root (${keep.notes.join(', ')}); write GitHub bodies under .agenthouse/local/ then run housekeep`);
@@ -125,7 +130,7 @@ export async function main(args) {
     }
     case 'rollback':result=rollback(root);break;
     case 'session':result=session(root,{npmCli:o['npm-cli']});break;
-    case 'housekeep':result=housekeep(root,{check:o.check});break;
+    case 'housekeep':result=housekeep(root,{check:o.check,clean:o.clean});break;
     case 'recover':result={recovered:recover(root)};break;
     case 'uninstall':result=uninstall(root);break;
     case 'keygen': {

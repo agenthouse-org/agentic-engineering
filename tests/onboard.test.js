@@ -1,4 +1,4 @@
-import test from 'node:test';
+import test,{after} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -6,6 +6,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {PACKAGE,read,write} from '../src/io.js';
 import {onboard,demo,documentationFiles,openDocumentation,showDocumentation} from '../src/onboard.js';
+const home=fs.mkdtempSync(path.join(os.tmpdir(),'ah-onboard-store-'));process.env.AGENTHOUSE_HOME=home;after(()=>fs.rmSync(home,{recursive:true,force:true}));
 const temp=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah-onboard-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 const cli=(args)=>spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),...args],{encoding:'utf8',timeout:20000,windowsHide:true});
 test('command help works without enrollment and unknown topics fail',()=>{
@@ -18,25 +19,25 @@ test('command help works without enrollment and unknown topics fail',()=>{
   const missing=cli(['help','missing']);assert.equal(missing.status,2);assert.match(missing.stderr,/help cookbook/);
 });
 test('noninteractive onboarding enrolls and repeat preserves configuration',async t=>{
-  const root=temp(t);const first=await onboard(root,{agents:'codex,cursor'});assert.match(first,/frontend-acceptance/);
+  const root=temp(t);const first=await onboard(root,{integration:'shared',agents:'codex,cursor'});assert.match(first,/frontend-acceptance/);
   assert.match(first,/Registered coding agents: codex, cursor/);assert.match(first,/help cookbook/);assert.match(first,/reload/);
   const file=path.join(root,'.agenthouse/config.json'),before=fs.readFileSync(file);
-  assert.match(await onboard(root,{agents:'claude'}),/Project ready/);assert.deepEqual(fs.readFileSync(file),before);
+  assert.match(await onboard(root,{integration:'shared',agents:'claude'}),/Project installed/);assert.deepEqual(fs.readFileSync(file),before);
   assert.deepEqual(read(path.join(root,'.agenthouse/installation.json')).agents,['codex','cursor']);
 });
 test('noninteractive onboarding can store branch naming',async t=>{
   const root=temp(t);
-  await onboard(root,{agents:'codex',docs:'skip',branchPattern:'{id}-{slug}',branchExample:'first-change-outcome',branchBase:'main'});
+  await onboard(root,{integration:'shared',agents:'codex',docs:'skip',branchPattern:'{id}-{slug}',branchExample:'first-change-outcome',branchBase:'main'});
   const config=read(path.join(root,'.agenthouse/config.json'));
   assert.deepEqual(config.git.branchNaming,{pattern:'{id}-{slug}',example:'first-change-outcome',baseDefault:'main'});
 });
 test('piped onboarding explains explicit options without writing a project',t=>{
   const root=temp(t),result=cli(['onboard','--root',root]);
-  assert.equal(result.status,2);assert.match(result.stderr,/--non-interactive/);assert.deepEqual(fs.readdirSync(root),[]);
-  assert.equal(cli(['onboard','--root',root,'--non-interactive']).status,0);
+  assert.equal(result.status,2);assert.match(result.stderr,/--integration/);assert.deepEqual(fs.readdirSync(root),[]);
+  assert.equal(cli(['onboard','--root',root,'--non-interactive','--integration','shared']).status,0);
 });
 test('onboarding can show or open both Markdown guides',async t=>{
-  const root=temp(t);await onboard(root,{agents:'codex',docs:'skip'});
+  const root=temp(t);await onboard(root,{integration:'shared',agents:'codex',docs:'skip'});
   const files=documentationFiles(root);assert.equal(files.length,2);assert.ok(files.every(file=>fs.existsSync(file)));
   const shown=showDocumentation(root);assert.match(shown,/# agenthouse engineering cookbook/);assert.match(shown,/# Agent commands/);
   const calls=[],opened=openDocumentation(root,{platform:'win32',run:(command,args,options)=>{calls.push({command,args,options});return {status:0};}});
@@ -44,9 +45,9 @@ test('onboarding can show or open both Markdown guides',async t=>{
   assert.deepEqual(calls.map(call=>call.args[1]),files);assert.match(opened,/default Markdown application/);
 });
 test('scripted documentation choices are deterministic and validated before enrollment',t=>{
-  const shownRoot=temp(t),shown=cli(['onboard','--root',shownRoot,'--non-interactive','--docs','show']);
+  const shownRoot=temp(t),shown=cli(['onboard','--root',shownRoot,'--non-interactive','--integration','shared','--docs','show']);
   assert.equal(shown.status,0);assert.match(shown.stdout,/# agenthouse engineering cookbook/);assert.match(shown.stdout,/# Agent commands/);
-  const invalidRoot=temp(t),invalid=cli(['onboard','--root',invalidRoot,'--non-interactive','--docs','later']);
+  const invalidRoot=temp(t),invalid=cli(['onboard','--root',invalidRoot,'--non-interactive','--integration','shared','--docs','later']);
   assert.equal(invalid.status,2);assert.match(invalid.stderr,/Documentation choice must be open, show, skip/);assert.deepEqual(fs.readdirSync(invalidRoot),[]);
 });
 test('demo retains failed and passing reports and refuses nonempty targets',async t=>{
@@ -59,6 +60,6 @@ test('demo retains failed and passing reports and refuses nonempty targets',asyn
   assert.equal(cli(['demo']).status,2);
 });
 test('invalid onboarding agent causes no enrollment',async t=>{
-  const root=temp(t);await assert.rejects(()=>onboard(root,{agents:'unknown'}),/Unsupported agent/);
+  const root=temp(t);await assert.rejects(()=>onboard(root,{integration:'shared',agents:'unknown'}),/Unsupported agent/);
   assert.equal(fs.existsSync(path.join(root,'.agenthouse/installation.json')),false);
 });

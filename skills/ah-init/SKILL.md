@@ -18,7 +18,7 @@ CLI reference:
 
 ```text
 init [--agents claude,codex,cursor,windsurf,opencode,openclaw] [--policy FILE]
-     [--project NAME] [--autonomy supervised|bounded|delegated] [--scope project|user]
+     [--project NAME] [--autonomy supervised|bounded|delegated] [--scope project|user] [--integration shared|private] [--central]
 Install the runtime, lifecycle skill, and required frontend-acceptance dependency.
-Default autonomy: supervised. User scope creates a separate defaults workspace.
+Default autonomy: supervised. User scope caches runtime and skills centrally without touching a repository. New project setup requires --integration. Existing project installations retain storage until --central migrates unchanged owned files.
 ```

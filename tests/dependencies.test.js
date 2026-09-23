@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {generateKeyPairSync} from 'node:crypto';
 import {read,write,hash,PACKAGE} from '../src/io.js';
-import {install,payload} from '../src/install.js';
+import {install as installActual,payload} from '../src/install.js';
 import {dependencyStatus,DEPENDENCY_FILE} from '../src/dependencies.js';
 import {updateDependency,pinDependency} from '../src/dependency-update.js';
 import {rollback,session} from '../src/update.js';
@@ -71,3 +71,5 @@ test('reused versions and invalid content digest are rejected',t=>{
   const data=read(options.bundle);data.digest='bad';write(options.bundle,data);
   assert.throws(()=>updateDependency(root,{bundle:options.bundle,sha256:hash(fs.readFileSync(options.bundle))}),/digest/);
 });
+
+function install(root,options={}) {return installActual(root,{storage:'project',...options});}

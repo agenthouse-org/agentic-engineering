@@ -1,3 +1,4 @@
+import {runtimeDirectory} from './storage.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {assert,read,write,inside,hash,exclusive} from './io.js';
@@ -34,7 +35,7 @@ export function updateDependency(root,options) {
   if(options.check)return {current:current.version,available:next.version,compatible};
   if(hash(current)===hash(next))return {status:'current',version:current.version};
   const active=read(inside(root,'.agenthouse/active.json'));
-  const bundle=payload(inside(root,`.agenthouse/${active.runtime}`));
+  const bundle=payload(runtimeDirectory(root,active));
   assert(hash(bundle)===active.digest,'Active runtime modified');
   bundle.files['dependencies/'+next.id+'.json']=Buffer.from(JSON.stringify(data,null,2)+'\n').toString('base64');
   return install(root,{payload:bundle,expectedDigest:active.digest});

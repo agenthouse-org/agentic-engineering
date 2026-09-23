@@ -1,3 +1,4 @@
+import {runtimeDirectory} from './storage.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createInterface} from 'node:readline/promises';
@@ -6,6 +7,7 @@ import {assert,inside,read,write} from './io.js';
 import {install,AGENTS,installationStatus} from './install.js';
 import {dependencyStatus} from './dependencies.js';
 import {resolve} from './policy.js';
+import {artifactSurvey,housekeep} from './housekeep.js';
 import {evaluate} from './evaluate.js';
 
 const DOC_CHOICES=['open','show','skip'];
@@ -13,8 +15,8 @@ const DOC_CHOICES=['open','show','skip'];
 export function documentationFiles(root) {
   const active=read(inside(root,'.agenthouse/active.json'));
   const files=[
-    inside(root,`.agenthouse/${active.runtime}/docs/cookbook.md`),
-    inside(root,'.agenthouse/agent-commands.md')
+    inside(runtimeDirectory(root,active),'docs/cookbook.md'),
+    active.storage==='machine'?inside(runtimeDirectory(root,active),'docs/agent-commands.md'):inside(root,'.agenthouse/agent-commands.md')
   ];
   for(const file of files)assert(fs.existsSync(file),`Documentation missing: ${file}`);
   return files;
@@ -43,9 +45,14 @@ export function nextSteps(root) {
   const config=resolve(root,{frozen:true}).config;
   const installation=read(inside(root,'.agenthouse/installation.json'));
   dependencyStatus(root);
-  return `Project ready: ${root}
+  const artifacts=housekeep(root,{check:true});
+  return `Project installed: ${root}
 
-Installed: project launcher, lifecycle skill, frontend-acceptance, and agent instructions.
+Repository artifact check: ${artifacts.status}. ${artifacts.reason}
+
+Storage: ${installation.storage || 'project'}; integration: ${installation.integration || 'shared'}.
+${installation.storage==='machine'?'Skills and runtime live centrally; no project skill or command copies.':'Legacy project assets are preserved; init --central migrates unchanged owned assets.'}
+${installation.integration==='private'?'Nothing is shared through Git. Existing agent instruction files are untouched. Ask your agent to run node .agenthouse/run.mjs context explicitly.':'Commit project configuration, pins, and the small instruction entry points. Runtime, skills and generated test output stay out of commits.'}
 Registered coding agents: ${installation.agents.length?installation.agents.join(', '):'generic instructions only'}.
 Autonomy: ${config.autonomy || 'supervised'}; policy sources: ${config.policySources.join(', ')}.
 
@@ -58,7 +65,7 @@ From this directory:
   node .agenthouse/run.mjs work show --id first-change
 
 Ask your coding agent:
-  "Read AGENTS.md and follow the agenthouse lifecycle for first-change.
+  "Run node .agenthouse/run.mjs context, read its referenced instructions, and follow the agenthouse lifecycle for first-change.
    Help me define the outcome and acceptance criteria, then implement and verify it.
    For UI work, use the installed frontend-acceptance skill and inspect screenshots."
 
@@ -72,7 +79,7 @@ After reviewing configuration changes:
 
 An incomplete starter is expected to fail readiness; it is not an application test.
 Supervised transitions need an authorized signed decision (help work / help sign).
-Agent commands: read .agenthouse/agent-commands.md; invoke ah-help or ah-review-change through your host skill/command picker.
+Agent skills: run node .agenthouse/run.mjs context to locate this project’s pinned central skills. Native skill menus require separate host/plugin setup.
 To change agents on an existing installation, rerun init with the complete list, for example --agents codex,cursor.
 Explore: help evaluate, help dependencies, doctor, or demo in a NEW empty directory.
 Native agent loading/hooks still require host-specific verification.`;
@@ -82,8 +89,8 @@ export function writeBranchNaming(root,{pattern,example,baseDefault}={}) {
   const file=inside(root,'.agenthouse/config.json'),config=read(file);
   config.git=config.git || {};
   config.git.branchNaming={pattern:pattern.trim(),...(example?{example:String(example).trim()}:{}),...(baseDefault?{baseDefault:String(baseDefault).trim()}:{})};
-  write(file,config);
-  resolve(root);
+  const before=fs.readFileSync(file);
+  try {write(file,config);resolve(root);}catch(error){write(file,before);throw error;}
   return config.git.branchNaming;
 }
 
@@ -91,18 +98,31 @@ export async function onboard(root,options={}) {
   if(options.docs!==undefined)assert(DOC_CHOICES.includes(options.docs),`Documentation choice must be ${DOC_CHOICES.join(', ')}`);
   const installed=fs.existsSync(inside(root,'.agenthouse/installation.json'));
   const interactive=!options.nonInteractive && process.stdin.isTTY && process.stdout.isTTY;
-  let agents=options.agents,policy=options.policy,autonomy=options.autonomy;
+  let agents=options.agents,policy=options.policy,autonomy=options.autonomy,integration=options.integration,artifactPaths=options.artifactPaths;
+  if(integration!==undefined)assert(['shared','private'].includes(integration),'Choose shared or private integration');
+  if(!installed && !interactive)assert(integration,'Choose --integration shared or private for scripted setup');
   if(!installed && !agents && !options.nonInteractive)assert(interactive,'For scripted setup use onboard --agents codex (choose your agents), or --non-interactive. Run help onboard for options.');
-  const needsPrompt=interactive && ((!installed && !agents) || options.docs===undefined || (options['branch-pattern']===undefined && options.branchPattern===undefined));
+  const needsPrompt=interactive && ((!installed && !integration) || (!installed && !agents) || options.docs===undefined || (options['branch-pattern']===undefined && options.branchPattern===undefined));
   const prompt=needsPrompt?createInterface({input:process.stdin,output:process.stdout}):null;
   try {
     if(!installed && !agents && !options.nonInteractive) {
-      console.log(`Set up agenthouse in ${root}\nInstalls a project runtime, skills and advisory agent instructions.\nExisting project configuration and unrelated files are preserved.`);
+      console.log(`Set up agenthouse in ${root}\nStores runtime and skills centrally with a small project integration.\nExisting project configuration and unrelated files are preserved.`);
       agents=(await prompt.question(`Coding agents, comma separated (${Object.keys(AGENTS).join(', ')}; Enter for codex): `)).trim() || 'codex';
       if(!policy)policy=(await prompt.question('Organization policy JSON path (Enter for a local solo policy): ')).trim() || undefined;
       if(!policy && !autonomy)autonomy=(await prompt.question('Autonomy: supervised, bounded, delegated (Enter for supervised): ')).trim() || 'supervised';
     }
-    if(!installed)install(root,{agents:(agents || 'codex').split(',').map(a=>a.trim()),policy,autonomy,project:options.project});
+    if(!installed && !integration) {
+      console.log('Skills and runtime are stored once on this machine. Shared: commit configuration, pins and small instruction entry points. Private: ignore local .agenthouse state and leave existing instructions untouched; load guidance explicitly with context.');
+      integration=(await prompt.question('Repository integration (shared/private; required): ')).trim();
+      assert(['shared','private'].includes(integration),'Choose shared or private integration');
+    }
+    if(!installed) {
+      const survey=artifactSurvey(root);
+      console.log(JSON.stringify(survey,null,2));
+      if(prompt && artifactPaths===undefined)artifactPaths=(await prompt.question('Additional GENERATED test output directories, comma separated (Enter for none; do not include fixtures or baselines): ')).split(',').map(s=>s.trim()).filter(Boolean);
+      console.log(`Integration: ${integration}. Generated captures use .agenthouse/evidence; reports use .agenthouse/local/reports. Review actual test-tool outputs per repository.`);
+    }
+    if(!installed)install(root,{integration,artifactPaths,agents:(agents || 'codex').split(',').map(a=>a.trim()),policy,autonomy,project:options.project});
     const configPath=inside(root,'.agenthouse/config.json');
     const hasGit=fs.existsSync(path.join(root,'.git'));
     let config=read(configPath);
@@ -131,7 +151,7 @@ export async function onboard(root,options={}) {
 }
 export async function demo(root) {
   assert(!fs.existsSync(root) || fs.readdirSync(root).length===0,'Demo requires a new or empty directory; use --root ./ah-demo');
-  install(root,{agents:[],autonomy:'bounded'});
+  install(root,{storage:'project',agents:[],autonomy:'bounded'});
   write(inside(root,'story.md'),'Demonstration: greet a visitor by name. Acceptance: greet("Ada") returns "Hello, Ada!". This fixture does not validate your application.\n');
   write(inside(root,'greet.mjs'),'export const greet = name => `Hello!`;\n');
   write(inside(root,'acceptance.mjs'),'import assert from "node:assert/strict";\nimport {greet} from "./greet.mjs";\nassert.equal(greet("Ada"), "Hello, Ada!");\n');

@@ -1,12 +1,15 @@
 # Implementation and verification status
 
-Version 1.1.0 release line. Updated 2026-09-23.
+Version 1.2.0 uses central storage and explicit shared/private onboarding for new projects. See [central installation](central-installation.md) for context loading, migration, artifact classification and verification limits. Older project paths in examples apply to legacy installations.
 
-Local core/workflow tests: 117 passed. Real visual regression and usability pass/fail browser scenarios, and the upstream hooks suite (eight test files), were last recorded as passing on 2026-09-15.
+Version 1.2.0 release line. Updated 2026-09-23.
+
+Development checkout verification on Windows, 2026-09-23: 133 core/workflow/storage/artifact tests passed; the real baseline/broken/restored browser scenario, central usability pass/fail fixtures with screenshots, and package checks also passed. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
-| CLI and agent commands | 42 framework skills (41 generated plus lifecycle); plain-language picker descriptions and enrolled command catalog; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership, description and catalog tests |
+| Central storage | Versioned machine store; explicit shared/private integration; pinned context; legacy migration | Shared storage across projects, independent updates/rollback, offline restore, conflicts, private files, effective ignore checks and post-evaluation leaks |
+| CLI and agent commands | 43 framework skills (42 generated plus lifecycle); plain-language picker descriptions and enrolled command catalog; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership, description and catalog tests |
 | Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; conservative test-layer evidence/gaps and nominal signals; local aliases; commit/range/merge-base analysis | Empty/multi-layer/nominal/alias fixtures, root commit, deletion and merge-base fixtures; no discovered scripts executed |
 | Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions; ready-gate `ticketSize` with override | Missing/stale evidence, self-review rejection, invalidated signatures; oversized criteria and sizeOverride tested |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |
@@ -17,7 +20,7 @@ Local core/workflow tests: 117 passed. Real visual regression and usability pass
 | Local hooks | Content-pinned agenthouse-hooks export; session context, command signals, touched-file checks; owned Claude settings installation/removal | Event fixtures, preserved permissions/settings, duplicate avoidance and conflicts |
 | Skills and updates | Pinned frontend-acceptance 0.2.0 and web-usability-conformity 0.1.0 from agenthouse-skills | Commit/file integrity, pins, trusted updates and rollback; hook export pins included |
 | Browser usability | Explicit locked runtime setup and upstream audit runner | Real Chromium clean/failing fixtures, failure exit 1 and desktop/narrow screenshots |
-| Visual acceptance | Image/story/bug/wireframe contracts, concept review, Playwright capture and regression; housekeeping CLI for inspection captures | Missing/stale concept evidence; real baseline/broken/restored browser scenario; housekeep ignore/delete/tracked-file and dump-root tests |
+| Visual acceptance | Image/story/bug/wireframe contracts, concept review, Playwright capture and regression; housekeeping CLI for inspection captures | Missing/stale concept evidence; real baseline/broken/restored browser scenario; configured output, ignored baseline, indexed-file, explicit cleanup and Git-failure tests |
 | Visual plans | Local visual-plan JSON, semantic HTML wireframes, mermaid ERD/UML lint, optional ready-gate check | Pass/fail/incomplete fixtures; shipped example plan |
 | npm provenance | Inspect package.json and CI; write a missing GitHub/GitLab publish job for trusted or token provenance | Missing package, private package, overwrite refusal, repository mismatch, trusted vs token templates |
 | Stack modules | Node/TypeScript and PHP/Laravel standards and templates; evidence-led preview/apply with diff, target-state handoff, stale-base/conflict safety, adoption profiles and deterministic monorepo IDs | Legacy template output, no-test degradation, preservation, CLI preview/apply and stale snapshot behavior tested |

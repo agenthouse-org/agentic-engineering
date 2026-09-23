@@ -1,3 +1,4 @@
+import {runtimeDirectory} from './storage.js';
 import {updateDependency} from './dependency-update.js';
 import {dependencyStatus,hookLock,bundledDependencies,checkDependencyPin,checkPresentPins} from './dependencies.js';
 import fs from 'node:fs';
@@ -130,7 +131,7 @@ export function configureUpdateTracking(root,track) {
 }
 export function rollback(root) {
   const previous=read(inside(root,'.agenthouse/previous.json'));
-  const source=inside(root,`.agenthouse/${previous.active.runtime}`);
+  const source=runtimeDirectory(root,previous.active);
   // Restoring via installation validates ownership and preserves custom files.
   const files={};
   const enumerate=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})) {

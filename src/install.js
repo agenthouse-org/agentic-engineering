@@ -8,12 +8,45 @@ import {resolve} from './policy.js';
 import {hookSettings} from './hooks.js';
 import {bundledDependency,hookLock,bundledDependencies,SOURCES,checkDependencyPin,checkPresentPins} from './dependencies.js';
 import {gitignoreBody} from './housekeep.js';
+import {block,blocks} from './managed-blocks.js';
+import {machineHome,runtimeDirectory,storeTree,skillDirectory,verifyTree} from './storage.js';
 
 export const AGENTS={claude:'CLAUDE.md',codex:'AGENTS.md',opencode:'AGENTS.md',cursor:'.cursor/rules/agenthouse.mdc',windsurf:'.windsurf/rules/agenthouse.md',openclaw:'AGENTS.md'};
-const START='<!-- agenthouse:start -->',END='<!-- agenthouse:end -->';
-const block=body=>`${START}\n${body.trim()}\n${END}`;
 export function detect(root) {
   return Object.keys(AGENTS).filter(a=>fs.existsSync(path.join(root,'.'+(a==='claude'?'claude':a))) || fs.existsSync(path.join(os.homedir(),'.'+a)) || fs.existsSync(path.join(root,AGENTS[a])));
+}
+export function cachePayload(data=payload()) {
+  verifyPayload(data);
+  const digest=hash(data);
+  const runtime=storeTree(`runtime/${data.version}-${digest}`,data.files);
+  for(const {data:skill,lock} of bundledDependencies(data))storeTree(`skills/${lock.id}/${lock.digest}`,skill.files);
+  return {storage:'machine',version:data.version,digest,runtime,home:machineHome()};
+}
+function centralLauncher() {
+  return `import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+const active=JSON.parse(fs.readFileSync(new URL('./active.json',import.meta.url),'utf8'));
+if(!/^[a-f0-9]{64}$/.test(active.digest) || !/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$/.test(active.version) || active.runtime!==\`runtime/\${active.version}-\${active.digest}\`)throw new Error('Invalid central runtime pin');
+const home=process.env.AGENTHOUSE_HOME || path.join(os.homedir(),'.agenthouse');
+if(!path.isAbsolute(home))throw new Error('AGENTHOUSE_HOME must be an absolute path');
+const target=path.join(home,active.runtime,'bin/ah-engineering.js');
+if(!fs.existsSync(target))throw new Error('Exact central runtime missing; run ah-engineering restore from the matching package or original offline bundle');
+await import(pathToFileURL(target).href);
+`;
+}
+export function projectContext(root) {
+  const state=installationStatus(root),runtime=runtimeDirectory(root);
+  const data=payload(runtime);
+  const ids=new Set(Object.keys(data.files).flatMap(file=>file.match(/^skills\/([^/]+)\/SKILL.md$/)?.slice(1) || []));
+  for(const {lock} of bundledDependencies(data))ids.add(lock.id);
+  const imports=inside(root,'.agenthouse/skills.json');
+  if(fs.existsSync(imports))for(const id of Object.keys(read(imports)))ids.add(id);
+  return {root,version:state.version,storage:state.storage || 'project',integration:state.integration || 'shared',
+    instructions:'Read the lifecycle and applicable skills at the paths below. Run the project launcher from the target repository root. Resolve relative skill resources against the containing skill directory; central files are immutable. Use usability setup/run for the bundled audit tool instead of installing dependencies into a skill directory. Repository policy takes precedence over personal preferences. Skills are advisory; never invent evidence or governance approval.',
+    lifecycle:inside(runtime,'docs/lifecycle.md'),commands:inside(runtime,'docs/agent-commands.md'),
+    skills:Object.fromEntries([...ids].sort().map(id=>[id,inside(skillDirectory(root,id),'SKILL.md')]))};
 }
 export function payload(source=PACKAGE) {
   const metadata=read(path.join(source,'package.json'));
@@ -73,11 +106,11 @@ function managed(root,desired,state) {
     const file=inside(root,relative),existing=fs.existsSync(file)?fs.readFileSync(file,'utf8'):null,prior=state.files?.[relative];
     let content=entry.content;
     if(entry.block) {
-      const current=existing?.match(/<!-- agenthouse:start -->[\s\S]*?<!-- agenthouse:end -->/g) || [];
+      const current=blocks(existing || '');
       assert(current.length<=1,`Duplicate managed block: ${relative}`);
       if(current.length) assert(prior?.block && hash(current[0])===prior.digest,`Modified/unowned managed block: ${relative}`);
       else assert(!prior,`Managed block removed: ${relative}`);
-      const b=block(content);
+      const b=block(content,relative);
       content=current.length?existing.replace(current[0],b):`${existing || ''}${existing?'\n\n':''}${b}\n`;
       ownership[relative]={block:true,digest:hash(b),created:prior?.created ?? existing===null};
     }else {
@@ -96,9 +129,14 @@ export function installationStatus(root) {
     const file=inside(root,relative);
     assert(fs.existsSync(file),`Missing managed file: ${relative}; run restore`);
     const content=fs.readFileSync(file,'utf8');
-    const blocks=entry.block?content.match(/<!-- agenthouse:start -->[\s\S]*?<!-- agenthouse:end -->/g):null;
-    assert(!entry.block || blocks?.length===1,`Missing/duplicate managed block: ${relative}`);
-    assert(hash(entry.block?blocks[0]:content)===entry.digest,`Modified managed file: ${relative}`);
+    const found=entry.block?blocks(content):null;
+    assert(!entry.block || found?.length===1,`Missing/duplicate managed block: ${relative}`);
+    assert(hash(entry.block?found[0]:content)===entry.digest,`Modified managed file: ${relative}`);
+  }
+  if(active.storage==='machine') {
+    const data=payload(runtimeDirectory(root,active));
+    assert(hash(data)===active.digest,'Central runtime modified');
+    verifyTree(runtimeDirectory(root,active),data.files);
   }
   return state;
 }
@@ -108,8 +146,7 @@ export function restore(root,options={}) {
   assert(active.version===state.version && active.digest===state.digest,'Active pin differs from installation');
   assert(Array.isArray(state.agents),'Installation is missing the recorded agent list');
   resolve(root,{frameworkVersion:state.version,frozen:true});
-  assert(active.runtime===`runtime/${state.version}-${state.digest.slice(0,12)}`,'Active runtime path differs from recorded pin');
-  const source=inside(root,'.agenthouse/'+active.runtime);
+  const source=runtimeDirectory(root,active);
   let data;
   if(options.bundle)data=read(path.resolve(options.bundle));
   else if(fs.existsSync(source))data=payload(source);
@@ -133,24 +170,44 @@ export function install(root,options={}) {
     if(options.expectedDigest)assert(state.digest===options.expectedDigest,'Installation changed during dependency update; retry');
     if(fs.existsSync(inside(root,'.agenthouse/config.json')))resolve(root,{frameworkVersion:data.version,persist:false,frozen:!!options.restore});
     const agents=options.agents || state.agents || detect(root);
+    const storage=options.storage || state.storage || (state.version?'project':'machine');
+    const integration=options.integration || state.integration || 'shared';
+    assert(['project','machine'].includes(storage),'Invalid storage mode');
+    assert(['shared','private'].includes(integration),'Choose shared or private integration');
+    assert(integration!=='private' || storage==='machine','Private integration requires central storage');
+    gitignoreBody(root,options.artifactPaths || []); // Validate configured paths before activation in either mode.
+    assert(!state.version || !options.integration || options.integration===(state.integration || 'shared'),'Changing integration mode requires uninstall first; consumer data is preserved');
+    if(integration==='private') {
+      const tracked=spawnSync('git',['-C',root,'ls-files','-z','--','.agenthouse'],{encoding:'utf8',windowsHide:true});
+      assert(tracked.status===0,'Private integration requires a Git repository');
+      assert(!tracked.stdout,'Private integration cannot hide tracked .agenthouse files; keep shared integration or explicitly relocate existing project state');
+    }
     const ignoreGenerated=options.ignoreGenerated ?? state.ignoreGenerated ?? !state.version;
     for(const a of agents)assert(Object.hasOwn(AGENTS,a),`Unsupported agent ${a}`);
-    const digest=hash(data),runtime=`.agenthouse/runtime/${data.version}-${digest.slice(0,12)}`;
-    // Version directories are immutable. Their identity is verified on repeat install.
-    for(const [rel,b64] of Object.entries(data.files)) {
-      const file=inside(root,`${runtime}/${rel}`),bytes=Buffer.from(b64,'base64');
+    const digest=hash(data),runtime=`runtime/${data.version}-${storage==='machine'?digest:digest.slice(0,12)}`;
+    const active={runtime,version:data.version,digest,...(storage==='machine'?{storage}:{})};
+    const runtimePath=runtimeDirectory(root,active);
+    if(storage==='machine') {
+      const shared=machineHome(),target=path.resolve(root);
+      assert(shared!==target && !shared.startsWith(target+path.sep),'AGENTHOUSE_HOME must be outside the target repository');
+      assert(data.files['src/storage.js'],'This runtime does not support central storage; retain the legacy installation until a compatible release is available');
+      cachePayload(data);
+    }
+    else for(const [rel,b64] of Object.entries(data.files)) {
+      const file=inside(runtimePath,rel),bytes=Buffer.from(b64,'base64');
       if(fs.existsSync(file))assert(hash(fs.readFileSync(file))===hash(bytes),`Runtime modified: ${rel}`);
       else create(file,bytes);
     }
-    const health=spawnSync(process.execPath,[inside(root,`${runtime}/bin/ah-engineering.js`),'--help'],{encoding:'utf8',timeout:10000,windowsHide:true});
+    const health=spawnSync(process.execPath,[inside(runtimePath,'bin/ah-engineering.js'),'--help'],{encoding:'utf8',timeout:10000,windowsHide:true});
     assert(health.status===0,`New runtime failed health check: ${health.stderr || health.error?.message}`);
     const guidance='## agenthouse engineering\nDiscover agent commands in `.agenthouse/agent-commands.md`; every CLI operation has an ah-prefixed skill. At task start run `node .agenthouse/run.mjs session` and read `.agenthouse/resolved.json` plus `.agenthouse/lifecycle.md`. Use the lifecycle record and its acceptance criteria; never invent approval or evidence. If work is too large for one ticket, warn and ask before creating split work items or related branches (`work branch` needs `git.branchNaming`). If a new ask is out of scope, warn, stop, and ask whether to open a new work item, expand recorded scope, or override with `fields.scopeNotes`. For UI changes read and follow `.agents/skills/frontend-acceptance/SKILL.md` from agenthouse-skills and inspect real screenshots, then run `node .agenthouse/run.mjs housekeep`. Use `node .agenthouse/run.mjs evaluate --profile pull-request --frozen` for the configured checks. These instructions are advisory; CI and signed decisions supply boundary controls.';
     const desired={
       '.agenthouse/run.mjs':{content:`import fs from 'node:fs';\nimport {fileURLToPath} from 'node:url';\nconst active=JSON.parse(fs.readFileSync(new URL('./active.json',import.meta.url),'utf8'));\nconst target=new URL('./'+active.runtime+'/bin/ah-engineering.js',import.meta.url);\nawait import(target.href);\n`},
       '.agenthouse/lifecycle.md':{content:Buffer.from(data.files['docs/lifecycle.md'],'base64').toString('utf8')},
       'AGENTS.md':{block:true,content:guidance},
-      '.gitignore':{block:true,content:gitignoreBody()}
+      '.gitignore':{block:true,content:gitignoreBody(root)}
     };
+    if(storage==='project') {
     for(const a of agents)if(AGENTS[a]!=='AGENTS.md')desired[AGENTS[a]]={block:!AGENTS[a].endsWith('.mdc') && a!=='windsurf',content:a==='cursor'?`---\ndescription: agenthouse engineering lifecycle\nalwaysApply: true\n---\n${guidance}\n`:a==='windsurf'?`---\ntrigger: always_on\n---\n${guidance}\n`:guidance};
     for(const [file,b64] of Object.entries(data.files))if(file.startsWith('skills/'))desired[`.agents/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};
     const commandEntries=[];
@@ -171,13 +228,29 @@ export function install(root,options={}) {
     commandEntries.sort((a,b)=>a.name.localeCompare(b.name));
     desired['.agenthouse/agent-commands.md']={content:`# Agent commands\n\nUse a skill by name or ask your agent in natural language. CLI execution is shared.\n\n${commandEntries.map(({name,description})=>`- **${name}** — ${description}\n  \`.agents/skills/${name}/SKILL.md\``).join('\n')}\n\nClaude/OpenCode/Windsurf: /ah-help. Codex: select ah-help from the skill picker. Cursor/OpenClaw: use the shared project skills. Host discovery and permissions remain subject to the installed host version.\n`};
     for(const dependency of dependencies)for(const [file,b64] of Object.entries(dependency.data.files))desired[`.agents/skills/${dependency.lock.id}/${file}`]={content:Buffer.from(b64,'base64').toString('utf8')};
+    }
+    if(storage==='machine') {
+      for(const file of Object.keys(desired))delete desired[file];
+      desired['.agenthouse/run.mjs']={content:centralLauncher()};
+      if(integration==='shared') {
+        const guidance='## agenthouse engineering\nRun `node .agenthouse/run.mjs context` from this repository and read the returned lifecycle and skill files before starting work. The command selects this project’s exact centrally stored version. Run `node .agenthouse/run.mjs session` at task start and `node .agenthouse/run.mjs evaluate --frozen` for verification. Keep generated test output in configured ignored paths; preserve fixtures and approved baselines. Technical checks do not grant governance approval.';
+        desired['AGENTS.md']={block:true,content:guidance};
+        for(const agent of agents)if(AGENTS[agent]!=='AGENTS.md')desired[AGENTS[agent]]={block:!['cursor','windsurf'].includes(agent),content:agent==='cursor'?`---\ndescription: agenthouse engineering\nalwaysApply: true\n---\n${guidance}\n`:agent==='windsurf'?`---\ntrigger: always_on\n---\n${guidance}\n`:guidance};
+        desired['.gitignore']={block:true,content:gitignoreBody(root,options.artifactPaths || [])};
+        desired['.agenthouse/.gitignore']={content:'local/\nevidence/\nruntime/\nsessions/\ntransaction.json\nmutation.lock\nbrowser-assessment.json\n'};
+      }else desired['.agenthouse/.gitignore']={content:'*\n'};
+    }
     desired['.agenthouse/dependencies.lock.json']={content:JSON.stringify({schemaVersion:1,dependencies:Object.fromEntries(dependencies.map(d=>[d.lock.id,d.lock]))},null,2)+'\n'};
-    if(ignoreGenerated) {
+    if(storage==='project' && ignoreGenerated) {
       const generated=Object.keys(desired).filter(file=>/^\.(agents\/skills|claude\/commands|opencode\/commands|windsurf\/workflows)\//.test(file));
       desired['.gitignore'].content+='\n'+generated.sort().map(file=>'/'+file.replace(/[!*?\[\]\\ ]/g,character=>'\\'+character)).join('\n');
     }
     const adoption={...state,files:{...state.files}};
-    for(const dependency of dependencies) {
+    // A previous uninstall deliberately retained this exclusion file with consumer state.
+    const retainedIgnore=inside(root,'.agenthouse/.gitignore');
+    if(!state.version && desired['.agenthouse/.gitignore'] && fs.existsSync(retainedIgnore) && fs.readFileSync(retainedIgnore,'utf8')===desired['.agenthouse/.gitignore'].content)
+      adoption.files['.agenthouse/.gitignore']={block:false,digest:hash(desired['.agenthouse/.gitignore'].content)};
+    if(storage==='project')for(const dependency of dependencies) {
     const skillDirectory=inside(root,`.agents/skills/${dependency.lock.id}`);
     if(fs.existsSync(skillDirectory))for(const file of walk(skillDirectory))assert(dependency.lock.files[file] || state.files[`.agents/skills/${dependency.lock.id}/${file}`],`Unowned dependency file: ${file}`);
     for(const [file,digest] of Object.entries(dependency.lock.files)) {
@@ -186,7 +259,7 @@ export function install(root,options={}) {
     }
     }
     const removed=[];
-    for(const old of Object.keys(state.files))if(!desired[old] && (Object.keys(SOURCES).some(id=>old.startsWith('.agents/skills/'+id+'/')) || /^\.(agents\/skills|claude\/commands|opencode\/commands|windsurf\/workflows)\/(?:ah-|agenthouse-)/.test(old))) {
+    for(const old of Object.keys(state.files))if(!desired[old] && (Object.keys(SOURCES).some(id=>old.startsWith('.agents/skills/'+id+'/')) || storage==='machine' && ['.agenthouse/lifecycle.md','.agenthouse/agent-commands.md'].includes(old) || /^\.(agents\/skills|claude\/commands|opencode\/commands|windsurf\/workflows)\/(?:ah-|agenthouse-)/.test(old))) {
       assert(hash(fs.readFileSync(inside(root,old)))===state.files[old].digest,`Modified dependency file: ${old}`);
       removed.push({path:old,content:null});
     }
@@ -208,9 +281,8 @@ export function install(root,options={}) {
       const imports=read(importFile);
       for(const dependency of dependencies)if(imports[dependency.lock.id]){delete imports[dependency.lock.id];changes.push({path:'.agenthouse/skills.json',content:JSON.stringify(imports,null,2)+'\n'});}
     }
-    const active={runtime:runtime.replace('.agenthouse/',''),version:data.version,digest};
     if(state.digest!==digest && fs.existsSync(inside(root,'.agenthouse/active.json')))changes.push({path:'.agenthouse/previous.json',content:JSON.stringify({state,active:read(inside(root,'.agenthouse/active.json'))})});
-    changes.push({path:'.agenthouse/active.json',content:JSON.stringify(active)}, {path:'.agenthouse/installation.json',content:JSON.stringify({version:data.version,agents,files:ownership,digest,ignoreGenerated})});
+    changes.push({path:'.agenthouse/active.json',content:JSON.stringify(active)}, {path:'.agenthouse/installation.json',content:JSON.stringify({version:data.version,agents,files:ownership,digest,ignoreGenerated,storage,integration})});
     if(!fs.existsSync(inside(root,'.agenthouse/config.json'))) {
       const policySources=[];
       function initial(relative,value) {
@@ -225,21 +297,23 @@ export function install(root,options={}) {
         initial('.agenthouse/policy.json',{schemaVersion:1,id:'project-policy',revision:'1',owner:'project-owner',authorities:{'project-owner':publicKey.export({type:'spki',format:'pem'})},rules:[]});
         policySources.push('.agenthouse/policy.json');
       }
-      initial('.agenthouse/config.json',{schemaVersion:1,project,...(options.policy?{}:{autonomy:options.autonomy || 'supervised',documentationAuthority:'git'}),policySources,
+      initial('.agenthouse/local/.gitignore','*\n');
+      initial('.agenthouse/config.json',{schemaVersion:1,project,...(storage==='machine'?{artifacts:{outputs:options.artifactPaths || [],baselines:[],cleanup:[]}}:{}),...(options.policy?{}:{autonomy:options.autonomy || 'supervised',documentationAuthority:'git'}),policySources,
         evaluators:[{id:'readiness',kind:'work-item',file:'.agenthouse/work/first-change.json',stage:'plan'}],profiles:{'pull-request':{checks:[{evaluator:'readiness',required:true}]}}});
     }
     transact(root,changes,options.restore?undefined:()=>[{path:'.agenthouse/resolved.json',content:JSON.stringify(resolve(root,{frameworkVersion:data.version,persist:false}).snapshot,null,2)+'\n'}]);
-    return {version:data.version,agents,root,advisoryAdapters:true};
+    return {version:data.version,agents,root,storage,integration,advisoryAdapters:true};
   });
 }
 export function uninstall(root) {
   return exclusive(root,()=>{
     const file=inside(root,'.agenthouse/installation.json'),state=read(file),changes=[];
     for(const [rel,entry] of Object.entries(state.files)) {
+      if(rel==='.agenthouse/.gitignore')continue; // Retained private state must stay private after uninstall.
       const dest=inside(root,rel);assert(fs.existsSync(dest),`Missing managed file: ${rel}`);
       const current=fs.readFileSync(dest,'utf8');
       if(entry.block) {
-        const found=current.match(/<!-- agenthouse:start -->[\s\S]*?<!-- agenthouse:end -->/g);
+        const found=blocks(current);
         assert(found?.length===1 && hash(found[0])===entry.digest,`Modified managed block: ${rel}`);
         const remaining=current.replace(found[0],'');
         changes.push({path:rel,content:entry.created && !remaining.trim()?null:remaining});

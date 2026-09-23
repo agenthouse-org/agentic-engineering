@@ -1,8 +1,12 @@
 # Agent commands
 
-Version 1.1.0 installs 41 generated agent-facing commands plus the lifecycle skill. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
+Version 1.2.0 provides 42 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
 
-## Invoke them
+## Load central skills
+
+From the enrolled repository run `node .agenthouse/run.mjs context`. Read its returned lifecycle and relevant skill paths, then execute commands from the repository root. Shared instruction bridges direct agents to this command; private setup leaves existing instructions untouched, so request it explicitly. The central store does not automatically register native menus. Separately installed host plugins may expose skills; use context to select the repository pin instead of substituting a plugin’s newer method.
+
+## Legacy project invocation
 
 | Agent | Entry point | Installed location |
 | --- | --- | --- |
@@ -21,6 +25,7 @@ Reload the host or start a fresh session after first enrollment if the command i
 
 | Agent skill | CLI operation |
 | --- | --- |
+| `ah-context` | `context` — pinned lifecycle and skill paths |
 | `ah-help` | `help [COMMAND|agents|cookbook|extended|ah-SKILL]` |
 | `ah-onboard` | `onboard` with conversational choices and noninteractive CLI arguments |
 | `ah-demo` | `demo` in a new/empty directory |
