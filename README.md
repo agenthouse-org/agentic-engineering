@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**Version 1.2.0.** New enrollments choose shared or private repository integration and load pinned skills from central machine storage. Artifact checks protect repository-specific test output and source baselines. The CLI, lifecycle records, policy checks, visual-evidence adapter, versioned frontend skill, and verified updates are implemented. Agent skill picker text and the enrolled command catalog use plain-language what/when descriptions. Repository survey, structured ready/done gates, red/green capture, hooks, usability tooling, marketplace manifests, visual plans, test-framework establishment, and npm provenance verification are included. See [implementation status](docs/implementation-status.md).
+**Version 1.3.0.** Assess technical feasibility with commit-bound inventories and linked evidence, review incoming PR/MR URLs through a read-only agent workflow, and preview configured checks with `evaluate --list`. Help groups skills by lifecycle phase and accepts natural-language goals. Reports identify check origins; an optional verify gate requires specification evidence before testing. Plugin entrypoints retain repository pins and expose version mismatches through doctor. See [release notes](docs/releases/1.3.0.md) and [implementation status](docs/implementation-status.md) for verification and integration limits.
 
 
 ## Install on your computer
@@ -20,9 +20,9 @@ npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-To pin the CLI version, use `npm install --global @agenthouse/engineering@1.2.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@1.3.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
 
-Versioned GitHub release downloads are pending. For an offline installation, obtain a reviewed `.tgz` package as described below.
+The release workflow attaches an attested update bundle to GitHub releases. For an offline CLI installation, obtain a reviewed `.tgz` package as described below.
 
 Update the machine-wide CLI with `npm install --global @agenthouse/engineering@latest --ignore-scripts`. Existing projects retain an exact runtime. They can keep exact tracking or opt into a moving verified channel:
 
@@ -38,7 +38,7 @@ Public discovery checks npm `latest` first and requires package integrity, regis
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-engineering-1.2.0.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.3.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -52,7 +52,7 @@ To package the source yourself, run these commands in a tools directory outside 
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-engineering-1.2.0.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.3.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 

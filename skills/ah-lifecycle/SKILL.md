@@ -8,7 +8,7 @@ metadata:
 
 # agenthouse lifecycle
 
-Run `node .agenthouse/run.mjs context` and read the returned lifecycle path, the relevant work record, and `.agenthouse/resolved.json`. Run the enrolled launcher from the repository root. If enrollment is absent, explain what context is missing instead of inventing organization policy.
+First check that `.agenthouse/run.mjs` and `.agenthouse/active.json` exist. If absent, stop without side effects and point to the organization enroll skill or ah-enroll-repository. When enrolled, run `node .agenthouse/run.mjs context` and read the returned lifecycle path, the relevant work record, and `.agenthouse/resolved.json`. Run the enrolled launcher from the repository root. If enrollment is absent, explain what context is missing instead of inventing organization policy.
 
 Before implementation, identify the requested outcome, scope, acceptance criteria and applicable decisions. Record material gaps and assumptions. Select evidence appropriate to the change: a documentation correction and a permission boundary change need different verification. Keep replies to Decide / Ready or Blocked / Open unless the user asks for more.
 

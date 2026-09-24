@@ -24,6 +24,22 @@ export function summarize(checks) {
   for(const [status,exitCode] of [['error',2],['failed',1],['incomplete',4],['pending',3]]) if(required.some(c=>c.status===status)) return {status,exitCode};
   return {status:'satisfied',exitCode:0};
 }
+export function checkOrigin(config,snapshot,id) {
+  const evaluator=config.evaluators.find(e=>e.id===id);
+  const rule=`evaluator.${id}`;
+  return {module:evaluator?.origin?.module || 'project',file:evaluator?.origin?.file || '.agenthouse/config.json',
+    rule:evaluator?.origin?.rule || (snapshot.provenance[rule]?rule:null),policy:snapshot.provenance[rule] || null};
+}
+export function evaluationPlan(root,options={}) {
+  const {config,snapshot}=resolve(root,{frozen:!!options.frozen,policyFile:options.policyFile,persist:false});
+  const profile=options.profile || 'pull-request',selected=config.profiles[profile];
+  assert(selected,'Unknown profile: '+profile);
+  assert(selected.checks.length,'Empty evaluation profile is not a gate');
+  return {schemaVersion:1,mode:'plan',profile,subject:subject(root,options.subject),policyDigest:snapshot.digest,
+    promotion:selected.promotion || null,checks:selected.checks.map(c=>({id:c.evaluator,required:c.required!==false || snapshot.requiredChecks.includes(c.evaluator),
+      origin:checkOrigin(config,snapshot,c.evaluator),evaluator:config.evaluators.find(e=>e.id===c.evaluator) || null})),
+    omittedRequiredChecks:snapshot.requiredChecks.filter(id=>!selected.checks.some(c=>c.evaluator===id))};
+}
 export function collectEvidence(root,folder,evidence=[]) {
   return evidence.map(e=>{
     assert(e && typeof e.path==='string','Invalid evidence path');
@@ -99,7 +115,7 @@ export async function evaluate(root,options={}) {
         if(data.status==='not-applicable') assert(data.reason?.trim(),'Not-applicable requires a reason');
         if(data.evidence) data.evidence=collectEvidence(root,folder,data.evidence);
       } catch(error) { data={status:'error',reason:error.message}; }
-      result.checks.push({...data,id,required,criteria:config.evaluators.find(x=>x.id===id)?.criteria || []});
+      result.checks.push({...data,id,required,origin:checkOrigin(config,snapshot,id),criteria:config.evaluators.find(x=>x.id===id)?.criteria || []});
     }
   } catch(error) { result.checks.push({id:'framework',required:true,status:'error',reason:error.message}); }
   if(central) {
@@ -107,6 +123,7 @@ export async function evaluate(root,options={}) {
     catch(error){result.checks.push({id:'AH-ARTIFACT-001',required:true,status:'error',reason:error.message});}
   }
   Object.assign(result,summarize(result.checks),{finishedAt:new Date().toISOString()});
+  for(const check of result.checks)check.origin ||= {module:'agenthouse',file:'src/evaluate.js',rule:check.id,policy:null};
   reports(folder,result);
   write(path.join(output,'latest.json'),{runId,path:runId,exitCode:result.exitCode});
   return {...result,folder};

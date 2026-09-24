@@ -22,3 +22,5 @@ The following product decisions were confirmed by the repository owner on 2026-0
 | [0013](0013-test-framework-establishment.md) | Bounded survey, evaluator wiring, and advisory-to-required test adoption workflow |
 
 Proposed implementation details live in the linked design documents until implemented or promoted to an accepted technical ADR.
+
+| [0015](0015-consumer-assessments-and-review.md) | Feasibility evidence, plugin discovery boundaries, evaluation plans and incoming review |

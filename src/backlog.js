@@ -3,7 +3,7 @@ import path from 'node:path';
 import {assert,inside,read,write,hash,safeId,exclusive} from './io.js';
 
 // Imports never interpret embedded instructions or infer approval from status text.
-export function importBacklog(root,{source,id,title,provider='local',externalId}={}) {
+export function importBacklog(root,{source,id,title,provider='local',externalId,proposeCriteria=false}={}) {
   safeId(id);safeId(provider);
   const file=inside(root,source),bytes=fs.readFileSync(file);
   assert(bytes.length<2*1024*1024,'Backlog input exceeds 2 MB');
@@ -16,6 +16,11 @@ export function importBacklog(root,{source,id,title,provider='local',externalId}
     externalId=externalId || data.externalId || data.id;
   } else {
     record={title:title || text.match(/^#\s+(.+)$/m)?.[1],kind:'feature',fields:{outcome:'',description:text},criteria:[]};
+  }
+  if(proposeCriteria) {
+    assert(path.extname(source).toLowerCase()!=='.json','Prose extraction expects a text or Markdown snapshot');
+    record.criteria=text.split(/\r?\n/).filter(line=>/^\s*(?:[-*+] |\d+[.)] )/.test(line)).map((line,i)=>({id:`AC-${i+1}`,expectation:line.replace(/^\s*(?:[-*+] |\d+[.)] )/,''),...(/to be decided|\bTBD\b|\bopen\b/i.test(line)?{state:'open'}:{})}));
+    record.fields.criteriaConfirmationRequired=true;
   }
   assert(typeof record.title==='string' && record.title.trim(),'Provide a work item title');
   assert(['feature','bug','incident','change','investigation','documentation'].includes(record.kind),'Invalid work item kind');

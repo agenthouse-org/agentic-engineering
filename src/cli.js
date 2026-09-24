@@ -1,3 +1,4 @@
+import {assessmentInventory,validateAssessment} from './assessment.js';
 import {help} from './help.js';
 import {onboard,demo} from './onboard.js';
 import fs from 'node:fs';
@@ -8,7 +9,7 @@ import {assert,read,write,create,hash,inside,VERSION,PACKAGE,exclusive,validated
 import {install,uninstall,detect,payload,recover,transact,restore,installationStatus} from './install.js';
 import {cachePayload,projectContext} from './install.js';
 import {resolve,signed} from './policy.js';
-import {evaluate} from './evaluate.js';
+import {evaluate,evaluationPlan} from './evaluate.js';
 import {newItem,advance,createBranch,STAGES} from './lifecycle.js';
 import {update,updateFromChannel,configureUpdateTracking,rollback,session} from './update.js';
 import {housekeep} from './housekeep.js';
@@ -25,18 +26,19 @@ import {checkVisualPlan} from './visual-plan.js';
 import {statusNpmProvenance,applyNpmProvenance} from './npm-provenance.js';
 import {planModule,applyModulePlan} from './module-plan.js';
 
-const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated','central','clean','preview','latest']);
+const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated','central','clean','preview','latest','list','propose-criteria']);
 function parse(args) {
   const o={},pos=[];
   for(let i=0;i<args.length;i++) {
     if(!args[i].startsWith('--')){pos.push(args[i]);continue;}
     const key=args[i].slice(2);assert(!Object.hasOwn(o,key),`Repeated option --${key}`);
-    if(boolean.has(key))o[key]=true;else {assert(args[i+1] && !args[i+1].startsWith('--'),`Missing value for --${key}`);o[key]=args[++i];}
+    if(boolean.has(key) || key==='plan' && pos[0]==='evaluate')o[key]=true;else {assert(args[i+1] && !args[i+1].startsWith('--'),`Missing value for --${key}`);o[key]=args[++i];}
   }
   return {o,pos};
 }
-const allowed={context:[],onboard:['integration','artifact-paths','agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['integration','central','agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['profile','subject','base-url','output','ci','frozen','policy-file'],doctor:[],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking','latest','track','npm-cli'],rollback:[],session:['npm-cli'],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output','preview','apply','workspace','layers','profile','advisory-profile','milestone-reference','milestone-owner','milestone-status']};
-Object.assign(allowed,{survey:['output'],inspect:['ref','base','output'],review:['ref','base','baseline','item','evidence','output'],gate:['item','phase','decision','policy-file','output'],spec:['item','phase','evaluator','output'],backlog:['source','id','title','provider','external-id','output']});
+const allowed={context:[],onboard:['integration','artifact-paths','agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['integration','central','agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['list','plan','profile','subject','base-url','output','ci','frozen','policy-file'],doctor:['plugin-version'],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking','latest','track','npm-cli'],rollback:[],session:['npm-cli'],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output','preview','apply','workspace','layers','profile','advisory-profile','milestone-reference','milestone-owner','milestone-status']};
+Object.assign(allowed,{survey:['output'],inspect:['ref','base','output'],review:['ref','base','baseline','item','evidence','output'],gate:['item','phase','decision','policy-file','output'],spec:['item','phase','evaluator','output'],backlog:['propose-criteria','source','id','title','provider','external-id','output']});
+allowed.assessment=['item','selectors','ref','summary','output'];
 allowed.controls=['policy-file'];
 allowed.hook=['vendor','input'];
 allowed['hook-config']=['vendor','install','remove'];
@@ -50,7 +52,7 @@ allowed.onboard.push('branch-pattern','branch-example','branch-base');
 export async function main(args) {
   const {o,pos}=parse(args),command=pos.shift();
   if(!command || o.help || command==='help') {
-    const topic=command==='help'?pos.shift():command;
+    const topic=command==='help'?pos.splice(0).join(' ') || undefined:command;
     assert(pos.length===0,'Use help COMMAND or COMMAND --help');
     console.log(help(topic));return 0;
   }
@@ -66,12 +68,13 @@ export async function main(args) {
     case 'hook-config': {assert(!(o.install && o.remove),'Choose install or remove');hookConfiguration(o.vendor);result=o.install || o.remove?exclusive(root,()=>{const plan=hookSettings(root,{remove:o.remove});if(plan.changes.length)transact(root,plan.changes);return {status:plan.status};}):hookConfiguration(o.vendor);break;}
     case 'visual-plan': {const action=pos.shift();assert(action==='check','Choose visual-plan check');result=checkVisualPlan(root,{item:o.item,plan:o.plan});break;}
     case 'npm-provenance': {const action=pos.shift();assert(['status','apply'].includes(action),'Choose npm-provenance status or apply');result=action==='apply'?applyNpmProvenance(root,{provider:o.provider,workflow:o.workflow,publish:o.publish,access:o.access}):statusNpmProvenance(root,{provider:o.provider,workflow:o.workflow,publish:o.publish});break;}
+    case 'assessment':result=o.summary?validateAssessment(root,o.summary):assessmentInventory(root,{item:o.item,selectors:o.selectors,ref:o.ref});break;
     case 'survey':result=survey(root);break;
     case 'inspect':result=inspectChange(root,{ref:o.ref,base:o.base});break;
     case 'review':result=evidenceReview(root,{ref:o.ref,base:o.base,item:o.item,evidence:o.evidence?.split(','),baseline:o.baseline});result.exitCode={passed:0,failed:1,incomplete:4}[result.status];break;
     case 'gate':result=gate(root,{item:o.item,phase:o.phase,decision:o.decision,policyFile:o['policy-file']});break;
     case 'spec':result=await specification(root,{item:o.item,phase:o.phase,evaluator:o.evaluator});break;
-    case 'backlog':result=importBacklog(root,{source:o.source,id:o.id,title:o.title,provider:o.provider,externalId:o['external-id']});break;
+    case 'backlog':result=importBacklog(root,{source:o.source,id:o.id,title:o.title,provider:o.provider,externalId:o['external-id'],proposeCriteria:o['propose-criteria']});break;
     case 'context':dependencyStatus(root);result=projectContext(root);break;
     case 'onboard':console.log(await onboard(root,{integration:o.integration,artifactPaths:o['artifact-paths']?.split(',').filter(Boolean),agents:o.agents,policy:o.policy,autonomy:o.autonomy,project:o.project,docs:o.docs,nonInteractive:o['non-interactive'],branchPattern:o['branch-pattern'],branchExample:o['branch-example'],branchBase:o['branch-base']}));return 0;
     case 'demo':assert(o.root,'Specify --root NEW_EMPTY_DIRECTORY for the demo');console.log(await demo(root));return 0;
@@ -84,6 +87,7 @@ export async function main(args) {
     case 'restore':result=restore(root,{bundle:o.bundle,ignoreGenerated:o['ignore-generated']});break;
     case 'resolve':result=resolve(root,{frozen:o.frozen,policyFile:o['policy-file']}).snapshot;break;
     case 'evaluate': {
+      if(o.list || o.plan){assert(!o.output,'Plan prints to stdout; --output is not supported');console.log(JSON.stringify(evaluationPlan(root,{profile:o.profile,subject:o.subject,frozen:o.frozen || o.ci,policyFile:o['policy-file']}),null,2));return 0;}
       result=await evaluate(root,{profile:o.profile,subject:o.subject,baseUrl:o['base-url'],output:o.output,frozen:o.frozen || o.ci,policyFile:o['policy-file']});
       console.log(`${result.status} · ${result.checks.length} checks · ${result.folder}`);return result.exitCode;
     }
@@ -96,6 +100,8 @@ export async function main(args) {
       if(fs.existsSync(inside(root,'.agenthouse/transaction.json')))problems.push('Interrupted installation: run recover');
       const state=fs.existsSync(inside(root,'.agenthouse/installation.json'))?read(inside(root,'.agenthouse/installation.json')):null;
       if(!state)problems.push('No installed runtime');
+      if(state && state.version!==VERSION)problems.push(`Executing runtime ${VERSION} differs from repository pin ${state.version}`);
+      if(o['plugin-version'] && o['plugin-version']!==state?.version)problems.push(`Plugin version ${o['plugin-version']} differs from repository pin ${state?.version || 'missing'}`);
       if(config && !config.git?.branchNaming?.pattern && fs.existsSync(path.join(root,'.git')))warnings.push('Branch naming not configured (git.branchNaming.pattern); ask the team standard (for example {id}-{slug}) before work branch');
       if(fs.existsSync(inside(root,'.agenthouse/installation.json'))) {
         const keep=housekeep(root,{check:true});
@@ -106,7 +112,7 @@ export async function main(args) {
         if(!keep.kept && (keep.dumps.length || keep.stray.length))problems.push(`Inspection screenshot dumps outside ${keep.canonical} (${[...keep.dumps,...keep.stray].join(', ')}); write captures under ${keep.canonical}/<work-id>/ then run housekeep`);
         if(keep.notes.length)problems.push(`Scratch files at repository root (${keep.notes.join(', ')}); write GitHub bodies under .agenthouse/local/ then run housekeep`);
       }
-      result={version:VERSION,platform:process.platform,detectedAgents:detect(root),installed:state?.agents || [],problems,warnings,scope:config?.project,limitations:['Agent instruction adapters are advisory; native host loading is not certified.','External platform integrations use organization-owned CLI evaluators.']};
+      result={version:VERSION,pluginVersion:o['plugin-version'] || null,repositoryVersion:state?.version || null,platform:process.platform,detectedAgents:detect(root),installed:state?.agents || [],problems,warnings,scope:config?.project,limitations:['Agent instruction adapters are advisory; native host loading is not certified.','External platform integrations use organization-owned CLI evaluators.']};
       console.log(JSON.stringify(result,null,2));return problems.length?2:0;
     }
     case 'work': {

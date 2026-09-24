@@ -146,17 +146,19 @@ export function evidenceReview(root,{ref='HEAD',base,item,evidence=[],baseline}=
   }
   const work=item?read(inside(root,item)):null;
   const criteria=work?.criteria || [];
-  const coverage=criteria.map(c=>({id:c.id,expectation:c.expectation,checks:records.filter(r=>!r.stale).flatMap(r=>r.checks.filter(x=>x.id===c.id || x.criteria?.includes(c.id)))}));
+  const confirmed=!work?.fields?.criteriaConfirmationRequired || work.criteriaConfirmation?.digest===hash(criteria);
+  const coverage=criteria.map(c=>({id:c.id,expectation:c.expectation,state:c.state,checks:records.filter(r=>!r.stale).flatMap(r=>r.checks.filter(x=>x.id===c.id || x.criteria?.includes(c.id)))}));
+  for(const criterion of coverage)criterion.verdict=criterion.state==='open'?'open':!confirmed || !criterion.checks.length?'incomplete':criterion.checks.some(c=>c.status==='failed')?'fail':criterion.checks.every(c=>c.status==='passed')?'pass':'incomplete';
   let baselineComparison=null;
   if(baseline) {
     const prior=read(inside(root,baseline));
     assert(prior.subject===change.base && prior.policyDigest===snapshot.digest,'Baseline evidence must match the comparison base and current policy');
     baselineComparison=records.flatMap(r=>r.checks.map(check=>{
       const previous=prior.checks?.find(c=>c.id===check.id);
-      return {id:check.id,before:previous?.status || 'unmeasured',after:check.status,classification:!previous?'new-check':previous.status===check.status?'unchanged':check.status==='passed'?'improved':'changed'};
+      return {id:check.id,before:previous?.status || 'unmeasured',after:check.status,classification:!previous?'new-check':previous.status==='failed' && check.status==='failed'?'inherited':previous.status===check.status?'unchanged':check.status==='passed'?'improved':'changed'};
     }));
   }
   return {...change,workItem:work?{id:work.id,source:item}:null,evidence:records,coverage,baselineComparison,
-    status:!work || !criteria.length || !records.length || records.some(r=>r.stale)||coverage.some(c=>!c.checks.length)?'incomplete':records.every(r=>r.status==='satisfied' && r.exitCode===0)&&coverage.every(c=>c.checks.every(x=>x.status==='passed'))?'passed':'failed',
+    status:!confirmed || coverage.some(c=>['open','incomplete'].includes(c.verdict)) || !work || !criteria.length || !records.length || records.some(r=>r.stale)||coverage.some(c=>!c.checks.length)?'incomplete':records.every(r=>r.status==='satisfied' && r.exitCode===0)&&coverage.every(c=>c.checks.every(x=>x.status==='passed'))?'passed':'failed',
     reviewRequired:true,meaning:'Evidence completeness and technical outcomes only; not review approval'};
 }

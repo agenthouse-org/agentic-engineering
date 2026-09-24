@@ -3,16 +3,26 @@ import {assert,read,write,inside,hash,exclusive} from './io.js';
 import {resolve,approval} from './policy.js';
 import {run} from './process.js';
 import {checkVisualPlan} from './visual-plan.js';
+import {validateAssessment} from './assessment.js';
 
-export const CRITERIA={ready:['outcome','scope','acceptance','verification','dependencies','risks'],done:['changes','evidence','acceptanceEvidence','releasePlan','rollbackPlan']};
+export const CRITERIA={ready:['outcome','scope','acceptance','verification','dependencies','risks'],verify:['changes'],done:['changes','evidence','acceptanceEvidence','releasePlan','rollbackPlan']};
 export function gate(root,{item,phase='ready',decision,policyFile}={}) {
-  assert(['ready','done'].includes(phase),'Choose ready or done');
+  assert(['ready','verify','done'].includes(phase),'Choose ready, verify or done');
   const record=read(inside(root,item)),{config,snapshot}=resolve(root,{frozen:true,policyFile});
   const settings=config.lifecycle || {},rules=settings[phase] || {};
-  const fields=rules.fields || CRITERIA[phase],findings=[];
+  const fields=rules.fields || CRITERIA[phase],findings=[],evidence=[];
   const kindFields=rules.kindFields || (phase==='ready'?{bug:['reproduction','expected','observed'],incident:['impact','mitigation'],investigation:['question','completionCondition'],documentation:['audience']}:{});
   for(const id of new Set([...fields,...(kindFields[record.kind] || [])]))if(typeof record.fields?.[id]!=='string'||!record.fields[id].trim())findings.push({id,status:'incomplete',reason:`Missing ${id}`});
   assert(Array.isArray(record.criteria),'Work item requires criteria');
+  for(const criterion of record.criteria || [])if(criterion.state==='open')findings.push({id:criterion.id,status:'incomplete',reason:'Criterion remains open; settle before the gate'});
+  if(phase==='ready' && record.fields?.technicalAssessment) {
+    try {
+      const assessment=validateAssessment(root,record.fields.technicalAssessment,{policyFile});
+      evidence.push({file:record.fields.technicalAssessment,sha256:hash(fs.readFileSync(inside(root,record.fields.technicalAssessment)))});
+      if(assessment.openQuestions.length)findings.push({id:'technicalAssessment',status:'incomplete',reason:'Assessment has unresolved questions'});
+      if(record.fields.assessmentCommit!==assessment.commit)findings.push({id:'technicalAssessment',status:'incomplete',reason:'Declare fields.assessmentCommit for the assessed revision'});
+    }catch(error){findings.push({id:'technicalAssessment',status:'incomplete',reason:error.message});}
+  }
   assert(record.criteria.every(c=>typeof c.id==='string' && c.id.trim() && typeof c.expectation==='string' && c.expectation.trim()) && new Set(record.criteria.map(c=>c.id)).size===record.criteria.length,'Invalid or duplicate acceptance criteria');
   if(!record.criteria.length)findings.push({id:'criteria',status:'incomplete',reason:'No observable criteria'});
   if(phase==='ready' && rules.ticketSize!==false) {
@@ -33,7 +43,6 @@ export function gate(root,{item,phase='ready',decision,policyFile}={}) {
       findings.push({id:'visualPlan',status:'incomplete',reason:error.message});
     }
   }
-  const evidence=[];
   if(phase==='done') {
     for(const file of record.evidence || []) {
       const bytes=fs.readFileSync(inside(root,file)),result=JSON.parse(bytes);evidence.push({file,sha256:hash(bytes),result});

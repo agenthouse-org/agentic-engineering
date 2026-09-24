@@ -1,6 +1,6 @@
 # Agent commands
 
-Version 1.2.0 provides 42 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
+Version 1.3.0 provides generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
 
 ## Load central skills
 
@@ -21,7 +21,18 @@ Natural-language requests also work when the host has loaded the skills: “Use 
 
 Reload the host or start a fresh session after first enrollment if the command is not shown. Open the enrolled repository as the agent workspace. Native discovery, slash UI, permissions, and execution capabilities depend on the host/version and workspace trust; generated files and CLI execution are tested here, not full native-host certification.
 
-## Complete command map
+## Default command map
+
+Understand: ah-survey, ah-inspect, ah-controls.
+Shape: ah-draft-user-story, ah-assess-story-readiness, ah-validate-scope, ah-assess-tech-feasibility, ah-visual-plan.
+Build: ah-work, ah-spec, ah-check-commit.
+Verify: ah-evaluate, ah-review, ah-review-change, ah-review-mr, ah-frontend-acceptance, ah-usability.
+Approve: ah-sign, ah-gate.
+Operate: ah-update, ah-rollback, ah-recover, ah-housekeep, ah-doctor, ah-session.
+
+Assess judges a story, scope or feasibility; evaluate runs checks on a build; gate decides ready or done from evidence. Use `help "I need to plan this"` for at most three suggested skills.
+
+## Complete command map (administration included)
 
 | Agent skill | CLI operation |
 | --- | --- |

@@ -10,7 +10,11 @@
         "node_modules/typescript/bin/tsc",
         "--noEmit"
       ],
-      "result": "exit-code"
+      "result": "exit-code",
+      "origin": {
+        "module": "node-typescript",
+        "file": "modules/node-typescript.json"
+      }
     },
     {
       "id": "tests",
@@ -19,7 +23,11 @@
       "args": [
         "--test"
       ],
-      "result": "exit-code"
+      "result": "exit-code",
+      "origin": {
+        "module": "node-typescript",
+        "file": "modules/node-typescript.json"
+      }
     },
     {
       "id": "lint",
@@ -29,7 +37,11 @@
         "node_modules/eslint/bin/eslint.js",
         "."
       ],
-      "result": "exit-code"
+      "result": "exit-code",
+      "origin": {
+        "module": "node-typescript",
+        "file": "modules/node-typescript.json"
+      }
     }
   ],
   "principles": [

@@ -1,8 +1,10 @@
+import {commandMap,goalHelp} from './command-map.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {assert,PACKAGE,VERSION} from './io.js';
 
 export const topics={
+  assessment:'assessment --item FILE --selectors FILE [--ref COMMIT] [--output FILE]\nassessment --summary FILE\nCollect reproducible literal occurrences for feasibility analysis, or validate a linked assessment summary. Does not run project checks or approve a proposal.',
   context:'context\nPrint this project’s pinned central lifecycle and skill paths. Read those files from any agent; no project skill copies or automatic host discovery are required.',
   controls:'controls [--policy-file FILE]\nMap resolved rule identifiers to actual runtime mechanisms and configured checks. Unknown rules remain guidance; deployment activation is not inferred.',
   hook:'hook [--vendor claude|cursor|ci] [--input FILE]\nProcess a native or normalized JSON event from stdin or FILE with the pinned hooks runtime. Uses frozen project policy; no check installs software.',
@@ -13,15 +15,15 @@ export const topics={
   'npm-provenance':'npm-provenance status [--output FILE]\nnpm-provenance apply [--provider github|gitlab] [--workflow FILE] [--publish trusted|token] [--access public|restricted]\nInspect local npm publish files for provenance, or write a new GitHub Actions / GitLab job when the target file is missing. Does not publish, store tokens, or change npmjs.com. Exit 0 ready or inapplicable, 1 failed, 4 incomplete.',
   inspect:'inspect [--ref HEAD|BASE..HEAD] [--base BRANCH] [--output FILE]\nAnalyze committed changes, candidate tests, added suppressions and residue. --base compares from the merge base.',
   review:'review --item FILE --evidence REPORT_JSON[,REPORT_JSON] [--baseline REPORT_JSON] [--ref HEAD|BASE..HEAD] [--base BRANCH] [--output FILE]\nMap criterion IDs to checks for the exact commit and frozen policy. Technical coverage does not grant review approval. Exit 0 passed, 1 failed, 4 incomplete.',
-  gate:'gate --item FILE --phase ready|done [--decision FILE] [--policy-file FILE] [--output FILE]\nEvaluate configured lifecycle criteria, evidence and independent signed approval. Exit 0 passed, 1 failed, 3 pending, 4 incomplete.',
+  gate:'gate --item FILE --phase ready|verify|done [--decision FILE] [--policy-file FILE] [--output FILE]\nEvaluate configured lifecycle criteria, evidence and independent signed approval. Exit 0 passed, 1 failed, 3 pending, 4 incomplete.',
   spec:'spec --item FILE --phase red|green --evaluator ID [--output FILE]\nCapture an expected test failure (exit 1), then success (exit 0) with the same configured command and criteria. Review the failure cause; an exit code alone is not proof of a valid test.',
-  backlog:'backlog --source MARKDOWN_OR_JSON --id ID [--title TITLE] [--provider ID] [--external-id ID] [--output FILE]\nImport one local record or exported platform item, preserving content and external identity. Existing items are never overwritten.',
+  backlog:'backlog [--propose-criteria] --source MARKDOWN_OR_JSON --id ID [--title TITLE] [--provider ID] [--external-id ID] [--output FILE]\nImport one local record or exported platform item, preserving content and external identity. Existing items are never overwritten.',
   onboard:'onboard [--integration shared|private] [--artifact-paths DIR,DIR] [--root PATH] [--agents claude,codex,cursor] [--policy FILE] [--autonomy supervised|bounded|delegated] [--docs open|show|skip]\n        [--branch-pattern PATTERN] [--branch-example EXAMPLE] [--branch-base REF]\nGuided setup asks whether to open the Markdown guides in the default app, show them in the terminal, or skip. With Git present it asks for a branch naming pattern (for example {id}-{slug}) when unset. For scripts, explicitly choose --integration shared|private, --agents (or --non-interactive), and --docs. Skills and runtime are central; private mode leaves existing agent instructions untouched.\nExisting installations receive the same documentation choice and a read-only next-step guide; configuration is preserved.',
   demo:'demo --root NEW_EMPTY_DIRECTORY\nRun an isolated example: a failing acceptance check, a fix, then a passing check.\nPrints the HTML report path. The demonstration does not validate your application.',
   init:'init [--agents claude,codex,cursor,windsurf,opencode,openclaw] [--policy FILE]\n     [--project NAME] [--autonomy supervised|bounded|delegated] [--scope project|user] [--integration shared|private] [--central]\nInstall the runtime, lifecycle skill, and required frontend-acceptance dependency.\nDefault autonomy: supervised. User scope caches runtime and skills centrally without touching a repository. New project setup requires --integration. Existing project installations retain storage until --central migrates unchanged owned files.',
   work:'work new --id ID --title "Outcome" [--kind feature|bug|incident|change|investigation|documentation] [--path NAME] [--parent ID]\nwork show --id ID\nwork advance --id ID --to STAGE [--decision REPOSITORY_RELATIVE_FILE] [--gate-decision FILE] [--policy-file FILE]\nwork branch --id ID [--from REF] [--parent ID]\nEdit fields in .agenthouse/work/ID.json. Stages require evidence and applicable approvals.\nwork branch requires git.branchNaming.pattern, a clean tree, creates and checks out the branch, and does not push.',
-  evaluate:'evaluate [--profile pull-request] [--ci] [--frozen] [--subject BUILD_ID]\n         [--base-url URL] [--output PATH] [--policy-file FILE]\nRun configured checks and write JSON, JUnit, and HTML evidence reports.\nExit codes: 0 passed; 1 failed; 2 error; 3 approval pending; 4 incomplete.\n--ci implies --frozen and never updates dependencies. BUILD_ID must identify the tested build.',
-  doctor:'doctor\nCheck installation, policy snapshot, required skill integrity, and repository-specific output exclusions, indexed artifacts and ignored baseline paths.\nWarns when Git is present without git.branchNaming.pattern. Exit 0: healthy installation; exit 2: problems. This does not certify application quality.',
+  evaluate:'evaluate [--list | --plan] [--profile pull-request] [--ci] [--frozen] [--subject BUILD_ID]\n         [--base-url URL] [--output PATH] [--policy-file FILE]\nRun repository-profile checks against a specific build and write evidence reports; does not assess requirements, scope or design. --list/--plan prints the resolved profile, origins and build without executing checks or writing files.\nExit codes: 0 passed; 1 failed; 2 error; 3 approval pending; 4 incomplete.\n--ci implies --frozen and never updates dependencies. BUILD_ID must identify the tested build.',
+  doctor:'doctor [--plugin-version VERSION]\nCheck installation, policy snapshot, required skill integrity, and repository-specific output exclusions, indexed artifacts and ignored baseline paths.\nWarns when Git is present without git.branchNaming.pattern. Exit 0: healthy installation; exit 2: problems. This does not certify application quality.',
   resolve:'resolve [--frozen] [--policy-file FILE]\nResolve configured policy sources. --frozen verifies the existing snapshot without refreshing it.',
   session:'session [--npm-cli PATH]\nCheck configured approved updates between commands, report policy drift without replacing the frozen snapshot, apply housekeeping rules, and record the active version set.',
   dependencies:'dependencies status\ndependencies pin | unpin [--name frontend-acceptance|web-usability-conformity|hooks]\ndependencies update --bundle FILE (--sha256 HASH | --public-key FILE) [--check] [--allow-breaking]\nManage bundled upstream skills. Pins bind version and digest; updates preserve upstream ownership.',
@@ -80,49 +82,16 @@ export function help(topic) {
     if(names.includes(name))return skillHelp(name);
     const suggestion=suggestedSkill(topic,names);
     assert(!suggestion,`Unknown help topic: ${topic}. Did you mean coding-agent skill ${suggestion}? Run "ah-engineering help ${suggestion}" or invoke "$${suggestion}" in Codex.`);
+    const goal=goalHelp(topic);if(goal)return goal;
     assert(false,`Unknown help topic: ${topic}. Run "ah-engineering help" for CLI commands, "ah-engineering help agents" for coding-agent skills, or "ah-engineering help cookbook" for examples.`);
   }
   return `agenthouse engineering ${VERSION}
 
-Turn a story or bug into a reviewable change with explicit criteria, checks,
-visual evidence, and governance decisions. Use your preferred coding agent.
+${commandMap()}
 
-Start here
-  onboard       Choose agents/policy and enroll a repository
-  demo          Failing check, fix, then passing report in an empty directory
-  help COMMAND  Show options and examples (also COMMAND --help)
-  help agents   Coding-agent skill installation and invocation
-  help cookbook Longer setup and workflow recipes (alias: help extended)
+Assess = judge a story, scope or feasibility; evaluate = run checks on a build; gate = decide ready or done from evidence.
 
-Daily work
-  survey        Read tooling and test-layer clues without running scripts
-  visual-plan   Draft or check wireframes and mermaid diagrams
-  inspect       Files, candidate tests, and suppressions for a commit/range
-  review        Match work-item criteria to build and policy evidence
-  gate, spec    Ready/done checks, or capture red-then-green test runs
-  backlog       Import a markdown or exported tracker work item
-  controls      Which rules have real checks vs advisory text
-  usability     Set up and run the upstream browser usability audit
-  hook, hook-config  Process host/CI hook events; install owned hook settings
-  work          Create, show, advance, or branch lifecycle work items
-  evaluate      Run configured checks locally or in CI; write evidence reports
-  doctor        Diagnose enrollment, skills, and housekeeping problems
-  resolve       Rebuild or freeze-check .agenthouse/resolved.json
-  session       Active version, approved updates, housekeeping, policy drift
-  housekeep     Verify artifact exclusions; explicitly clean configured disposable paths
+Setup: onboard, demo. Use help COMMAND, help "your goal", help agents or help extended.
+Run node .agenthouse/run.mjs for the repository pin. No paid account is required.`;
 
-Installation and maintenance
-  init, dependencies, update, bundle, rollback, restore, recover, uninstall
-  skill         Import an optional specialist skill from a local folder
-  module        Preview/apply wiring of repo tests into evaluate profiles
-  keygen, sign  Create keys and sign authorized decisions
-  npm-provenance  Inspect or add npm publish provenance; does not publish
-
-Agent skills: use help ah-SKILL, help agents, or .agenthouse/agent-commands.md.
-npm installs one executable: ah-engineering. These are its subcommands.
-Enrollment also creates node .agenthouse/run.mjs for the project's pinned runtime.
-Use --root PATH to target a repository. No paid account is required.
-
-Try: ah-engineering demo --root ./ah-demo
-Then: ah-engineering onboard --root /path/to/your/project`;
 }

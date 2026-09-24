@@ -1,6 +1,6 @@
 # agenthouse engineering cookbook
 
-Version 1.2.0 uses central storage and explicit shared/private onboarding for new projects. See [central installation](central-installation.md) for context loading, migration, artifact classification and verification limits. Older project paths in examples apply to legacy installations.
+Version 1.3.0 uses central storage and explicit shared/private onboarding for new projects. See [central installation](central-installation.md) for context loading, migration, artifact classification and verification limits. Older project paths in examples apply to legacy installations.
 
 This guide shows the common paths from installation to a verified change. Commands use the globally installed `ah-engineering` executable for setup and the repository-pinned launcher for daily work.
 
@@ -262,3 +262,9 @@ Compare `ah-engineering --help` with `node .agenthouse/run.mjs --help`. Use the 
 - `docs/dependencies.md`: dependency integrity, pins, updates, and rollback
 - `docs/visual-acceptance.md`: UI acceptance and browser evidence
 - `docs/npm-provenance.md`: public npm publish provenance and trusted publishing
+
+## Administration
+
+Use `help COMMAND` for keygen, npm-provenance, bundle, module, skill, hook-config, init, restore, uninstall, resolve, dependencies, context and assessment. These remain available outside the default lifecycle map.
+
+See [technical feasibility](technical-feasibility.md) and [incoming URL reviews](review-mr.md).

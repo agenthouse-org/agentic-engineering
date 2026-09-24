@@ -30,6 +30,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: node node_modules/@playwright/test/cli.js install --with-deps chromium
       - run: npm run test:browser
+      - run: node tests/browser/report-acceptance.mjs
       - run: npm run test:usability
       - uses: actions/upload-artifact@v4
         if: always()
@@ -37,4 +38,5 @@ jobs:
           name: browser-evidence
           path: |
             work/browser-*
+            .agenthouse/evidence/consumer-feedback/
             work/usability-test-*/artifacts/agenthouse/usability/**

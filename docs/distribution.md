@@ -84,3 +84,34 @@ ah-engineering restore --root /path/to/project --bundle /offline/original-bundle
 Restore makes no network requests, preserves the recorded agents, and leaves configuration and resolved policy snapshots unchanged. It refuses modified owned files and removed managed instruction blocks. It does not reconstruct missing project authority or consumer imports. Interrupted transactions require `recover` first. An older pinned project launcher may not contain `restore`; invoke the newer global CLI to request restoration without upgrading the pin. Historical projection formats have not been verified: if reconstructed ownership digests differ, restore refuses the operation rather than rewriting them.
 
 Existing installations opt in with `ah-engineering restore --ignore-generated`. Repeating restore is idempotent. Diagnostics reject missing, edited, or symlinked managed projections. Shared storage is not implemented; ordinary copies remain on disk.
+
+## Plugin discovery and organization overlays
+
+The supplied package already includes .codex-plugin/plugin.json,
+.claude-plugin/plugin.json and local marketplace manifests. Install the reviewed
+package directory through the host's plugin mechanism to discover the same
+generated skills outside enrolled repositories. Host installation/search and reload
+behavior must be validated for the host version; source packaging alone is not
+proof of live global search. See the 1.3.0 release notes for distribution details.
+
+For an offline/private organization overlay, vendor an exact reviewed package
+under an immutable version-and-digest directory and use a local marketplace
+source pointing there (Codex: source object with source=local and path; Claude:
+source string). Preserve the package's plugin manifests, skills and CLI bootstrap.
+Record package version and SHA-256 in the organization's dependency lock and reject
+changed bytes before installing. Do not assume either host supports transitive
+plugin dependencies: install the pinned framework entry alongside the organization
+enroll skill. The organization enroll skill selects policy; the framework plugin
+does not carry consumer policy. Avoid moving Git branch references for pins.
+
+Generated skills and legacy command projections identify their generating package
+version. An enrolled invocation loads context from the repository pin, never a
+newer global method. Invoke the pinned doctor with --plugin-version VERSION from
+the plugin marker to compare runtime, plugin and repository versions. Without
+that option doctor reports pluginVersion=null, rather than guessing which host
+plugin is installed. A mismatch produces exit 2 and preserves the repository pin.
+
+Central/shared and private enrollment retain their existing storage behavior.
+Legacy project-copy enrollment continues to generate host command projections.
+We deliberately do not add repository command files to private installations:
+that would contradict ADR-0014 and alter consumer-owned host discovery settings.

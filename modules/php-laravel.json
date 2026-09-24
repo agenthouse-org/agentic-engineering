@@ -10,7 +10,11 @@
         "artisan",
         "test"
       ],
-      "result": "exit-code"
+      "result": "exit-code",
+      "origin": {
+        "module": "php-laravel",
+        "file": "modules/php-laravel.json"
+      }
     },
     {
       "id": "analysis",
@@ -21,7 +25,11 @@
         "analyse",
         "--no-progress"
       ],
-      "result": "exit-code"
+      "result": "exit-code",
+      "origin": {
+        "module": "php-laravel",
+        "file": "modules/php-laravel.json"
+      }
     },
     {
       "id": "format",
@@ -31,7 +39,11 @@
         "vendor/bin/pint",
         "--test"
       ],
-      "result": "exit-code"
+      "result": "exit-code",
+      "origin": {
+        "module": "php-laravel",
+        "file": "modules/php-laravel.json"
+      }
     }
   ],
   "principles": [

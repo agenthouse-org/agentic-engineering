@@ -52,7 +52,7 @@ export function advance(root,id,to,decisionFile,{policyFile,gateDecision}={}) {
     assert(stages.indexOf(item.stage)>=0 && stages.indexOf(to)===stages.indexOf(item.stage)+1,'Transitions must follow the lifecycle; amend the record to explain an exception');
     if(STAGES.indexOf(to)>STAGES.indexOf(item.stage)+1)assert(item.fields?.pathReason?.trim(),'Explain why the configured shorter path fits this work');
     const ready=readiness(item);assert(ready.status==='passed',ready.reason);
-    const phase=to==='implement'?'ready':to==='accept'?'done':null;
+    const phase=to==='implement'?'ready':to==='accept'?'done':to==='verify'?'verify':null;
     if(phase && config.lifecycle?.[phase]) {
       const result=gate(root,{item:`.agenthouse/work/${id}.json`,phase,decision:gateDecision,policyFile});
       assert(result.status==='passed',`${phase} gate ${result.status}: ${result.findings.map(f=>f.reason).join('; ')}`);

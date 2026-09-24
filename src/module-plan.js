@@ -68,8 +68,10 @@ export function planModule(root,name,options={}) {
   const target=structuredClone(before),selectedEvaluators=[];
   for(const candidate of candidates) {
     const id=`tests.${identity.key}.${candidate.layer}`,existing=target.evaluators.find(item=>item.id===id);
-    const evaluator={id,kind:'command',executable:name==='node-typescript'?'npm':'composer',args:name==='node-typescript'?['run',candidate.script]:[candidate.script],cwd:workspace.relative,result:'exit-code'};
+    const evaluator={id,origin:{module:name,file:workspace.relative==='.'?(name==='node-typescript'?'package.json':'composer.json'):`${workspace.relative}/${name==='node-typescript'?'package.json':'composer.json'}`},kind:'command',executable:name==='node-typescript'?'npm':'composer',args:name==='node-typescript'?['run',candidate.script]:[candidate.script],cwd:workspace.relative,result:'exit-code'};
     if(existing) {
+      // Older enrolled evaluators predate provenance metadata; preserve their bytes.
+      if(!existing.origin)delete evaluator.origin;
       assert(canonical(existing)===canonical(evaluator),`Evaluator conflict: ${id}`);
       selectedEvaluators.push(existing);
       continue;
