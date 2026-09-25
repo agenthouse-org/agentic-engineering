@@ -4,7 +4,7 @@ description: "Run checks configured in the repository profile against a specific
 license: MIT
 ---
 
-Generated from ah-engineering 1.4.0.
+Generated from ah-engineering 1.5.0.
 
 # agenthouse evaluate
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Runs repository-profile checks against a specific build and writes evidence reports; does not assess requirements, scope or design. For what-would-run questions use evaluate --list, which has no execution or file-write side effects. Use the project’s configured profile and actual build identity. Preserve failure, error, pending, and incomplete statuses. Explain report paths and missing evidence. Do not modify tests, policies, or checks merely to obtain a pass.
+Runs repository-profile checks against a specific build and writes evidence reports; does not assess requirements, scope or design. For what-would-run questions use evaluate --list, which has no execution or file-write side effects. Use the project’s configured profile and actual build identity. Preserve failure, error, pending, and incomplete statuses. Explain report paths and missing evidence. In CI, confirm the selected platform uploads the generated junit.xml on both successful and failed runs; generation does not publish it. Framework JUnit projects evaluation checks, not the test runner’s individual cases, so configure the project runner separately for per-test detail. GitLab ingests JUnit with artifacts:reports:junit; GitHub Actions stores it as a downloadable artifact, and a UI test summary requires a separately reviewed reporting integration. Keep upload unconditional on test success and preserve the command’s exit status. Never let report ingestion turn a failed gate into success; do not add an unreviewed third-party action. Do not modify tests, policies, or checks merely to obtain a pass.
 
 CLI reference:
 

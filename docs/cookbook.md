@@ -1,6 +1,6 @@
 # agenthouse engineering cookbook
 
-Version 1.4.0 adds role and product-process guidance. See [roles and product processes](roles-and-processes.md) for loading, consumer-owned copies, and reviewing baseline updates. Central storage and explicit shared/private onboarding remain available; older project paths in examples apply to legacy installations.
+Version 1.5.0 adds conditional CI test-report publication guidance. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for configuring JUnit XML upload and platform ingestion without masking failures.
 
 This guide shows the common paths from installation to a verified change. Commands use the globally installed `ah-engineering` executable for setup and the repository-pinned launcher for daily work.
 

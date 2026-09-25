@@ -4,7 +4,7 @@ description: "List files touched by a commit or range, candidate tests, new supp
 license: MIT
 ---
 
-Generated from ah-engineering 1.4.0.
+Generated from ah-engineering 1.5.0.
 
 # agenthouse inspect
 

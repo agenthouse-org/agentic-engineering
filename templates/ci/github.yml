@@ -17,11 +17,14 @@ jobs:
         run: node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
       - name: Evaluate
         run: node .agenthouse/run.mjs evaluate --profile pull-request --ci --frozen --subject "${{ github.sha }}"
-      - name: Preserve evidence even when evaluation fails
+      # Includes result.json, junit.xml, report.html and linked evidence.
+      # GitHub stores these as downloadable artifacts; arbitrary JUnit XML is
+      # not parsed into a native test-results view without a reviewed reporter.
+      - name: Preserve evaluation and test reports even when evaluation fails
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: agenthouse-evidence
+          name: agenthouse-evaluation-reports
           path: .agenthouse/local/reports/
           include-hidden-files: true
           if-no-files-found: warn

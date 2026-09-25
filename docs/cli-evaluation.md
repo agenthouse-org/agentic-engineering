@@ -84,9 +84,9 @@ Missing artifacts despite an external runner reporting success are incomplete ev
 
 ## Reports and artifacts
 
-The initial target outputs are a concise terminal summary, `result.json` as the authoritative machine contract, `junit.xml` for conventional CI test views, and `report.html` for human review. Include screenshot/reference/difference artifacts for applicable frontend checks. Add platform-native formats only when they provide useful fidelity.
+The initial target outputs are a concise terminal summary, `result.json` as the authoritative machine contract, `junit.xml` for conventional CI test views, and `report.html` for human review. Include screenshot/reference/difference artifacts for applicable frontend checks. Add platform-native formats only when they provide useful fidelity. Evaluation writes JUnit XML locally; CI must separately upload or ingest it. A file appearing in the workspace is not proof that it reached the platform's report view.
 
-JUnit is a projection: failed criteria map to failures, execution errors to errors, and pending/incomplete/not-applicable states remain explicitly labeled in properties and case messages. They may appear as skipped in a viewer, but the process exit and full JSON preserve blocking semantics. Advisory results must be identified so report import does not silently establish a different gate policy.
+JUnit is a projection of framework evaluation checks: failed criteria map to failures, execution errors to errors, and pending/incomplete/not-applicable states remain explicitly labeled in properties and case messages. It does not contain the underlying test runner's individual cases unless that runner separately emits them. Project-specific test-runner JUnit configuration is separate. Non-passed framework checks may appear as skipped in a viewer, but the process exit and full JSON preserve blocking semantics. Advisory results must be identified so report import does not silently establish a different gate policy.
 
 Write the result atomically; retain partial diagnostics on interruption where possible and signal an unsuccessful run. Report artifact provenance and protect paths against traversal during evidence import. Do not mix diagnostic logs into machine-readable JSON stdout.
 
@@ -101,6 +101,8 @@ Each template must show:
 3. Invoke the chosen profile with `--ci --frozen`, explicit environment/build identity, and an output directory.
 4. Publish reports and evidence even when evaluation returns a nonzero status, preserving the original status as the job result.
 5. Connect the job's result to the platform's branch/release policy where a required gate is intended.
+
+When the test runner or evaluator produces JUnit XML and the CI platform has a supported report integration, configure it explicitly and retain the file on both successful and failed runs. Report generation and report publication are separate responsibilities. GitLab displays JUnit reports when the job declares `artifacts:reports:junit`; set `artifacts:when: always` and use a file glob rather than a directory. The supplied GitLab template does this. GitHub Actions' workflow artifacts preserve downloadable files but do not parse arbitrary JUnit XML into a native test-results view. The supplied GitHub template uploads evaluation evidence, including `junit.xml`; an in-page test summary needs a separately reviewed reporting action or integration. Do not add third-party actions without the consumer's normal supply-chain review. A report uploader must not mask the original test/evaluation exit status or mark a failed gate as passed.
 
 Do not use a blanket ignore-error option that makes failed evaluation green. Handling pending approval may involve a separate platform approval job; the evaluation itself does not approve or deploy. Pull-request evaluation should not gain production credentials just because the release profile needs them.
 

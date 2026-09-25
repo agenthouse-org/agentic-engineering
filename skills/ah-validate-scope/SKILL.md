@@ -4,7 +4,7 @@ description: "Assess whether a set of requirements covers an intended outcome, i
 license: MIT
 ---
 
-Generated from ah-engineering 1.4.0.
+Generated from ah-engineering 1.5.0.
 
 # agenthouse validate-scope
 

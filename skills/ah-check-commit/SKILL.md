@@ -4,7 +4,7 @@ description: "Check the behavior affected by a commit or change range against it
 license: MIT
 ---
 
-Generated from ah-engineering 1.4.0.
+Generated from ah-engineering 1.5.0.
 
 # agenthouse check-commit
 

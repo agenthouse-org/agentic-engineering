@@ -1,10 +1,10 @@
 # Implementation and verification status
 
-Version 1.4.0 adds generic role and product-process guidance. See [roles and product processes](roles-and-processes.md) for behavior and limitations. Central storage and explicit shared/private onboarding remain available.
+Version 1.5.0 adds conditional JUnit XML report publication guidance. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
 
-Version 1.4.0 release line. Updated 2026-09-25.
+Version 1.5.0 release line. Updated 2026-09-25.
 
-Development checkout verification on Windows, 2026-09-25: 146 Node tests passed, including role/process adoption, conflicts, local edits, advisory orientation, and command routing. Generated command skills and release allowlist checks passed. The release workflow is responsible for cross-platform, browser, usability, and package verification for this version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
+Development checkout verification on Windows, 2026-09-25: CI templates preserve JUnit reports on failures and keep evaluation status authoritative; focused template contract tests added. Generated command skills and release allowlist checks are run before release. The release workflow is responsible for cross-platform, browser, usability, and package verification for this version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
@@ -27,7 +27,7 @@ Development checkout verification on Windows, 2026-09-25: 146 Node tests passed,
 | Stack modules | Node/TypeScript and PHP/Laravel standards and templates; evidence-led preview/apply with diff, target-state handoff, stale-base/conflict safety, adoption profiles and deterministic monorepo IDs | Legacy template output, no-test degradation, preservation, CLI preview/apply and stale snapshot behavior tested |
 | Marketplace packages | Claude and Codex manifests/indexes | Claude Code 2.1.270 validators passed; Claude and Codex 0.154.0-alpha.6.2 installed/enabled the packed plugin in isolated Windows profiles |
 | Distribution | npm tarball, offline bundles, exact/latest tracking, npm signature/provenance verification, attested GitHub-bundle fallback, release-declared compatibility, recovery and rollback | Real npm 0.1.9 verification; mocked npm/GitHub fallback, exact identity, pins, breaking, managed-file conflicts, interruption and tampering tests; GitHub v0.1.9 correctly ineligible because it has no bundle asset |
-| CI | Deterministic evaluator templates, optional artifact-only agent-review recipe, and future-release GitHub update-bundle attestation/upload | CLI exit/report tests; release-workflow contract test; browser/usability jobs included in repository CI |
+| CI | Deterministic evaluator templates, JUnit XML retention on failures, GitLab native test-report ingestion, GitHub artifact retention with optional reviewed reporter integration, and future-release bundle attestation/upload | CLI exit/report tests; CI template contract tests; release-workflow contract test; browser/usability jobs included in repository CI |
 
 Native live-session hook delivery and command discovery are not certified across all six hosts. Other agents can use the tested shared CLI and generated instruction projections. Local checks supplement server-side branch controls; the command matcher is not a shell sandbox.
 

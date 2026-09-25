@@ -35,6 +35,18 @@ test('survey and commit analysis handle root commit, deleted files and merge bas
   write(path.join(root,'widget.ts'),'// TODO investigate\n// @ts-ignore\nexport const value=2;\n');fs.unlinkSync(path.join(root,'tests/widget.test.ts'));git(root,'add','.');git(root,'commit','-m','change');
   const report=inspectChange(root,{base});assert.equal(report.base,base);assert.equal(report.findings.length,2);assert.ok(report.files.some(f=>f.status==='D'));assert.throws(()=>inspectChange(root,{ref:'--help'}));
 });
+test('CI templates preserve JUnit reports on failures without masking the gate result',()=>{
+  const github=fs.readFileSync(path.join(PACKAGE,'templates/ci/github.yml'),'utf8');
+  const gitlab=fs.readFileSync(path.join(PACKAGE,'templates/ci/gitlab.yml'),'utf8');
+  const skill=fs.readFileSync(path.join(PACKAGE,'skills/ah-evaluate/SKILL.md'),'utf8');
+  assert.match(github,/if:\s*always\(\)/);
+  assert.match(github,/path:\s*\.agenthouse\/local\/reports\//);
+  assert.match(github,/not parsed into a native test-results view/);
+  assert.match(gitlab,/when:\s*always/);
+  assert.match(gitlab,/reports:\s*\n\s+junit:\s*\.agenthouse\/local\/reports\/\*\/junit\.xml/);
+  assert.match(skill,/confirm the selected platform uploads the generated junit\.xml/);
+  assert.match(skill,/report ingestion turn a failed gate into success/);
+});
 test('survey reports test-layer gaps and conservative nominal evidence without executing scripts',t=>{
   const root=temp(t);git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');
   write(path.join(root,'package.json'),{scripts:{'test:unit':'node -e "require(\'fs\').writeFileSync(\'executed\',\'bad\')"','test:api':'vitest run tests/api'}});

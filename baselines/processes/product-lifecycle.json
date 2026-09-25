@@ -9,7 +9,7 @@
     {"id":"define","purpose":"Choose outcomes, requirements, scope, and acceptance evidence.","outputs":["Outcome","Acceptance criteria","Exclusions"]},
     {"id":"design","purpose":"Shape product, service, and technical choices and risks.","outputs":["Design and architecture decisions","Risk responses"]},
     {"id":"plan","purpose":"Order work and confirm readiness, ownership, and verification.","outputs":["Work plan","Dependencies","Verification approach"]},
-    {"id":"deliver","purpose":"Build, verify, accept, and release the product change.","outputs":["Change","Verification evidence","Release and rollback plan"]},
+    {"id":"deliver","purpose":"Build, verify, accept, and release the product change.","outputs":["Change","Verification evidence","JUnit or platform-native test report uploaded when supported","Release and rollback plan"]},
     {"id":"operate-support","purpose":"Operate the service and support users.","outputs":["Service and support evidence","Incidents and feedback"]},
     {"id":"learn-retire","purpose":"Measure outcomes, improve, or retire responsibly.","outputs":["Outcome review","Improvement or retirement decision"]}
   ],

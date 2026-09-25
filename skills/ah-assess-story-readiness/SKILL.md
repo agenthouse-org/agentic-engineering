@@ -4,7 +4,7 @@ description: "Assess whether one existing work item is complete enough to implem
 license: MIT
 ---
 
-Generated from ah-engineering 1.4.0.
+Generated from ah-engineering 1.5.0.
 
 # agenthouse assess-story-readiness
 
