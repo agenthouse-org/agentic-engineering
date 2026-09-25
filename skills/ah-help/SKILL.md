@@ -4,7 +4,7 @@ description: "List installed agenthouse skills and suggest which one fits a goal
 license: MIT
 ---
 
-Generated from ah-engineering 1.5.0.
+Generated from ah-engineering 1.5.1.
 
 # agenthouse help
 

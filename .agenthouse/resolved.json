@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "frameworkVersion": "1.5.1",
+  "configDigest": "25587a3b46762776be9edfbe21637cf5a9d79eeb8e0a79ba8e03433a602eccc5",
+  "sources": [
+    {
+      "id": "project-policy",
+      "revision": "1",
+      "digest": "78a66f7c0f3084955f4ff42275a8bbb8ca7e4d27fb863b095a9b325324ed4912"
+    }
+  ],
+  "rules": [],
+  "provenance": {},
+  "requiredChecks": [],
+  "owner": "project-owner",
+  "authorities": {
+    "project-owner": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA2Ky/M72t2xANs4GbJMUg7xWLLhrgYXXFqWoBLlnzWIo=\n-----END PUBLIC KEY-----\n"
+  },
+  "digest": "033c9698c76b050178e7b13cdf347f834f295a40849416b6029485c584e19a48"
+}

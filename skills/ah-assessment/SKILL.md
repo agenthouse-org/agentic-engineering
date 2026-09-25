@@ -4,7 +4,7 @@ description: "Collect commit-bound feasibility inventory or validate an assessme
 license: MIT
 ---
 
-Generated from ah-engineering 1.5.0.
+Generated from ah-engineering 1.5.1.
 
 # agenthouse assessment
 

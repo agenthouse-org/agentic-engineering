@@ -1,12 +1,21 @@
 {
   "name": "ah-engineering",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Agent-neutral engineering lifecycle, visual acceptance, evidence and governance.",
   "author": {
-    "name": "agenthouse"
+    "name": "Neri GmbH",
+    "url": "https://agenthouse.org"
   },
-  "homepage": "https://github.com/agenthouse-org/agentic-engineering",
+  "homepage": "https://agenthouse.org",
   "repository": "https://github.com/agenthouse-org/agentic-engineering",
   "license": "MIT",
+  "keywords": [
+    "agenthouse",
+    "agentic-engineering",
+    "sdlc",
+    "governance",
+    "coding-agents",
+    "developer-tools"
+  ],
   "skills": "./skills/"
 }

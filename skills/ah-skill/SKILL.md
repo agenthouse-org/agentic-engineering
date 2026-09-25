@@ -4,7 +4,7 @@ description: "Import one reviewed specialist skill unchanged from a local folder
 license: MIT
 ---
 
-Generated from ah-engineering 1.5.0.
+Generated from ah-engineering 1.5.1.
 
 # agenthouse skill
 

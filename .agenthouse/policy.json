@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "project-policy",
+  "revision": "1",
+  "owner": "project-owner",
+  "authorities": {
+    "project-owner": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA2Ky/M72t2xANs4GbJMUg7xWLLhrgYXXFqWoBLlnzWIo=\n-----END PUBLIC KEY-----\n"
+  },
+  "rules": []
+}

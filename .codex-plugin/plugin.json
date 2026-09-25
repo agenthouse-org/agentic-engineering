@@ -1,21 +1,44 @@
 {
   "name": "ah-engineering",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Agent-neutral engineering lifecycle, visual acceptance, evidence and governance.",
   "author": {
-    "name": "agenthouse"
+    "name": "Neri GmbH",
+    "url": "https://agenthouse.org"
   },
-  "homepage": "https://github.com/agenthouse-org/agentic-engineering",
+  "homepage": "https://agenthouse.org",
   "repository": "https://github.com/agenthouse-org/agentic-engineering",
   "license": "MIT",
+  "keywords": [
+    "agenthouse",
+    "agentic-engineering",
+    "sdlc",
+    "governance",
+    "coding-agents",
+    "developer-tools"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "agenthouse engineering",
-    "shortDescription": "Engineering workflows for developers and teams",
+    "shortDescription": "Engineering lifecycle tools",
     "longDescription": "Agent-neutral engineering lifecycle, visual acceptance, evidence and governance.",
-    "developerName": "agenthouse",
-    "category": "Productivity",
-    "capabilities": [],
-    "defaultPrompt": "Use ah-onboard to help me adopt agenthouse engineering in this repository."
+    "developerName": "Neri GmbH",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Guide engineering lifecycle work",
+      "Evaluate evidence and policy",
+      "Review changes against requirements"
+    ],
+    "websiteURL": "https://agenthouse.org",
+    "privacyPolicyURL": "https://agenthouse.org/en/privacy/",
+    "defaultPrompt": [
+      "Set up agenthouse engineering in this repository.",
+      "Assess whether this work item is ready to implement.",
+      "Review this change against its requirements and evidence."
+    ],
+    "brandColor": "#000000",
+    "composerIcon": "./assets/agenthouse-icon.png",
+    "logo": "./assets/agenthouse-icon.svg",
+    "logoDark": "./assets/agenthouse-logo-sleek.svg"
   }
 }

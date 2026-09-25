@@ -13,3 +13,16 @@
 .env
 .env.*
 !.env.example
+
+
+# agenthouse:start
+/.agenthouse/local/
+/.agenthouse/runtime/
+/.agenthouse/transaction.json
+/.agenthouse/mutation.lock
+/.agenthouse/sessions/
+/.agenthouse/evidence/
+/.agenthouse/browser-assessment.json
+/artifacts/agenthouse/
+/.agenthouse/local/reports/
+# agenthouse:end

@@ -1,7 +1,11 @@
 {
   "name": "@agenthouse/engineering",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Portable agentic SDLC, policy and evidence evaluation for developers and CI/CD",
+  "author": {
+    "name": "Neri GmbH",
+    "url": "https://agenthouse.org"
+  },
   "type": "module",
   "license": "MIT",
   "engines": {
@@ -27,6 +31,7 @@
     "README.md",
     "LICENSE",
     "dependencies",
+    "assets",
     ".codex-plugin",
     ".claude-plugin",
     ".agents/plugins/marketplace.json"
@@ -46,7 +51,15 @@
     "type": "git",
     "url": "git+https://github.com/agenthouse-org/agentic-engineering.git"
   },
-  "homepage": "https://github.com/agenthouse-org/agentic-engineering#readme",
+  "homepage": "https://agenthouse.org",
+  "keywords": [
+    "agenthouse",
+    "agentic-engineering",
+    "sdlc",
+    "governance",
+    "coding-agents",
+    "developer-tools"
+  ],
   "bugs": {
     "url": "https://github.com/agenthouse-org/agentic-engineering/issues"
   },

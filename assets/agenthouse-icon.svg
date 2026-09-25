@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="500.00003"
+   height="500.00003"
+   viewBox="0 0 132.29167 132.29168"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="agenthouse_logo_dark_square.svg"
+   inkscape:export-filename="agenthouse_logo_dark_square.png"
+   inkscape:export-xdpi="191.99998"
+   inkscape:export-ydpi="191.99998"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.0396254"
+     inkscape:cx="219.30976"
+     inkscape:cy="248.16631"
+     inkscape:window-width="1718"
+     inkscape:window-height="1360"
+     inkscape:window-x="1706"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-9.0732698,-49.509369)">
+    <rect
+       style="fill:#000000;fill-rule:evenodd;stroke-width:0.264583"
+       id="rect1"
+       width="132.29167"
+       height="132.29167"
+       x="9.0732698"
+       y="49.509369"
+       rx="6.0502454e-05"
+       ry="0.93232536" />
+    <g
+       id="g20-1-1"
+       transform="matrix(0.18072632,0,0,0.18072632,421.32349,199.01066)"
+       style="fill:#ffffff">
+      <path
+         id="polygon3-5-6-8-1"
+         d="m -1915.0746,-669.5 -175,116 -45,-27 220,-146 220,146 -45,27 z"
+         style="fill:#ffffff" />
+      <path
+         id="polygon4-2-3-8-9-3"
+         d="m -1857.0889,-227.43321 162.0143,-87.9666 v -242.85116 l -45,27.0024 v 209.84876 z"
+         sodipodi:nodetypes="cccccc"
+         style="fill:#ffffff" />
+      <path
+         id="polygon4-2-3-2-5-2-8"
+         d="m -1973.0603,-227.43321 -162.0143,-87.9666 v -242.85116 l 45,27.0024 v 209.84876 z"
+         sodipodi:nodetypes="cccccc"
+         style="fill:#ffffff" />
+      <path
+         id="polygon6-6-7-7-7"
+         d="m -1868.0746,-221.5003 v -176.53645 l -95.5,-57.30509 1.5,233.84014 47.0001,25.55214 z"
+         sodipodi:nodetypes="cccccc"
+         style="fill:#ffffff" />
+    </g>
+  </g>
+</svg>

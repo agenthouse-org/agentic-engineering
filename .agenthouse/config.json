@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "project": "agenthouse-agentic-engineering",
+  "artifacts": {
+    "outputs": [],
+    "baselines": [],
+    "cleanup": []
+  },
+  "autonomy": "supervised",
+  "documentationAuthority": "git",
+  "policySources": [
+    ".agenthouse/policy.json"
+  ],
+  "evaluators": [
+    {
+      "id": "readiness",
+      "kind": "work-item",
+      "file": ".agenthouse/work/first-change.json",
+      "stage": "plan"
+    }
+  ],
+  "profiles": {
+    "pull-request": {
+      "checks": [
+        {
+          "evaluator": "readiness",
+          "required": true
+        }
+      ]
+    }
+  },
+  "git": {
+    "branchNaming": {
+      "pattern": "codex/{id}-{slug}",
+      "example": "codex/release-brand-metadata",
+      "baseDefault": "main"
+    }
+  }
+}

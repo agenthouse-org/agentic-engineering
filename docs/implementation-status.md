@@ -1,8 +1,8 @@
 # Implementation and verification status
 
-Version 1.5.0 adds conditional JUnit XML report publication guidance. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
+Version 1.5.1 completes plugin and npm publisher metadata, lowercase agenthouse branding, and packaged logo assets. Version 1.5.0 added conditional JUnit XML report publication guidance. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
 
-Version 1.5.0 release line. Updated 2026-09-25.
+Version 1.5.1 release line. Updated 2026-09-25.
 
 Development checkout verification on Windows, 2026-09-25: CI templates preserve JUnit reports on failures and keep evaluation status authoritative; focused template contract tests added. Generated command skills and release allowlist checks are run before release. The release workflow is responsible for cross-platform, browser, usability, and package verification for this version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
 

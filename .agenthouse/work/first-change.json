@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "first-change",
+  "title": "Release agenthouse engineering 1.5.1",
+  "kind": "change",
+  "stage": "discover",
+  "revision": 2,
+  "fields": {
+    "outcome": "Publish agenthouse engineering 1.5.1 with consistent lowercase branding, complete Neri GmbH metadata, and production logo assets in the npm and plugin packages.",
+    "scope": "Brand text, package and plugin metadata, published logo assets, repository enrollment, release documentation, and the 1.5.1 GitHub/npm release. No runtime behavior or external marketplace approval is included.",
+    "acceptance": "All published AgentHouse display text is lowercase agenthouse; manifests identify Neri GmbH and agenthouse.org; every referenced logo exists in the archive; package, plugin, release, and test checks pass; v1.5.1 is pushed and the GitHub/npm release results are verified.",
+    "decisions": "Use a patch release because behavior is unchanged. Keep API identifiers such as AGENTHOUSE_HOME unchanged. Omit optional author email and terms URL. Use the existing GitHub Release workflow and npm trusted publishing.",
+    "verification": "Run the Codex plugin validator, npm run check, npm test, npm run test:browser, npm pack dry run, frozen agenthouse evaluation, and verify the GitHub release workflow plus npm registry version.",
+    "changes": "Brand assets and metadata are packaged; version and release documentation are synchronized to 1.5.1; the repository is enrolled in shared supervised mode.",
+    "evidence": "Codex plugin validation passed; npm release checks passed; 147 unit tests passed; the real-browser pilot passed; the frozen agenthouse pull-request profile passed; the npm dry run includes all five brand assets. Remote GitHub and npm publication remain pending.",
+    "acceptanceEvidence": "User explicitly requested enrollment followed by push and release. Technical acceptance remains subject to the recorded checks; this text is not a signed governance decision.",
+    "releasePlan": "Commit the reviewed 1.5.1 changes to main, push origin/main, publish GitHub release v1.5.1, and observe the Publish to npm workflow until completion.",
+    "rollbackPlan": "Use v1.5.0 as the source rollback point. If 1.5.1 is defective, publish a corrective patch and deprecate 1.5.1 on npm; npm versions are immutable. Remove or mark the GitHub release as appropriate only after preserving failure evidence."
+  },
+  "criteria": [
+    {
+      "id": "branding",
+      "expectation": "Published brand text uses lowercase agenthouse while public API identifiers remain stable."
+    },
+    {
+      "id": "metadata",
+      "expectation": "Package and plugin manifests identify Neri GmbH, agenthouse.org, and valid supported listing metadata."
+    },
+    {
+      "id": "assets",
+      "expectation": "All five production logo assets ship in the package and manifest references resolve."
+    },
+    {
+      "id": "release",
+      "expectation": "GitHub v1.5.1 and npm @agenthouse/engineering 1.5.1 complete successfully."
+    }
+  ],
+  "evidence": [],
+  "history": []
+}
