@@ -4,7 +4,7 @@ description: "Sign a reviewed governance decision or data bundle with an authori
 license: MIT
 ---
 
-Generated from ah-engineering 1.5.1.
+Generated from ah-engineering 1.6.0.
 
 # agenthouse sign
 

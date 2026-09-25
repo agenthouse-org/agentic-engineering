@@ -1,6 +1,6 @@
 export const phases={
   understand:['survey','inspect','controls'],
-  shape:['draft-user-story','assess-story-readiness','validate-scope','assess-tech-feasibility','visual-plan'],
+  shape:['define-product-requirements','draft-user-story','assess-story-readiness','validate-scope','assess-tech-feasibility','visual-plan'],
   build:['work','spec','check-commit'],
   verify:['evaluate','review','review-change','review-mr','frontend-acceptance','usability'],
   approve:['sign','gate'],
@@ -15,6 +15,7 @@ export function goalHelp(goal) {
     [/what.*(?:run|check)|dry.run|evaluate|run.*check/i,'verify','evaluate','review','Use evaluate --list first; evaluation does not assess requirements or design.'],
     [/ready|readiness/i,'shape','assess-story-readiness','spec','It does not grant approval or advance a stage.'],
     [/scope|requirements.*cover/i,'shape','validate-scope','assess-story-readiness','It does not approve scope changes.'],
+    [/PRD|product requirements|requirements.*multiple|story map|multiple stories/i,'shape','define-product-requirements','validate-scope','It does not invent customer evidence or choose architecture.'],
     [/plan|story|requirement/i,'shape','draft-user-story','visual-plan','It does not implement or approve the story.'],
     [/prove|test|bug|regression/i,'build','spec','check-commit','It does not replace independent review.'],
     [/approve|done|release/i,'approve','gate','sign','A technical result does not grant governance approval.'],

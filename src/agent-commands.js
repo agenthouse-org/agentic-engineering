@@ -93,6 +93,32 @@ Decide (only questions that change the work):
 5. Remaining open choices, each with a recommended option
 
 Then a compact draft: outcome, scope, 3–8 observable criteria, and for bugs reproduction / expected / observed. Distinguish stated requirements from proposed details. More than eight criteria or multiple independent outcomes usually means split; set fields.sizeRisk to oversized on the work record when keeping a draft that is still too large. For UI work read the installed frontend-acceptance skill. Present a draft, not a readiness approval. Use work new only when creation is requested; then offer work branch from a chosen base using git.branchNaming (ask and store the pattern if missing). External writes need authorization. If they pick a visual plan, follow ah-visual-plan and link fields.visualPlan.`],
+  'define-product-requirements':['Define product requirements and a story map from user evidence, assumptions, constraints, and missing information. Use when a request spans multiple stories or needs a PRD before story drafting.', `This is a define-stage product workflow, not a generator and not a CLI subcommand. Do not run define-product-requirements or infer a CLI exists. Use supplied discovery, validation, customer, support, sales, analytics, research, policy, and stakeholder evidence as inputs. If evidence is missing, say so; never present an assumption, preference, or agent inference as customer evidence.
+
+Reply with a product requirements and story map artifact. Keep each requirement traceable to the evidence, assumption, constraint, risk, or unresolved question that supports it. Use stable local IDs for evidence items, requirements, success measures, and proposed stories so ah-validate-scope and ah-draft-user-story can refer to them later.
+
+Include these sections:
+
+1. Target users and their jobs
+2. Problem and available evidence
+3. Desired outcomes and success measures
+4. Product principles and constraints
+5. Functional requirements
+6. Quality, privacy, security, and operational requirements
+7. Scope and explicit exclusions
+8. Dependencies and risks
+9. Assumptions and unresolved questions
+10. Recommended epic and child-story decomposition
+11. Acceptance strategy
+
+Boundaries:
+- Do not choose architecture, implementation strategy, migration path, or technical design. Route those questions to ah-assess-tech-feasibility.
+- Do not create work items, branches, tracker records, or files unless the user explicitly requests that separate action.
+- Do not approve the requirements, transition lifecycle state, or imply governance approval.
+- Do not collapse unresolved questions into requirements. Mark blocked or assumption-backed requirements clearly.
+- Preserve traceability from user evidence to requirements and proposed stories; show requirements with no evidence as assumptions or open questions, not facts.
+
+Recommended flow: discover / validate evidence, then ah-define-product-requirements, then ah-validate-scope, then ah-draft-user-story, then ah-assess-story-readiness. For a small single-story request, explain that ah-draft-user-story may be enough.`],
   'assess-story-readiness':['Assess whether one existing work item is complete enough to implement. Use when asking if a story is ready, blocked, or missing facts.', `Run gate --item FILE --phase ready against the actual item and policy; use its findings as the completeness baseline, including ticketSize when present.
 
 Reply as Decide / Ready or Blocked / Missing. Cite each missing fact with suggested wording. Evaluate completeness separately from truth. Disclose authorship.

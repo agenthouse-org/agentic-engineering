@@ -12,7 +12,7 @@ import {BROWSER_EPHEMERA,removeLocalFrontendEphemera} from '../src/housekeep.js'
 const temp=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah-commands-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 test('all CLI topics and engineering workflow roles have installed agent entry points',t=>{
   const root=temp(t);install(root,{agents:['claude','codex','cursor','opencode','windsurf','openclaw']});
-  for(const command of ['help',...Object.keys(topics),'review-change','draft-user-story','assess-story-readiness','validate-scope','check-commit','enroll-repository','frontend-acceptance']) {
+  for(const command of ['help',...Object.keys(topics),'review-change','define-product-requirements','draft-user-story','assess-story-readiness','validate-scope','check-commit','enroll-repository','frontend-acceptance']) {
     const name=`ah-${command}`,canonical=path.join(root,'.agents/skills',name,'SKILL.md');assert.ok(fs.existsSync(canonical));
     for(const folder of ['.claude/commands','.opencode/commands','.windsurf/workflows']) {
       const body=fs.readFileSync(path.join(root,folder,`${name}.md`),'utf8');
@@ -62,6 +62,17 @@ test('frontend-acceptance treats inspection screenshots as ephemeral, not Git ev
   const lifecycle=fs.readFileSync(path.join(PACKAGE,'skills/ah-lifecycle/SKILL.md'),'utf8');
   assert.match(lifecycle,/housekeep/);
   assert.match(lifecycle,/tests\/output/);
+});
+test('define-product-requirements preserves evidence boundaries and lifecycle scope',()=>{
+  const skill=agentSkills()['ah-define-product-requirements'];
+  assert.match(skill,/product requirements and story map artifact/);
+  assert.match(skill,/never present an assumption.*as customer evidence/);
+  assert.match(skill,/Do not choose architecture/);
+  assert.match(skill,/Do not create work items/);
+  assert.match(skill,/ah-validate-scope/);
+  const routed=spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),'help','product requirements for multiple stories'],{encoding:'utf8'});
+  assert.equal(routed.status,0,routed.stderr);
+  assert.match(routed.stdout,/Primary: ah-define-product-requirements/);
 });
 test('enrollment ignores frontend inspection captures',t=>{
   const root=temp(t);install(root,{agents:[]});

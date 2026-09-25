@@ -1,6 +1,6 @@
 # Agent commands
 
-This checkout provides 47 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
+This checkout provides 48 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
 
 ## Load central skills
 
@@ -24,7 +24,7 @@ Reload the host or start a fresh session after first enrollment if the command i
 ## Default command map
 
 Understand: ah-survey, ah-inspect, ah-controls.
-Shape: ah-draft-user-story, ah-assess-story-readiness, ah-validate-scope, ah-assess-tech-feasibility, ah-visual-plan.
+Shape: ah-define-product-requirements, ah-draft-user-story, ah-assess-story-readiness, ah-validate-scope, ah-assess-tech-feasibility, ah-visual-plan.
 Build: ah-work, ah-spec, ah-check-commit.
 Verify: ah-evaluate, ah-review, ah-review-change, ah-review-mr, ah-frontend-acceptance, ah-usability.
 Approve: ah-sign, ah-gate.
@@ -67,6 +67,7 @@ Assess judges a story, scope or feasibility; evaluate runs checks on a build; ga
 The framework includes these engineering workflows:
 
 - `ah-enroll-repository`: conversational enrollment through onboarding.
+- `ah-define-product-requirements`: define-stage product requirements and a story map from evidence, assumptions, constraints, and unresolved questions. It does not create work items, choose architecture, or present assumptions as customer evidence.
 - `ah-draft-user-story`: outcomes, criteria, proposed details, and open questions. Offers a visual plan (wireframe, mermaid, both, neither) as a scoping option.
 - `ah-assess-story-readiness`: an evidence-based readiness assessment.
 - `ah-validate-scope`: agent assessment of coverage across multiple requirements. There is no `validate-scope` CLI subcommand. A local work item is optional; use supplied authoritative outcomes and requirements.

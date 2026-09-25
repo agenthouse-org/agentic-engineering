@@ -1,15 +1,15 @@
 # Implementation and verification status
 
-Version 1.5.1 completes plugin and npm publisher metadata, lowercase agenthouse branding, and packaged logo assets. Version 1.5.0 added conditional JUnit XML report publication guidance. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
+Version 1.6.0 adds evidence-traced product requirements and story mapping to the existing define stage. Version 1.5.1 completed plugin and npm publisher metadata, lowercase agenthouse branding, and packaged logo assets. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
 
-Version 1.5.1 release line. Updated 2026-09-25.
+Version 1.6.0 release line. Updated 2026-09-25.
 
 Development checkout verification on Windows, 2026-09-25: CI templates preserve JUnit reports on failures and keep evaluation status authoritative; focused template contract tests added. Generated command skills and release allowlist checks are run before release. The release workflow is responsible for cross-platform, browser, usability, and package verification for this version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
 | Central storage | Versioned machine store; explicit shared/private integration; pinned context; legacy migration | Shared storage across projects, independent updates/rollback, offline restore, conflicts, private files, effective ignore checks and post-evaluation leaks |
-| CLI and agent commands | 48 framework skills in this checkout (47 generated plus lifecycle); plain-language picker descriptions and enrolled command catalog; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Routing/help and role/process command discovery tests passed |
+| CLI and agent commands | 49 framework skills in this checkout (48 generated plus lifecycle); plain-language picker descriptions and enrolled command catalog; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Routing/help and role/process command discovery tests passed |
 | Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; conservative test-layer evidence/gaps and nominal signals; local aliases; commit/range/merge-base analysis | Empty/multi-layer/nominal/alias fixtures, root commit, deletion and merge-base fixtures; no discovered scripts executed |
 | Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions; ready-gate `ticketSize` with override | Missing/stale evidence, self-review rejection, invalidated signatures; oversized criteria and sizeOverride tested |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |

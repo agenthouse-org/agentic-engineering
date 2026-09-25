@@ -4,7 +4,7 @@ description: "Run checks configured in the repository profile against a specific
 license: MIT
 ---
 
-Generated from ah-engineering 1.5.1.
+Generated from ah-engineering 1.6.0.
 
 # agenthouse evaluate
 

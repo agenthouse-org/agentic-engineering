@@ -4,8 +4,8 @@
   "title": "Feature request",
   "summary": "Move a request from user need through product choice and delivery evidence.",
   "entryConditions": ["A request, user problem, or opportunity is captured"],
-  "steps": ["Clarify actor, problem, and desired outcome", "Check user and market evidence", "Define scope, exclusions, and acceptance examples", "Assess product and technical options", "Plan, deliver, verify, accept, and evaluate the outcome"],
-  "outputs": ["Outcome and acceptance","Decision record","Verification and acceptance evidence","Outcome follow-up"],
+  "steps": ["Clarify actor, problem, and desired outcome", "Check user and market evidence", "When the request spans multiple stories, define product requirements and a story map before story drafting", "Define scope, exclusions, and acceptance examples", "Assess product and technical options", "Plan, deliver, verify, accept, and evaluate the outcome"],
+  "outputs": ["Outcome and acceptance","Product requirements and story map","Decision record","Verification and acceptance evidence","Outcome follow-up"],
   "roles": ["product-manager","engineer"],
-  "skills": ["ah-draft-user-story","ah-assess-story-readiness","ah-work","ah-review-change"]
+  "skills": ["ah-define-product-requirements","ah-validate-scope","ah-draft-user-story","ah-assess-story-readiness","ah-work","ah-review-change"]
 }

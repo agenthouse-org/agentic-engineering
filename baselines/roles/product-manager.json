@@ -8,6 +8,6 @@
   "boundaries": ["Do not present assumptions as validated evidence", "Do not approve technical or governance gates unless separately authorized"],
   "decisionRights": ["Recommend product priorities and scope within the team's delegated authority"],
   "processes": ["product-lifecycle", "feature-request", "change"],
-  "skills": [{"id":"ah-draft-user-story","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},{"id":"ah-assess-story-readiness","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"}],
+  "skills": [{"id":"ah-define-product-requirements","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},{"id":"ah-validate-scope","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},{"id":"ah-draft-user-story","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},{"id":"ah-assess-story-readiness","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"}],
   "methods": [{"name":"Jobs to Be Done","use":"Optional lens for understanding the progress customers seek","reference":"https://strategyn.com/jobs-to-be-done/"}]
 }

@@ -100,6 +100,7 @@ After opening the enrolled repository in Codex, select the skill or ask:
 
 ```text
 $ah-help Recommend the next agenthouse workflow for this bug.
+$ah-define-product-requirements Turn this multi-story request into evidence-traced requirements and a story map.
 $ah-validate-scope Check whether these requirements cover the intended outcome.
 $ah-review-change Review this change against its requirements and evidence.
 ```
@@ -132,6 +133,12 @@ node .agenthouse/run.mjs evaluate --profile pull-request --ci
 ```
 
 ## Recipe: assess scope before implementation
+
+For a request that spans multiple stories, first define product requirements and a story map from available evidence, assumptions, constraints, and unresolved questions:
+
+```text
+$ah-define-product-requirements Define the checkout improvement from the discovery notes, support tickets, and analytics summary. Keep assumptions separate from evidence and do not create work items yet.
+```
 
 `ah-validate-scope` is an agent workflow, not a CLI subcommand. Give it the intended outcome and the actual requirement files or work items:
 

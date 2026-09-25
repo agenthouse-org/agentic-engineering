@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**Version 1.5.1.** Plugin and package listings now use lowercase agenthouse branding, identify Neri GmbH as the publisher, link to agenthouse.org, and ship the production logo assets used by the Codex manifest. See [release notes](docs/releases/1.5.1.md) and [implementation status](docs/implementation-status.md).
+**Version 1.6.0.** The define stage now includes evidence-traced product requirements and story mapping for requests that span multiple stories. See [release notes](docs/releases/1.6.0.md) and [implementation status](docs/implementation-status.md).
 
 
 ## Install on your computer
@@ -20,7 +20,7 @@ npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-To pin the CLI version, use `npm install --global @agenthouse/engineering@1.5.1 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@1.6.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
 
 The release workflow attaches an attested update bundle to GitHub releases. For an offline CLI installation, obtain a reviewed `.tgz` package as described below.
 
@@ -38,7 +38,7 @@ Public discovery checks npm `latest` first and requires package integrity, regis
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-engineering-1.5.1.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.6.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -52,7 +52,7 @@ To package the source yourself, run these commands in a tools directory outside 
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-engineering-1.5.1.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.6.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -106,11 +106,11 @@ Enterprise teams can add `--policy /path/to/approved-policy.json`. Teams retain 
 
 Every CLI operation is also available as an `ah-` agent skill. Try `/ah-help`, `/ah-onboard`, or `/ah-review-change` in hosts with slash commands; in Codex select the named skill or use `$ah-help`. Run `node .agenthouse/run.mjs context` to locate the project’s exact central skills from any agent. Shared enrollment installs small instruction bridges; private enrollment requires explicit context loading. Native slash-command menus require separate host/plugin registration.
 
-Story drafting, readiness, scope validation, visual planning, commit checking, and review workflows are included. See [all agent commands and host-specific usage](docs/agent-commands.md). CLI-only global installation does not register project commands before enrollment.
+Product requirements definition, story drafting, readiness, scope validation, visual planning, commit checking, and review workflows are included. See [all agent commands and host-specific usage](docs/agent-commands.md). CLI-only global installation does not register project commands before enrollment.
 
 ### Included skills
 
-The framework ships **48 agent-facing skills** (47 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
+The framework ships **49 agent-facing skills** (48 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
 
 | Skill | Purpose |
 | --- | --- |
@@ -122,6 +122,7 @@ The framework ships **48 agent-facing skills** (47 generated commands plus the l
 | `ah-demo` | Run the failure/fix example |
 | `ah-lifecycle` | Guide work through the SDLC |
 | `ah-work` | Create, inspect, and advance work records |
+| `ah-define-product-requirements` | Define evidence-traced requirements and a story map |
 | `ah-draft-user-story` | Draft outcomes and acceptance criteria |
 | `ah-assess-story-readiness` | Assess whether work is ready to implement |
 | `ah-validate-scope` | Check scope against the intended outcome |

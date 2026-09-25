@@ -4,7 +4,7 @@ description: "Restore the previous complete runtime and dependency set. Use when
 license: MIT
 ---
 
-Generated from ah-engineering 1.5.1.
+Generated from ah-engineering 1.6.0.
 
 # agenthouse rollback
 

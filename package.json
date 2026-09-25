@@ -1,6 +1,6 @@
 {
   "name": "@agenthouse/engineering",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "Portable agentic SDLC, policy and evidence evaluation for developers and CI/CD",
   "author": {
     "name": "Neri GmbH",

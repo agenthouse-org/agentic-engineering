@@ -4,7 +4,7 @@ description: "Navigate the product lifecycle or subprocesses for features, bugs,
 license: MIT
 ---
 
-Generated from ah-engineering 1.5.1.
+Generated from ah-engineering 1.6.0.
 
 # agenthouse process
 

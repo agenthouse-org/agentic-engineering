@@ -6,7 +6,7 @@
   "stages": [
     {"id":"discover","purpose":"Understand users, needs, alternatives, and opportunity.","outputs":["Problem evidence","Assumptions and success measures"]},
     {"id":"validate","purpose":"Test whether the opportunity and proposed value merit investment.","outputs":["Experiment evidence","Decision and remaining uncertainty"]},
-    {"id":"define","purpose":"Choose outcomes, requirements, scope, and acceptance evidence.","outputs":["Outcome","Acceptance criteria","Exclusions"]},
+    {"id":"define","purpose":"Choose outcomes, requirements, scope, story map, and acceptance evidence.","outputs":["Outcome","Product requirements and story map","Acceptance criteria","Exclusions"]},
     {"id":"design","purpose":"Shape product, service, and technical choices and risks.","outputs":["Design and architecture decisions","Risk responses"]},
     {"id":"plan","purpose":"Order work and confirm readiness, ownership, and verification.","outputs":["Work plan","Dependencies","Verification approach"]},
     {"id":"deliver","purpose":"Build, verify, accept, and release the product change.","outputs":["Change","Verification evidence","JUnit or platform-native test report uploaded when supported","Release and rollback plan"]},

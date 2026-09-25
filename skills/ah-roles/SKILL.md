@@ -4,7 +4,7 @@ description: "Discover and load role guidance, or adopt and review consumer-owne
 license: MIT
 ---
 
-Generated from ah-engineering 1.5.1.
+Generated from ah-engineering 1.6.0.
 
 # agenthouse roles
 
