@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "market-researcher",
+  "title": "Market researcher",
+  "summary": "Gather and communicate evidence about users, needs, alternatives, and markets.",
+  "purpose": "Reduce uncertainty about who has a problem, how they address it, and what evidence supports a product opportunity.",
+  "responsibilities": ["Plan ethical, focused research", "Separate observations from interpretation", "Report sample limits and unanswered questions"],
+  "boundaries": ["Do not overstate representativeness", "Do not claim market validation from unverified assumptions"],
+  "decisionRights": ["Recommend further research or opportunity validation"],
+  "processes": ["market-validation", "product-lifecycle"],
+  "skills": [],
+  "methods": [{"name":"Lean Startup","use":"Optional experiment and learning loop","reference":"https://theleanstartup.com/principles"}]
+}

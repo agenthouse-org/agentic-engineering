@@ -1,6 +1,6 @@
 # agenthouse engineering cookbook
 
-Version 1.3.0 uses central storage and explicit shared/private onboarding for new projects. See [central installation](central-installation.md) for context loading, migration, artifact classification and verification limits. Older project paths in examples apply to legacy installations.
+Version 1.4.0 adds role and product-process guidance. See [roles and product processes](roles-and-processes.md) for loading, consumer-owned copies, and reviewing baseline updates. Central storage and explicit shared/private onboarding remain available; older project paths in examples apply to legacy installations.
 
 This guide shows the common paths from installation to a verified change. Commands use the globally installed `ah-engineering` executable for setup and the repository-pinned launcher for daily work.
 
@@ -28,6 +28,27 @@ ah-engineering help agents
 ```
 
 An agent skill may combine judgment and several CLI operations, so not every `ah-` skill has a same-named CLI subcommand.
+
+## Recipe: work from a role or process
+
+Discover and load guidance for the current task:
+
+```text
+node .agenthouse/run.mjs roles list
+node .agenthouse/run.mjs roles use --id product-manager
+node .agenthouse/run.mjs process start --id feature-request
+```
+
+To customize shared-with-yourself roles/processes, adopt definitions to the consumer global repository, edit the JSON copies, then inspect baseline drift after a framework update:
+
+```text
+node .agenthouse/run.mjs roles adopt
+node .agenthouse/run.mjs process adopt
+node .agenthouse/run.mjs roles check
+node .agenthouse/run.mjs process check
+```
+
+Review reported field changes before `roles merge --id ID` or `process merge --id ID`. Conflicts preserve local files; deferred revisions can be recorded with `ignore`. `process where --description "..."` offers tentative orientation and does not update a tracker. See [roles and product processes](roles-and-processes.md) for details.
 
 ## Recipe: install and enroll a repository
 

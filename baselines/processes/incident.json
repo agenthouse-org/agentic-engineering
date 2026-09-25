@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "incident",
+  "title": "Incident response",
+  "summary": "Coordinate response, recovery, communication, and learning for operational incidents.",
+  "entryConditions": ["Service impact or an operational threat is suspected"],
+  "steps": ["Use the organization's incident authority and escalation path", "Assess impact and establish a response lead", "Mitigate immediate harm and communicate through approved channels", "Restore service and verify recovery", "Preserve a factual timeline and evidence", "Review causes and prevention actions without delaying urgent recovery"],
+  "outputs": ["Impact and timeline","Recovery evidence","Communication record","Follow-up actions"],
+  "roles": ["support-specialist","engineer"],
+  "skills": ["ah-work","ah-review-change"]
+}

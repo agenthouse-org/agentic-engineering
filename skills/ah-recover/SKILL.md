@@ -4,7 +4,7 @@ description: "Finish an interrupted onboard, update, or restore without overwrit
 license: MIT
 ---
 
-Generated from ah-engineering 1.3.0.
+Generated from ah-engineering 1.4.0.
 
 # agenthouse recover
 

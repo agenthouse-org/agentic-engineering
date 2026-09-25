@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "bug",
+  "title": "Bug lifecycle",
+  "summary": "Reproduce, prioritize, fix, verify, release, and learn from unexpected behavior.",
+  "entryConditions": ["Expected and observed behavior can be described or evidence is available"],
+  "steps": ["Capture impact, environment, and reproduction evidence", "Triage severity, affected users, and workaround", "Agree scope and expected behavior", "Reproduce where practical and implement a focused correction", "Verify the correction and relevant regression risks", "Communicate, release, and capture follow-up learning"],
+  "outputs": ["Reproduction","Expected/observed behavior","Fix and regression evidence","Release/support note when needed"],
+  "roles": ["support-specialist","product-manager","engineer"],
+  "skills": ["ah-work","ah-spec","ah-review-change"]
+}

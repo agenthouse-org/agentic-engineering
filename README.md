@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**Version 1.3.0.** Assess technical feasibility with commit-bound inventories and linked evidence, review incoming PR/MR URLs through a read-only agent workflow, and preview configured checks with `evaluate --list`. Help groups skills by lifecycle phase and accepts natural-language goals. Reports identify check origins; an optional verify gate requires specification evidence before testing. Plugin entrypoints retain repository pins and expose version mismatches through doctor. See [release notes](docs/releases/1.3.0.md) and [implementation status](docs/implementation-status.md) for verification and integration limits.
+**Version 1.4.0.** Add reusable roles and product processes spanning market discovery through delivery and support. Adopt consumer-owned global copies, review baseline updates, and request advisory process orientation without storing workflow state. See [roles and product processes](docs/roles-and-processes.md), [release notes](docs/releases/1.4.0.md), [implementation status](docs/implementation-status.md), and [distribution limits](docs/distribution.md).
 
 
 ## Install on your computer
@@ -20,7 +20,7 @@ npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-To pin the CLI version, use `npm install --global @agenthouse/engineering@1.3.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@1.4.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
 
 The release workflow attaches an attested update bundle to GitHub releases. For an offline CLI installation, obtain a reviewed `.tgz` package as described below.
 
@@ -38,7 +38,7 @@ Public discovery checks npm `latest` first and requires package integrity, regis
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-engineering-1.3.0.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.4.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -52,7 +52,7 @@ To package the source yourself, run these commands in a tools directory outside 
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-engineering-1.3.0.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.4.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -110,7 +110,7 @@ Story drafting, readiness, scope validation, visual planning, commit checking, a
 
 ### Included skills
 
-The framework ships **43 agent-facing skills** (42 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
+The framework ships **48 agent-facing skills** (47 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
 
 | Skill | Purpose |
 | --- | --- |
@@ -144,6 +144,8 @@ The framework ships **43 agent-facing skills** (42 generated commands plus the l
 | `ah-doctor` | Diagnose installation and dependency problems |
 | `ah-resolve` | Resolve or verify policy configuration |
 | `ah-session` | Start a session, apply housekeeping, and process approved updates |
+| `ah-roles` | Discover/load roles and adopt or review consumer-owned baselines |
+| `ah-process` | Navigate product processes and request advisory lifecycle orientation |
 | `ah-housekeep` | Verify configured output exclusions and explicitly clean disposable paths |
 | `ah-dependencies` | Inspect, pin, unpin, and update dependencies |
 | `ah-update` | Update the framework |
@@ -212,6 +214,8 @@ npm installs **one executable: `ah-engineering`**. Everything below is a subcomm
 | `onboard` | Guided project setup and next steps |
 | `demo` | Run the isolated failure/fix/report example |
 | `work new`, `work show`, `work advance` | Track a change through the lifecycle |
+| `roles` | Load a role, adopt consumer-wide copies, and review baseline updates |
+| `process` | Navigate product processes, request advisory orientation, and review baseline updates |
 | `evaluate` | Run checks locally or in CI |
 | `doctor` | Diagnose installation, policy, skill integrity, and housekeeping |
 | `resolve`, `session` | Resolve policy and start a session with approved updates and housekeeping |
@@ -259,6 +263,7 @@ Instruction files are generated for Claude Code, Codex, OpenCode, Cursor, Windsu
 ## Learn more and contribute
 
 - [Operating guide](docs/using.md) and [lifecycle stages](docs/lifecycle.md)
+- [Roles and product processes](docs/roles-and-processes.md)
 - [Implementation status](docs/implementation-status.md) and [delivery roadmap](docs/delivery-plan.md)
 - [Architecture](docs/blueprint.md), [governance](docs/governance.md), and [decision records](docs/adr/README.md)
 - [Distribution](docs/distribution.md), [integrations](docs/integrations.md), and [migration](docs/migration.md)

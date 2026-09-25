@@ -8,7 +8,7 @@
       "name": "ah-engineering",
       "source": "./",
       "description": "Agent-neutral engineering lifecycle, visual acceptance, evidence and governance.",
-      "version": "1.3.0"
+      "version": "1.4.0"
     }
   ],
   "metadata": {

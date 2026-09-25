@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "market-validation",
+  "title": "Market validation",
+  "summary": "Test a product opportunity with explicit evidence and uncertainty.",
+  "entryConditions": ["A target user or buyer and a problem hypothesis are stated"],
+  "steps": ["Describe the segment, problem, alternatives, and assumptions", "Choose an ethical research or experiment method", "Collect observations and record sample, context, and limitations", "Compare results with a pre-stated success or stop condition", "Recommend proceed, revise, investigate further, or stop"],
+  "outputs": ["Evidence summary","Assumptions and limitations","Recommendation and unresolved questions"],
+  "roles": ["market-researcher","product-manager","sales-specialist"],
+  "skills": [],
+  "methods": [{"name":"Lean Startup","use":"Optional hypothesis, experiment, and learning framing","reference":"https://theleanstartup.com/principles"},{"name":"Jobs to Be Done","use":"Optional lens for interview and opportunity framing","reference":"https://strategyn.com/jobs-to-be-done/"}]
+}

@@ -45,14 +45,14 @@ export function projectContext(root) {
   const imports=inside(root,'.agenthouse/skills.json');
   if(fs.existsSync(imports))for(const id of Object.keys(read(imports)))ids.add(id);
   return {root,version:state.version,storage:state.storage || 'project',integration:state.integration || 'shared',
-    instructions:'Read the lifecycle and applicable skills at the paths below. Run the project launcher from the target repository root. Resolve relative skill resources against the containing skill directory; central files are immutable. Use usability setup/run for the bundled audit tool instead of installing dependencies into a skill directory. Repository policy takes precedence over personal preferences. Skills are advisory; never invent evidence or governance approval.',
+    instructions:'Read the lifecycle and applicable skills at the paths below. Run the project launcher from the target repository root. Use roles/process commands to load role behavior and product-process guidance; process orientation is advisory and role descriptions do not grant approval. Review consumer baseline changes explicitly. Resolve relative skill resources against the containing skill directory; central files are immutable. Use usability setup/run for the bundled audit tool instead of installing dependencies into a skill directory. Repository policy takes precedence over personal preferences. Skills are advisory; never invent evidence or governance approval.',
     lifecycle:inside(runtime,'docs/lifecycle.md'),commands:inside(runtime,'docs/agent-commands.md'),
     skills:Object.fromEntries([...ids].sort().map(id=>[id,inside(skillDirectory(root,id),'SKILL.md')]))};
 }
 export function payload(source=PACKAGE) {
   const metadata=read(path.join(source,'package.json'));
   const files={};
-  for(const name of ['bin','src','schemas','skills','modules','templates','adapters','docs','dependencies']) {
+  for(const name of ['bin','src','schemas','skills','modules','templates','adapters','docs','dependencies','baselines']) {
     if(fs.existsSync(path.join(source,name)))for(const file of walk(path.join(source,name)))files[`${name}/${file}`]=fs.readFileSync(path.join(source,name,file)).toString('base64');
   }
   for(const file of ['package.json','README.md','LICENSE','.codex-plugin/plugin.json','.claude-plugin/plugin.json','.claude-plugin/marketplace.json','.agents/plugins/marketplace.json']) if(fs.existsSync(path.join(source,file)))files[file]=fs.readFileSync(path.join(source,file)).toString('base64');
@@ -63,7 +63,7 @@ export function verifyPayload(data) {
   assert(Object.keys(data.files).length<5000,'Bundle file limit exceeded');
   let total=0;
   for(const [name,content] of Object.entries(data.files)) {
-    assert(/^(bin|src|schemas|skills|modules|templates|adapters|docs|dependencies)\//.test(name) || ['package.json','README.md','LICENSE','.codex-plugin/plugin.json','.claude-plugin/plugin.json','.claude-plugin/marketplace.json','.agents/plugins/marketplace.json'].includes(name),`Disallowed bundle path: ${name}`);
+    assert(/^(bin|src|schemas|skills|modules|templates|adapters|docs|dependencies|baselines)\//.test(name) || ['package.json','README.md','LICENSE','.codex-plugin/plugin.json','.claude-plugin/plugin.json','.claude-plugin/marketplace.json','.agents/plugins/marketplace.json'].includes(name),`Disallowed bundle path: ${name}`);
     inside(os.tmpdir(),name);
     assert(typeof content==='string' && Buffer.from(content,'base64').toString('base64')===content,'Invalid bundle encoding');
     total+=Buffer.byteLength(content,'base64');assert(total<50*1024*1024,'Bundle size limit exceeded');

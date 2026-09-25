@@ -16,6 +16,8 @@ Use the smallest evidence set that demonstrates the requested outcome. Keep work
 | learn | `learning`: measured result, incidents, prevention and improvement proposals |
 | retire | `retirement`: decommissioning, retention/deletion decisions, dependency and ownership closure |
 
+For cross-functional product guidance beyond engineering work records, see [roles and product processes](roles-and-processes.md). Those process definitions guide work without owning external status.
+
 For a bug, record reproducible actual versus expected behavior and preserve failing-before evidence when available. For an incident, recovery may happen before ordinary implementation planning under the organization's emergency process; the lifecycle record is retrospective evidence, not permission to defer urgent authorized recovery.
 
 For frontend work derive acceptance from an image, wireframe, story, or bug report. Use the frontend-acceptance skill when installed. For UI layout or data-model shape that must be seen before code, use `ah-visual-plan` and `visual-plan check`; skip it for trivial work. Capture the real UI; write inspection screenshots only under `.agenthouse/evidence/<work-id>/`; inspect them; record findings on the work item; run `housekeep`. Never write galleries to `tests/output`. Do not commit inspection screenshot galleries. Baseline regression, design conformance, interaction correctness, and accessibility are complementary. Do not replace missing concept assessment with an image similarity number.

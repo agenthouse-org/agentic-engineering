@@ -4,6 +4,7 @@ export const phases={
   build:['work','spec','check-commit'],
   verify:['evaluate','review','review-change','review-mr','frontend-acceptance','usability'],
   approve:['sign','gate'],
+  product:['roles','process'],
   operate:['update','rollback','recover','housekeep','doctor','session']
 };
 export function commandMap(){return Object.entries(phases).map(([phase,names])=>`${phase}: ${names.map(n=>'ah-'+n).join(', ')}`).join('\n');}
@@ -19,6 +20,8 @@ export function goalHelp(goal) {
     [/approve|done|release/i,'approve','gate','sign','A technical result does not grant governance approval.'],
     [/understand|explore|survey/i,'understand','survey','inspect','It does not execute discovered scripts.'],
     [/install|enroll|setup/i,'operate','enroll-repository','doctor','It does not replace organization policy.'],
+    [/role|persona|act as/i,'product','roles','process','Role behavior and authority are advisory; a role does not grant approval.'],
+    [/process|lifecycle|where.*(?:now|are we)/i,'product','process','roles','Orientation is advisory and does not change authoritative work status.'],
     [/broken|diagnos|health/i,'operate','doctor','recover','Diagnosis does not authorize unrelated repairs.']
   ];
   const route=routes.find(([pattern])=>pattern.test(goal));

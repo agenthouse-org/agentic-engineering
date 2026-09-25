@@ -21,6 +21,8 @@ Changing shared/private integration on an existing enrollment requires uninstall
 
 The current user's central store is `~/.agenthouse/`, overridable with an absolute `AGENTHOUSE_HOME` path. The override must be outside the target repository and must be available to both the global CLI and project launcher. Do not commit absolute machine paths. The same identity is reused across projects; different exact versions can coexist.
 
+Consumer-owned role and process definitions use a separate global repository, defaulting to `~/.agenthouse/global/` (or `$AGENTHOUSE_HOME/global/` when overridden) and configurable with absolute `AGENTHOUSE_GLOBAL_REPO`. This repository is durable consumer data, not part of the versioned runtime assets; runtime update, rollback, and uninstall do not replace or remove it. See [roles and product processes](roles-and-processes.md) for adoption and update review.
+
 - Runtime and framework skills: `runtime/<version>-<payload-digest>/`.
 - Bundled upstream skills, unchanged with their provenance and licenses: `skills/<id>/<skill-digest>/`.
 - Reviewed imported skills: `skills/<id>/<content-digest>/`, referenced by the project's import lock.

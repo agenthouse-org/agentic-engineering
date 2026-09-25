@@ -38,6 +38,10 @@ Generate a compact agent entry point from the resolved policy and link detailed 
 
 Individual developers use framework defaults and project decisions without an organization layer. Enterprise consumers select an organization policy source and receive its defaults with minimal additional setup.
 
+## Roles and product processes
+
+Use roles and processes as navigable guidance alongside direct skills and commands. Roles describe purpose, responsibilities, boundaries, intended decision rights, and linked methods. Product processes span market discovery and validation through definition, delivery, operation, support, learning, and retirement; subprocesses cover features, bugs, changes, releases, and incidents. Consumer-owned copies can be adapted globally, with project selection kept separate. Status remains in the consumer's existing system; orientation is advisory. Baseline updates are reviewed and explicitly merged, deferred, or ignored, preserving consumer edits and reporting conflicts. See the [roles and processes guide](roles-and-processes.md) for current commands and limits.
+
 ## Lifecycle and evidence
 
 | Stage | Question | Typical evidence |

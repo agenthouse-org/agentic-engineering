@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "release",
+  "title": "Product release",
+  "summary": "Prepare, authorize, deliver, observe, and recover a product release.",
+  "entryConditions": ["A candidate change and target environment are identified"],
+  "steps": ["Confirm scope, compatibility, and release evidence", "Check operational readiness, communications, and rollback", "Obtain applicable authorization", "Deploy using the approved procedure", "Observe health and user impact", "Complete or execute recovery and record learning"],
+  "outputs": ["Release record","Authorized decision","Observability and rollback evidence","Outcome review"],
+  "roles": ["product-manager","engineer","support-specialist"],
+  "skills": ["ah-evaluate","ah-gate","ah-session"]
+}

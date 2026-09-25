@@ -4,7 +4,7 @@ description: "Report the active agenthouse version, apply approved updates and h
 license: MIT
 ---
 
-Generated from ah-engineering 1.3.0.
+Generated from ah-engineering 1.4.0.
 
 # agenthouse session
 
@@ -14,11 +14,11 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Explain any applied or deferred approved updates, housekeeping, and the active version set. If policyChange is changed, show the new revision and affected rules/checks, keep the current frozen snapshot, and ask whether this work should adopt it. Run resolve only after the user chooses adoption. Noninteractive work must report the mismatch rather than choose.
+Explain applied/deferred runtime and dependency updates, baselineUpdates for roles/processes, housekeeping, and active version set. If baseline changes are available, summarize affected definitions and field diffs, then offer explicit merge or ignore; never merge automatically. If refresh-required is returned after runtime activation, explain that the current process used the old pinned code and baseline review is available on the next invocation. If policyChange is changed, show the new revision and affected rules/checks, keep the current frozen snapshot, and ask whether this work should adopt it. Run resolve only after the user chooses adoption. Noninteractive work must report the mismatch rather than choose.
 
 CLI reference:
 
 ```text
 session [--npm-cli PATH]
-Check configured approved updates between commands, report policy drift without replacing the frozen snapshot, apply housekeeping rules, and record the active version set.
+Check configured approved runtime/dependency updates between commands, report role/process baseline update summaries and field diffs, report policy drift without replacing the frozen snapshot, apply housekeeping rules, and record the active version set. Baseline changes are never merged automatically; inspect with roles/process check. If this session activates a new runtime, baseline review is deferred to the next invocation.
 ```

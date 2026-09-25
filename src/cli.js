@@ -25,6 +25,7 @@ import {controls} from './controls.js';
 import {checkVisualPlan} from './visual-plan.js';
 import {statusNpmProvenance,applyNpmProvenance} from './npm-provenance.js';
 import {planModule,applyModulePlan} from './module-plan.js';
+import {roleProcessList,roleProcessShow,roleProcessAdopt,roleProcessCheck,roleProcessMerge,roleProcessIgnore,processOrientation} from './roles-processes.js';
 
 const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated','central','clean','preview','latest','list','propose-criteria']);
 function parse(args) {
@@ -36,7 +37,7 @@ function parse(args) {
   }
   return {o,pos};
 }
-const allowed={context:[],onboard:['integration','artifact-paths','agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['integration','central','agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['list','plan','profile','subject','base-url','output','ci','frozen','policy-file'],doctor:['plugin-version'],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking','latest','track','npm-cli'],rollback:[],session:['npm-cli'],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output','preview','apply','workspace','layers','profile','advisory-profile','milestone-reference','milestone-owner','milestone-status']};
+const allowed={context:[],onboard:['integration','artifact-paths','agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['integration','central','agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['list','plan','profile','subject','base-url','output','ci','frozen','policy-file'],doctor:['plugin-version'],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking','latest','track','npm-cli'],rollback:[],session:['npm-cli'],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output','preview','apply','workspace','layers','profile','advisory-profile','milestone-reference','milestone-owner','milestone-status'],roles:['id','repository'],process:['id','repository','description']};
 Object.assign(allowed,{survey:['output'],inspect:['ref','base','output'],review:['ref','base','baseline','item','evidence','output'],gate:['item','phase','decision','policy-file','output'],spec:['item','phase','evaluator','output'],backlog:['propose-criteria','source','id','title','provider','external-id','output']});
 allowed.assessment=['item','selectors','ref','summary','output'];
 allowed.controls=['policy-file'];
@@ -57,7 +58,7 @@ export async function main(args) {
     console.log(help(topic));return 0;
   }
   assert(Object.hasOwn(allowed,command),`Unknown command ${command}`);
-  assert(['work','dependencies','usability','visual-plan','npm-provenance'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
+  assert(['work','dependencies','usability','visual-plan','npm-provenance','roles','process'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
   for(const key of Object.keys(o))assert(['root','help',...allowed[command]].includes(key),`Unknown option --${key} for ${command}`);
   const root=path.resolve(o.root || process.cwd());
   let result;
@@ -69,6 +70,29 @@ export async function main(args) {
     case 'visual-plan': {const action=pos.shift();assert(action==='check','Choose visual-plan check');result=checkVisualPlan(root,{item:o.item,plan:o.plan});break;}
     case 'npm-provenance': {const action=pos.shift();assert(['status','apply'].includes(action),'Choose npm-provenance status or apply');result=action==='apply'?applyNpmProvenance(root,{provider:o.provider,workflow:o.workflow,publish:o.publish,access:o.access}):statusNpmProvenance(root,{provider:o.provider,workflow:o.workflow,publish:o.publish});break;}
     case 'assessment':result=o.summary?validateAssessment(root,o.summary):assessmentInventory(root,{item:o.item,selectors:o.selectors,ref:o.ref});break;
+    case 'roles': {
+      const action=pos.shift(),repository=o.repository;
+      if(action==='list')result=roleProcessList('roles',repository);
+      else if(action==='show'||action==='use'){assert(o.id,'--id required');result=roleProcessShow('roles',o.id,repository);}
+      else if(action==='adopt')result=roleProcessAdopt('roles',o.id,repository);
+      else if(action==='check')result=roleProcessCheck('roles',o.id,repository);
+      else if(action==='merge'){assert(o.id,'--id required');result=roleProcessMerge('roles',o.id,repository);}
+      else if(action==='ignore'){assert(o.id,'--id required');result=roleProcessIgnore('roles',o.id,repository);}
+      else throw new Error('Choose roles list, show, use, adopt, check, merge, or ignore');
+      break;
+    }
+    case 'process': {
+      const action=pos.shift(),repository=o.repository;
+      if(action==='list')result=roleProcessList('processes',repository);
+      else if(action==='show'||action==='start'){assert(o.id,'--id required');result=roleProcessShow('processes',o.id,repository);}
+      else if(action==='adopt')result=roleProcessAdopt('processes',o.id,repository);
+      else if(action==='check')result=roleProcessCheck('processes',o.id,repository);
+      else if(action==='merge'){assert(o.id,'--id required');result=roleProcessMerge('processes',o.id,repository);}
+      else if(action==='ignore'){assert(o.id,'--id required');result=roleProcessIgnore('processes',o.id,repository);}
+      else if(action==='where')result=processOrientation(o.description);
+      else throw new Error('Choose process list, show, start, where, adopt, check, merge, or ignore');
+      break;
+    }
     case 'survey':result=survey(root);break;
     case 'inspect':result=inspectChange(root,{ref:o.ref,base:o.base});break;
     case 'review':result=evidenceReview(root,{ref:o.ref,base:o.base,item:o.item,evidence:o.evidence?.split(','),baseline:o.baseline});result.exitCode={passed:0,failed:1,incomplete:4}[result.status];break;

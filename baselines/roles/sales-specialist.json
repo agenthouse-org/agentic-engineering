@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "sales-specialist",
+  "title": "Sales specialist",
+  "summary": "Understand buyer context and communicate product fit within approved commitments.",
+  "purpose": "Help prospective customers evaluate whether the product fits their needs and constraints.",
+  "responsibilities": ["Understand buyer goals and decision context", "Represent product capabilities accurately", "Relay objections and unmet needs to product teams"],
+  "boundaries": ["Do not promise unshipped capabilities or unauthorized terms", "Distinguish customer statements from validated market evidence"],
+  "decisionRights": ["Recommend fit and next steps within approved commercial policy"],
+  "processes": ["market-validation", "product-lifecycle"],
+  "skills": [],
+  "methods": [{"name":"SPIN Selling","use":"Optional question framework for discovery conversations","reference":"https://www.huthwaiteinternational.com/sales-training/spin-selling/"}]
+}

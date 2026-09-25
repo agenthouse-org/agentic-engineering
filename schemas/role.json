@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "title", "summary", "purpose", "responsibilities", "boundaries", "decisionRights", "processes", "skills", "methods"],
+  "properties": {
+    "schemaVersion": {"enum": [1]},
+    "id": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$"},
+    "title": {"type": "string", "minLength": 1},
+    "summary": {"type": "string", "minLength": 1},
+    "purpose": {"type": "string", "minLength": 1},
+    "responsibilities": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "boundaries": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "decisionRights": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "processes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "skills": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "source", "versionPolicy"], "properties": {"id": {"type": "string", "minLength": 1}, "source": {"type": "string", "minLength": 1}, "versionPolicy": {"enum": ["project-runtime-pin", "upstream-pin"]}}}},
+    "methods": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "use", "reference"], "properties": {"name": {"type": "string", "minLength": 1}, "use": {"type": "string", "minLength": 1}, "reference": {"type": "string", "minLength": 1}}}}
+  }
+}

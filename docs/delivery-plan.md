@@ -45,6 +45,8 @@ Deliver guidance, templates, and callable workflows for all lifecycle stages in 
 
 Acceptance: one feature, one bug, one small documentation change, one architectural exception, one release failure/recovery, and one operational incident travel through appropriate paths. An agent cannot turn its own unsupported success assertion into accepted evidence. Changed artifacts invalidate affected revision-bound approvals. Small work does not require irrelevant artifacts.
 
+Current role and product-process commands provide baseline discovery, local global copies, explicit update comparison/merge/ignore, and advisory orientation. They do not provide tracker state or organization-hosted synchronization. See [roles and product processes](roles-and-processes.md) for behavior and limitations.
+
 ## 7. Governance and integrations
 
 Deliver local records first, then tested GitHub/GitLab, Jira/Wrike, and selected documentation adapters. Design external writes for revision conflicts and safe retries. Implement the decision-provider interface with a local/open implementation before adding an optional hosted provider.

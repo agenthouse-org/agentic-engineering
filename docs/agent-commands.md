@@ -1,6 +1,6 @@
 # Agent commands
 
-Version 1.3.0 provides generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update` and `ah-work show`). Agents select arguments from the conversation and call the same CLI implementation.
+This checkout provides 47 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
 
 ## Load central skills
 
@@ -29,6 +29,7 @@ Build: ah-work, ah-spec, ah-check-commit.
 Verify: ah-evaluate, ah-review, ah-review-change, ah-review-mr, ah-frontend-acceptance, ah-usability.
 Approve: ah-sign, ah-gate.
 Operate: ah-update, ah-rollback, ah-recover, ah-housekeep, ah-doctor, ah-session.
+Product: ah-roles, ah-process.
 
 Assess judges a story, scope or feasibility; evaluate runs checks on a build; gate decides ready or done from evidence. Use `help "I need to plan this"` for at most three suggested skills.
 
@@ -37,6 +38,8 @@ Assess judges a story, scope or feasibility; evaluate runs checks on a build; ga
 | Agent skill | CLI operation |
 | --- | --- |
 | `ah-context` | `context` — pinned lifecycle and skill paths |
+| `ah-roles` | `roles list`, `show`, `use`, `adopt`, `check`, `merge`, `ignore` |
+| `ah-process` | `process list`, `show`, `start`, `where`, `adopt`, `check`, `merge`, `ignore` |
 | `ah-help` | `help [COMMAND|agents|cookbook|extended|ah-SKILL]` |
 | `ah-onboard` | `onboard` with conversational choices and noninteractive CLI arguments |
 | `ah-demo` | `demo` in a new/empty directory |

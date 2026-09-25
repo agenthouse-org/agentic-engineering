@@ -10,6 +10,7 @@ import {housekeep} from './housekeep.js';
 import {install,payload,verifyPayload,installationStatus} from './install.js';
 import {verifyEnvelope} from './policy.js';
 import {resolve} from './policy.js';
+import {roleProcessCheck} from './roles-processes.js';
 
 const PUBLIC_PACKAGE='@agenthouse/engineering',PUBLIC_REPOSITORY='agenthouse-org/agentic-engineering';
 const parts=value=>{const match=String(value).match(/^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/);assert(match,`Invalid release version: ${value}`);return {numbers:match.slice(1,4).map(Number),prerelease:match[4] || null};};
@@ -177,7 +178,14 @@ export function session(root,options={}) {
   // A subsequent launcher invocation selects a newly activated runtime. The
   // current process never loads newly downloaded code midway through a task.
   const housekeeping=housekeep(root,{env:options.env});
-  const result={id,active,executingVersion:VERSION,update:updateResult,dependencyUpdate,dependencies,policyChange,housekeeping};
+  const baselineUpdates={};
+  if(updateResult.status==='updated') {
+    for(const kind of ['roles','processes'])baselineUpdates[kind]={status:'refresh-required',reason:'A newer runtime was activated during this session. Start a new pinned CLI invocation to inspect its role/process baselines.',evaluatedVersion:VERSION,activeVersion:updateResult.version};
+  } else for(const kind of ['roles','processes'])try{
+    const review=roleProcessCheck(kind);
+    baselineUpdates[kind]={summary:review.summary,evaluatedVersion:VERSION,results:review.results.map(({id,status,baselineVersion,availableVersion,ignored,baselineChanges,conflicts})=>({id,status,baselineVersion,availableVersion,ignored,baselineChanges,conflictFields:(conflicts||[]).map(conflict=>conflict.field)}))};
+  }catch(error){baselineUpdates[kind]={status:'error',reason:error.message};}
+  const result={id,active,executingVersion:VERSION,update:updateResult,dependencyUpdate,dependencies,baselineUpdates,policyChange,housekeeping};
   write(inside(root,`.agenthouse/sessions/${id}.json`),result);
   return result;
 }

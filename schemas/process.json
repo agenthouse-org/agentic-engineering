@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "title", "summary", "roles"],
+  "properties": {
+    "schemaVersion": {"enum": [1]},
+    "id": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$"},
+    "title": {"type": "string", "minLength": 1},
+    "summary": {"type": "string", "minLength": 1},
+    "roles": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "stages": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "purpose", "outputs"], "properties": {"id": {"type": "string", "minLength": 1}, "purpose": {"type": "string", "minLength": 1}, "outputs": {"type": "array", "items": {"type": "string", "minLength": 1}}}}},
+    "subprocesses": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "entryConditions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "steps": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "outputs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "skills": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "methods": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "use", "reference"], "properties": {"name": {"type": "string", "minLength": 1}, "use": {"type": "string", "minLength": 1}, "reference": {"type": "string", "minLength": 1}}}},
+    "statusAuthority": {"type": "string", "minLength": 1}
+  }
+}

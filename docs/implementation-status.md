@@ -1,19 +1,20 @@
 # Implementation and verification status
 
-Version 1.3.0 uses central storage and explicit shared/private onboarding for new projects. See [central installation](central-installation.md) for context loading, migration, artifact classification and verification limits. Older project paths in examples apply to legacy installations.
+Version 1.4.0 adds generic role and product-process guidance. See [roles and product processes](roles-and-processes.md) for behavior and limitations. Central storage and explicit shared/private onboarding remain available.
 
-Version 1.3.0 release line. Updated 2026-09-24.
+Version 1.4.0 release line. Updated 2026-09-25.
 
-Development checkout verification on Windows, 2026-09-23: 133 core/workflow/storage/artifact tests passed; the real baseline/broken/restored browser scenario, central usability pass/fail fixtures with screenshots, and package checks also passed. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
+Development checkout verification on Windows, 2026-09-25: 146 Node tests passed, including role/process adoption, conflicts, local edits, advisory orientation, and command routing. Generated command skills and release allowlist checks passed. The release workflow is responsible for cross-platform, browser, usability, and package verification for this version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
 | Central storage | Versioned machine store; explicit shared/private integration; pinned context; legacy migration | Shared storage across projects, independent updates/rollback, offline restore, conflicts, private files, effective ignore checks and post-evaluation leaks |
-| CLI and agent commands | 46 framework skills (45 generated plus lifecycle); plain-language picker descriptions and enrolled command catalog; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Shared routing, help, installation, ownership, description and catalog tests |
+| CLI and agent commands | 48 framework skills in this checkout (47 generated plus lifecycle); plain-language picker descriptions and enrolled command catalog; every CLI operation has an ah-prefixed entry point; extended, host-specific and skill-aware help | Routing/help and role/process command discovery tests passed |
 | Repository survey and change analysis | Git, stack, scripts, agents, pipeline discovery; conservative test-layer evidence/gaps and nominal signals; local aliases; commit/range/merge-base analysis | Empty/multi-layer/nominal/alias fixtures, root commit, deletion and merge-base fixtures; no discovered scripts executed |
 | Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions; ready-gate `ticketSize` with override | Missing/stale evidence, self-review rejection, invalidated signatures; oversized criteria and sizeOverride tested |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |
 | Lifecycle and small changes | Full lifecycle plus configured shorter paths, eligible kinds and rationale; ask-first split work and `work branch` with repo `git.branchNaming` | Protected stages and invalid paths tested; branch naming render and clean-tree branch create tested |
+| Roles and product processes | Packaged role/process baselines; local consumer copies; lineage-aware review, conflict-safe merge/defer; advisory orientation | Adoption, file preservation, local edits, skill coverage, merge conflict behavior, deferral, orientation, and CLI discovery tested |
 | Backlog and review | Markdown/JSON import, retained external identity, criterion coverage, baseline outcome comparison | Idempotency, conflicts and stale evidence tested |
 | Governance | Frozen policy composition, mandatory definitions, signed decisions and direct delegation | Conflict, scope, expiry, omitted-check and delegation tests |
 | Control mapping | Rule provenance and explicit executable/guidance distinctions | Unenforced guidance is not reported as automated |
@@ -40,7 +41,7 @@ Exact-pin restore and owned generated-file ignore rules are implemented locally,
 
 ## Version 1.3.0 consumer-feedback changes (2026-09-24)
 
-This version provides 45 generated commands plus the lifecycle skill. Published
+The 1.3.0 release provided 45 generated commands plus the lifecycle skill. Published
 availability is established separately by the GitHub release and npm workflow.
 
 | Request | Implemented here | Remaining environment validation |

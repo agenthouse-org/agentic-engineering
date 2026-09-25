@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "change",
+  "title": "Change lifecycle",
+  "summary": "Assess and deliver a change with proportionate decisions, evidence, and communication.",
+  "entryConditions": ["A change to product behavior, policy, or operation is proposed"],
+  "steps": ["State the motivation and affected outcomes", "Assess stakeholders, compatibility, and risk", "Choose an authorized approach and migration path", "Plan implementation and verification", "Review evidence and required approvals", "Communicate, release, and learn"],
+  "outputs": ["Impact assessment","Decision and migration plan","Verification evidence","Release communication"],
+  "roles": ["product-manager","engineer"],
+  "skills": ["ah-assess-tech-feasibility","ah-work","ah-gate"]
+}

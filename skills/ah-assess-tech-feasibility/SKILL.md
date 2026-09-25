@@ -4,7 +4,7 @@ description: "Assess a proposed technical change, blast radius, encapsulation, r
 license: MIT
 ---
 
-Generated from ah-engineering 1.3.0.
+Generated from ah-engineering 1.4.0.
 
 # agenthouse assess-tech-feasibility
 
