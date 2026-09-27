@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {PACKAGE,assert,hash,inside,read,write,safeId,validated} from './io.js';
+import {skillDirectory} from './storage.js';
 
 const kinds=['roles','processes'];
 const baselineRoot=path.join(PACKAGE,'baselines');
@@ -45,6 +46,103 @@ function coverage(definition,kind) {
   const available=bundledSkillIds();
   return {status:references.length?'mapped':'candidate-gap',available:references.filter(id=>available.has(id)),missing:references.filter(id=>!available.has(id)),note:references.length?undefined:'No specialist skills are mapped yet; assess whether this process/role needs one.'};
 }
+function listed(value) {
+  if(Array.isArray(value))return [...new Set(value.filter(item=>typeof item==='string'&&item.trim()).map(item=>item.trim()))];
+  if(typeof value==='string'&&value.trim())return [...new Set(value.split(',').map(item=>item.trim().replace(/^["']|["']$/g,'')).filter(Boolean))];
+  return [];
+}
+function skillFrontmatter(markdown) {
+  const block=String(markdown||'').match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if(!block)return {};
+  const data={};let key=null;
+  for(const line of block[1].split(/\r?\n/)) {
+    const item=line.match(/^\s+-\s+(.+)$/);
+    if(item&&key&&Array.isArray(data[key])){data[key].push(item[1].trim().replace(/^["']|["']$/g,''));continue;}
+    const field=line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if(!field){key=null;continue;}
+    key=field[1];const raw=field[2].trim();
+    if(!raw){data[key]=[];continue;}
+    if(raw.startsWith('[')&&raw.endsWith(']'))data[key]=raw.slice(1,-1).split(',').map(part=>part.trim().replace(/^["']|["']$/g,'')).filter(Boolean);
+    else data[key]=raw.replace(/^["']|["']$/g,'');
+  }
+  return data;
+}
+function discoveryIndex() {
+  const value=read(path.join(baselineRoot,'skill-discovery.json'));
+  assert(value.schemaVersion===1&&Array.isArray(value.skills),'Invalid skill discovery index');
+  const byId=new Map();
+  for(const entry of value.skills) {
+    safeId(entry.id);
+    assert(!byId.has(entry.id),`Duplicate skill discovery id: ${entry.id}`);
+    for(const key of ['processes','roles','stages'])assert(Array.isArray(entry[key])&&entry[key].every(item=>typeof item==='string'&&item.length),`Invalid skill discovery ${key} for ${entry.id}`);
+    assert(typeof entry.source==='string'&&entry.source&&typeof entry.use==='string'&&entry.use,`Invalid skill discovery source/use for ${entry.id}`);
+    assert(entry.processes.length||entry.roles.length||entry.stages.length,`Skill discovery ${entry.id} needs a process, role, or stage`);
+    byId.set(entry.id,{...entry,processes:listed(entry.processes),roles:listed(entry.roles),stages:listed(entry.stages)});
+  }
+  return byId;
+}
+function dependencySkills() {
+  const dir=path.join(PACKAGE,'dependencies');if(!fs.existsSync(dir))return [];
+  return fs.readdirSync(dir).filter(name=>name.endsWith('.json')).map(name=>read(path.join(dir,name))).filter(record=>record.kind==='skill'&&record.id).map(record=>{
+    const source=record.source||{};
+    return {id:record.id,version:record.version||null,repository:source.repository||null,path:source.path||null,origin:'bundled-dependency',frontmatter:skillFrontmatter(Buffer.from(record.files?.['SKILL.md']||'','base64').toString('utf8'))};
+  });
+}
+function importSkillText(projectRoot,id) {
+  const local=path.join(projectRoot,'.agents','skills',id,'SKILL.md');
+  if(fs.existsSync(local))return fs.readFileSync(local,'utf8');
+  if(!fs.existsSync(path.join(projectRoot,'.agenthouse','active.json')))return '';
+  try {const file=path.join(skillDirectory(projectRoot,id),'SKILL.md');return fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';}catch{return '';}
+}
+function installedSpecialistSkills(projectRoot) {
+  const found=new Map(dependencySkills().map(skill=>[skill.id,skill]));
+  if(!projectRoot)return [...found.values()];
+  const lock=path.join(path.resolve(projectRoot),'.agenthouse','skills.json');
+  if(!fs.existsSync(lock))return [...found.values()];
+  for(const [id,entry] of Object.entries(read(lock))) {
+    if(found.has(id))continue;
+    safeId(id);
+    found.set(id,{id,version:entry.version||null,repository:null,path:null,origin:'project-import',frontmatter:skillFrontmatter(importSkillText(projectRoot,id))});
+  }
+  return [...found.values()];
+}
+function applicability(skill,index) {
+  const declared=index.get(skill.id);
+  const front=skill.frontmatter||{};
+  const processes=listed([...(declared?.processes||[]),...listed(front.processes)]);
+  const roles=listed([...(declared?.roles||[]),...listed(front.roles)]);
+  const stages=listed([...(declared?.stages||[]),...listed(front.stages)]);
+  const described=typeof front.description==='string'?front.description.trim():'';
+  return {source:declared?.source||(skill.repository?'agenthouse-skills':skill.origin==='project-import'?'project-import':'installed-skill'),use:declared?.use||described,processes,roles,stages};
+}
+function matchedBy(definition,kind,scope) {
+  if(kind==='processes') {
+    const reasons=[];
+    if(scope.processes.includes(definition.id))reasons.push('process');
+    const stageIds=new Set((definition.stages||[]).map(stage=>stage.id));
+    if(scope.stages.some(stage=>stageIds.has(stage)))reasons.push('stage');
+    return reasons;
+  }
+  return scope.roles.includes(definition.id)?['role']:[];
+}
+export function assembleSkillDiscovery(definition,kind,installed,index) {
+  const explicit=new Set(kind==='roles'?definition.skills.map(item=>item.id):definition.skills||[]);
+  const present=new Map(installed.map(skill=>[skill.id,skill]));
+  const catalog=[...installed];
+  for(const entry of index.values())if(!present.has(entry.id))catalog.push({id:entry.id,version:null,repository:null,path:null,origin:'discovery-index',frontmatter:{}});
+  const skills=[],unscoped=[];
+  for(const skill of catalog.sort((a,b)=>a.id.localeCompare(b.id))) {
+    if(explicit.has(skill.id))continue;
+    const scope=applicability(skill,index),reasons=matchedBy(definition,kind,scope),installedNow=skill.origin!=='discovery-index';
+    const record={id:skill.id,version:skill.version,source:scope.source,repository:skill.repository,path:skill.path,origin:skill.origin,availability:installedNow?'installed':'not-installed',use:scope.use};
+    if(reasons.length)skills.push({...record,matchedBy:reasons});
+    else if(installedNow&&!scope.processes.length&&!scope.roles.length&&!scope.stages.length)unscoped.push({id:skill.id,version:skill.version,source:scope.source,repository:skill.repository,path:skill.path,origin:skill.origin,availability:'installed'});
+  }
+  return {advisory:true,skills,unscoped,note:'Discovered specialist skills follow the pinned runtime and installed imports. Applicability comes from the packaged discovery index and from skill frontmatter. Discovery is advisory, is not stored in the consumer definition, and does not grant approval.'};
+}
+function skillDiscovery(definition,kind,projectRoot) {
+  return assembleSkillDiscovery(definition,kind,installedSpecialistSkills(projectRoot),discoveryIndex());
+}
 function writeBatch(entries) {
   const before=entries.map(([file])=>({file,content:fs.existsSync(file)?fs.readFileSync(file):null})),written=[];
   try {for(const [file,value] of entries){write(file,value);written.push(file);}}
@@ -63,12 +161,12 @@ export function roleProcessList(kind,root=globalRepository()) {
   const adopted=fs.existsSync(meta)?read(meta).adopted?.[kind]||{}:{};
   return baselineFiles(kind).map(({id})=>{const value=baseline(kind,id);return {id,title:value.title,summary:value.summary,adopted:!!adopted[id],baselineVersion:adopted[id]?.baselineVersion||null};});
 }
-export function roleProcessShow(kind,id,root=globalRepository()) {
+export function roleProcessShow(kind,id,root=globalRepository(),projectRoot) {
   typeName(kind);const value=baseline(kind,id);
   const local=path.resolve(root),meta=inside(local,'.agenthouse-global/state.json'),file=localFile(local,kind,id);
   const adopted=fs.existsSync(meta)?read(meta).adopted?.[kind]?.[id]:null;
-  if(adopted && fs.existsSync(file)) {const localValue=read(file);validated(kind==='roles'?'role':'process',localValue);assert(localValue.id===id,`Consumer definition identifier mismatch: ${id}`);return {source:'consumer-global-copy',baselineVersion:adopted.baselineVersion,availableBaselineVersion:baseVersion,definition:localValue,skillCoverage:coverage(localValue,kind)};}
-  return {source:'framework-baseline',baselineVersion:baseVersion,definition:value,skillCoverage:coverage(value,kind)};
+  if(adopted && fs.existsSync(file)) {const localValue=read(file);validated(kind==='roles'?'role':'process',localValue);assert(localValue.id===id,`Consumer definition identifier mismatch: ${id}`);return {source:'consumer-global-copy',baselineVersion:adopted.baselineVersion,availableBaselineVersion:baseVersion,definition:localValue,skillCoverage:coverage(localValue,kind),skillDiscovery:skillDiscovery(localValue,kind,projectRoot)};}
+  return {source:'framework-baseline',baselineVersion:baseVersion,definition:value,skillCoverage:coverage(value,kind),skillDiscovery:skillDiscovery(value,kind,projectRoot)};
 }
 export function roleProcessAdopt(kind,id,root=globalRepository()) {
   typeName(kind);
@@ -94,7 +192,7 @@ function changes(before,after,prefix='',out=[]) {
   } else out.push({field:prefix,before:before===undefined?null:before,after:after===undefined?null:after});
   return out;
 }
-export function roleProcessCheck(kind,id,root=globalRepository()) {
+export function roleProcessCheck(kind,id,root=globalRepository(),projectRoot) {
   typeName(kind);const repo=path.resolve(root),meta=inside(repo,'.agenthouse-global/state.json');
   if(!fs.existsSync(meta))return {kind,repository:repo,results:id?[{id,status:'not-adopted'}]:[],summary:{updatesAvailable:0,ignored:0}};
   const state=read(meta);assert(state.schemaVersion===1&&state.adopted?.[kind],'Invalid global repository state');
@@ -111,7 +209,7 @@ export function roleProcessCheck(kind,id,root=globalRepository()) {
     const baselineChanges=changes(old,current),localChanges=changes(old,localValue);
     const changed=record.baselineVersion!==baseVersion||currentBaselineDigest(current)!==record.baselineDigest;
     const digest=currentBaselineDigest(current),ignored=(record.ignoredRevisions||[]).some(revision=>revision.version===baseVersion&&revision.digest===digest);
-    return {id:key,status:changed?'update-available':'current',baselineVersion:record.baselineVersion,availableVersion:baseVersion,ignored,baselineChanges,localChanges,conflicts:mergeRoleProcessDefinition(old,localValue,current).conflicts,skillCoverage:coverage(localValue,kind)};
+    return {id:key,status:changed?'update-available':'current',baselineVersion:record.baselineVersion,availableVersion:baseVersion,ignored,baselineChanges,localChanges,conflicts:mergeRoleProcessDefinition(old,localValue,current).conflicts,skillCoverage:coverage(localValue,kind),skillDiscovery:skillDiscovery(localValue,kind,projectRoot)};
   });
   const available=results.filter(r=>r.status==='update-available');
   return {kind,repository:repo,results,summary:{updatesAvailable:available.length,ignored:available.filter(r=>r.ignored).length}};

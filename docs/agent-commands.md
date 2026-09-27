@@ -90,7 +90,7 @@ Project command files appear after `onboard` or `init`. A globally installed CLI
 
 `src/agent-commands.js` defines routing, picker descriptions, and workflow guidance; `src/help.js` supplies CLI reference text. Skill descriptions must say what the command does and when to use it in plain language with concrete triggers; do not derive them from the first sentence of agent instructions or rely on opaque framework jargon. Run `npm run build:agent-skills` after changing them. Generated skills ship in `skills/`; release checks reject stale generated content. Enrollment creates `.agenthouse/agent-commands.md` as the project catalog (name plus the same picker description) and the selected native aliases. Updates and removal use existing managed-file ownership checks and reject local edits.
 
-The frontend specialist implementation remains upstream in agenthouse-skills. Its wrapper reads the installed verified dependency; it does not duplicate the method. Agent skills grant no additional tool permissions. Private-key use, policy changes, external publication, and other sensitive mutations still require the user's applicable authorization.
+The frontend specialist implementation remains upstream in agenthouse-skills. Its wrapper reads the installed verified dependency; it does not duplicate the method. `ah-process` and `ah-roles` discover those installed skills when the packaged index or skill frontmatter matches the selected role or process. Agent skills grant no additional tool permissions. Private-key use, policy changes, external publication, and other sensitive mutations still require the user's applicable authorization.
 
 ## Host format references
 

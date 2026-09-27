@@ -4,7 +4,7 @@ description: "Remove unchanged managed agenthouse files while keeping configurat
 license: MIT
 ---
 
-Generated from ah-engineering 1.6.0.
+Generated from ah-engineering 1.7.0.
 
 # agenthouse uninstall
 

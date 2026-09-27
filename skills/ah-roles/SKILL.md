@@ -4,7 +4,7 @@ description: "Discover and load role guidance, or adopt and review consumer-owne
 license: MIT
 ---
 
-Generated from ah-engineering 1.6.0.
+Generated from ah-engineering 1.7.0.
 
 # agenthouse roles
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-When asked to act as a role, read its active consumer copy with roles use and apply its purpose, responsibilities, and boundaries to this task. State the role context, but do not claim a human identity or authority. Follow governing policy if it conflicts. Role behavior is scoped to this task unless the user asks otherwise. For role adaptations use the owned global JSON; review upstream changes and conflicts before explicit merge. Never treat role decision rights as approvals.
+When asked to act as a role, read its active consumer copy with roles use and apply its purpose, responsibilities, and boundaries to this task. State the role context, but do not claim a human identity or authority. Follow governing policy if it conflicts. Role behavior is scoped to this task unless the user asks otherwise. Read skillDiscovery and follow an installed discovered skill from context when it matches the role. Discovery is advisory. For role adaptations use the owned global JSON; review upstream changes and conflicts before explicit merge. Never treat role decision rights as approvals.
 
 CLI reference:
 
@@ -26,5 +26,5 @@ roles adopt [--id ROLE_ID] [--repository PATH]
 roles check [--id ROLE_ID] [--repository PATH]
 roles merge --id ROLE_ID [--repository PATH]
 roles ignore --id ROLE_ID [--repository PATH]
-Discover generic roles, load one for this task, or explicitly adopt and review baseline changes. Consumer copies live in AGENTHOUSE_GLOBAL_REPO or ~/.agenthouse/global. Adoption never overwrites an existing file. Updates are reviewed separately and merged only on explicit request; conflicts leave local files unchanged. Role decision rights do not approve governance actions.
+Discover generic roles, load one for this task, or explicitly adopt and review baseline changes. Show and use include skillDiscovery for installed specialist skills whose applicability names this role. Consumer copies live in AGENTHOUSE_GLOBAL_REPO or ~/.agenthouse/global. Adoption never overwrites an existing file. Updates are reviewed separately and merged only on explicit request; conflicts leave local files unchanged. Role decision rights do not approve governance actions.
 ```

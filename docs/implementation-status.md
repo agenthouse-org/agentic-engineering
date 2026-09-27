@@ -1,8 +1,8 @@
 # Implementation and verification status
 
-Version 1.6.0 adds evidence-traced product requirements and story mapping to the existing define stage. Version 1.5.1 completed plugin and npm publisher metadata, lowercase agenthouse branding, and packaged logo assets. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
+Version 1.7.0 discovers installed specialist skills for roles and processes, including pinned agenthouse-skills dependencies. Version 1.6.0 adds evidence-traced product requirements and story mapping to the existing define stage. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
 
-Version 1.6.0 release line. Updated 2026-09-25.
+Version 1.7.0 release line. Updated 2026-09-27.
 
 Development checkout verification on Windows, 2026-09-25: CI templates preserve JUnit reports on failures and keep evaluation status authoritative; focused template contract tests added. Generated command skills and release allowlist checks are run before release. The release workflow is responsible for cross-platform, browser, usability, and package verification for this version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
 
@@ -14,7 +14,7 @@ Development checkout verification on Windows, 2026-09-25: CI templates preserve 
 | Readiness and completion | Configurable fields, work-kind criteria, build/policy evidence, independent signed decisions; ready-gate `ticketSize` with override | Missing/stale evidence, self-review rejection, invalidated signatures; oversized criteria and sizeOverride tested |
 | Specification evidence | Red/green capture with unchanged declared tests, criteria, command and policy | Real failing/passing subprocesses and drift rejection |
 | Lifecycle and small changes | Full lifecycle plus configured shorter paths, eligible kinds and rationale; ask-first split work and `work branch` with repo `git.branchNaming` | Protected stages and invalid paths tested; branch naming render and clean-tree branch create tested |
-| Roles and product processes | Packaged role/process baselines; local consumer copies; lineage-aware review, conflict-safe merge/defer; advisory orientation | Adoption, file preservation, local edits, skill coverage, merge conflict behavior, deferral, orientation, and CLI discovery tested |
+| Roles and product processes | Packaged role/process baselines; local consumer copies; lineage-aware review, conflict-safe merge/defer; advisory orientation; runtime discovery of installed specialist skills | Adoption, file preservation, local edits, skill coverage, merge conflict behavior, deferral, orientation, skill discovery, and CLI discovery tested |
 | Backlog and review | Markdown/JSON import, retained external identity, criterion coverage, baseline outcome comparison | Idempotency, conflicts and stale evidence tested |
 | Governance | Frozen policy composition, mandatory definitions, signed decisions and direct delegation | Conflict, scope, expiry, omitted-check and delegation tests |
 | Control mapping | Rule provenance and explicit executable/guidance distinctions | Unenforced guidance is not reported as automated |

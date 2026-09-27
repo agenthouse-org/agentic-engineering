@@ -73,9 +73,9 @@ export async function main(args) {
     case 'roles': {
       const action=pos.shift(),repository=o.repository;
       if(action==='list')result=roleProcessList('roles',repository);
-      else if(action==='show'||action==='use'){assert(o.id,'--id required');result=roleProcessShow('roles',o.id,repository);}
+      else if(action==='show'||action==='use'){assert(o.id,'--id required');result=roleProcessShow('roles',o.id,repository,root);}
       else if(action==='adopt')result=roleProcessAdopt('roles',o.id,repository);
-      else if(action==='check')result=roleProcessCheck('roles',o.id,repository);
+      else if(action==='check')result=roleProcessCheck('roles',o.id,repository,root);
       else if(action==='merge'){assert(o.id,'--id required');result=roleProcessMerge('roles',o.id,repository);}
       else if(action==='ignore'){assert(o.id,'--id required');result=roleProcessIgnore('roles',o.id,repository);}
       else throw new Error('Choose roles list, show, use, adopt, check, merge, or ignore');
@@ -84,9 +84,9 @@ export async function main(args) {
     case 'process': {
       const action=pos.shift(),repository=o.repository;
       if(action==='list')result=roleProcessList('processes',repository);
-      else if(action==='show'||action==='start'){assert(o.id,'--id required');result=roleProcessShow('processes',o.id,repository);}
+      else if(action==='show'||action==='start'){assert(o.id,'--id required');result=roleProcessShow('processes',o.id,repository,root);}
       else if(action==='adopt')result=roleProcessAdopt('processes',o.id,repository);
-      else if(action==='check')result=roleProcessCheck('processes',o.id,repository);
+      else if(action==='check')result=roleProcessCheck('processes',o.id,repository,root);
       else if(action==='merge'){assert(o.id,'--id required');result=roleProcessMerge('processes',o.id,repository);}
       else if(action==='ignore'){assert(o.id,'--id required');result=roleProcessIgnore('processes',o.id,repository);}
       else if(action==='where')result=processOrientation(o.description);

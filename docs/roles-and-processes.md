@@ -16,6 +16,8 @@ ah-engineering process where --description "Customers report that checkout fails
 
 `roles use` prints a role for the current task. The `ah-roles` agent skill uses its purpose, responsibilities, and boundaries to frame the current task; role descriptions do not grant credentials or governance approval. `process start` presents guidance and linked roles/skills; it does not create a work item or record process state.
 
+`roles show`, `roles use`, `process show`, and `process start` also return `skillDiscovery`. That list is built from specialist skills installed with the pinned runtime, including agenthouse-skills dependencies, plus skills imported into the project. A packaged index names the processes, roles, and stages where a known skill is useful. An installed skill can add `processes`, `roles`, or `stages` in its SKILL.md frontmatter. Installed specialist skills with no applicability are returned as `unscoped`. Follow a discovered skill from `context`. Discovery is advisory, follows the pinned runtime, and is not written into the consumer copy.
+
 `process where` makes a tentative suggestion from the description supplied. It does not read an external tracker, update status, or approve a transition. Confirm the actual stage and status source with the user or the configured system of record. If evidence is ambiguous, the result remains ambiguous.
 
 ## Create consumer-owned global copies
@@ -58,7 +60,7 @@ Roles: product manager, market researcher, engineer, support specialist, and sal
 
 Processes: product lifecycle, market validation, feature request, bug, change, release, and incident response.
 
-Specialist skills remain owned by their upstream or framework projects. The baseline points to skill identifiers and reports whether those methods are mapped, available in the pinned package, or missing. An unmapped role/process is reported as a candidate gap for consumer review; it is not a required failure. The baseline does not copy specialist instructions into role definitions.
+Specialist skills remain owned by their upstream or framework projects. The baseline points to skill identifiers and reports whether those methods are mapped, available in the pinned package, or missing. An unmapped role/process is reported as a candidate gap for consumer review; it is not a required failure. The baseline does not copy specialist instructions into role definitions. Discovered skills stay outside those definition files, so adopting or merging a baseline does not freeze the skill list.
 
 ## Current limits
 
