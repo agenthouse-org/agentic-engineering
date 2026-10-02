@@ -6,6 +6,6 @@
   "entryConditions": ["A candidate change and target environment are identified"],
   "steps": ["Confirm scope, compatibility, and release evidence", "Check operational readiness, communications, and rollback", "Obtain applicable authorization", "Deploy using the approved procedure", "Observe health and user impact", "Complete or execute recovery and record learning"],
   "outputs": ["Release record","Authorized decision","Observability and rollback evidence","Outcome review"],
-  "roles": ["product-manager","engineer","support-specialist"],
-  "skills": ["ah-evaluate","ah-gate","ah-session"]
+  "roles": ["product-manager","engineer","support-specialist","devops","test-manager"],
+  "skills": ["ah-evaluate","ah-pipeline","ah-gate","ah-session"]
 }

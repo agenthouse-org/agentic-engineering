@@ -1,0 +1,68 @@
+stages:
+  - test
+  - release
+
+# ah-job: pull-request
+agenthouse-pull-request:
+  image: node:22
+  stage: test
+  script:
+    - npm ci --ignore-scripts
+    - node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+    - node .agenthouse/run.mjs evaluate --profile pull-request --ci --frozen --subject "$CI_COMMIT_SHA"
+  artifacts:
+    when: always
+    paths:
+      - .agenthouse/local/reports/
+    reports:
+      junit: .agenthouse/local/reports/*/junit.xml
+
+# ah-job: frontend
+agenthouse-frontend:
+  image: node:22
+  stage: test
+  script:
+    - npm ci --ignore-scripts
+    - node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+    - npx playwright install --with-deps chromium
+    - node .agenthouse/run.mjs evaluate --profile frontend --ci --frozen --subject "$CI_COMMIT_SHA"
+  artifacts:
+    when: always
+    paths:
+      - .agenthouse/local/reports/
+    reports:
+      junit: .agenthouse/local/reports/*/junit.xml
+
+# ah-job: release
+agenthouse-release:
+  image: node:22
+  stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - npm ci --ignore-scripts
+    - node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+    - node .agenthouse/run.mjs evaluate --profile release --ci --frozen --subject "$CI_COMMIT_SHA"
+  artifacts:
+    when: always
+    paths:
+      - .agenthouse/local/reports/
+    reports:
+      junit: .agenthouse/local/reports/*/junit.xml
+
+# ah-job: post-deploy
+agenthouse-post-deploy:
+  image: node:22
+  stage: release
+  rules:
+    - when: never
+  script:
+    - npm ci --ignore-scripts
+    - node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+    - node .agenthouse/run.mjs evaluate --profile post-deploy --ci --frozen --subject "$CI_COMMIT_SHA"
+  artifacts:
+    when: always
+    paths:
+      - .agenthouse/local/reports/
+    reports:
+      junit: .agenthouse/local/reports/*/junit.xml

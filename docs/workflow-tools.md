@@ -4,7 +4,23 @@ Use `ah-engineering` or the enrolled `node .agenthouse/run.mjs`. Every command h
 
 ## Inspect and import
 
-`survey` reports Git state, stacks, package scripts, configuration, agents, pipelines, work locations, and static evidence for unit, component, integration, functional/API, end-to-end, regression, and contract layers without executing discovered scripts. Layer states are `present`, `absent`, `ambiguous`, or `suspected-nominal`. Empty/comment-only files, skipped-only suites, no apparent assertions, and unconditional-success signals can prompt nominal review; they do not prove poor tests. Configure consumer-reviewed layer selection and aliases under `testing.layers` and `testing.aliases` in project configuration.
+`survey` reports Git state, stacks, package scripts, configuration, agents, pipelines, work locations, and static evidence for unit, component, integration, functional/API, end-to-end, interaction, regression, and contract layers without executing discovered scripts. Layer states are `present`, `absent`, `ambiguous`, or `suspected-nominal`. Empty/comment-only files, skipped-only suites, no apparent assertions, and unconditional-success signals can prompt nominal review; they do not prove poor tests. Configure consumer-reviewed layer selection and aliases under `testing.layers` and `testing.aliases` in project configuration.
+
+`interaction` covers user-visible UI journeys (distinct from API functional tests and from visual concept conformance). Pair interaction/end-to-end plan items with Playwright or the repository e2e runner; use frontend-acceptance for concept/regression/behavior/accessibility criteria.
+
+## Test authoring
+
+`test-plan write` records per-criterion level, method (`tdd`, `characterization`, `verify-after`), and file path on the work item (`fields.testPlan`). `test-plan check` validates coverage. `write-tests prepare` requires a green baseline before authoring new failing tests; `write-tests mark-written` updates statuses. For `tdd` items, capture red with `spec --phase red` before implementation. Do not modify existing tests without an explicit plan decision. Organization standards select methods and naming; core does not hard-code a testing philosophy. See [ADR-0017](adr/0017-test-authoring-and-pipeline.md).
+
+## Architecture and coding guidelines
+
+`architecture list|show|check|write` manages architecture ADR catalogs linked as `fields.architectureCatalog`. Listing can scan `docs/adr` (or `--path`). Check validates catalog structure and linked Markdown paths; it does not prove architectural correctness or grant exception approval.
+
+`coding-standards show|check|write` manages coding-convention catalogs linked as `fields.codingStandards`, optionally showing a module standards document (`--module node-typescript|php-laravel`). Mechanism hints (`advisory`, lint tools, `evaluate-check`) are not enforcement; use `controls` and `evaluate` for real checks. Ready gates verify linked catalogs when those fields are present. See [ADR-0018](adr/0018-architecture-and-coding-guidelines.md).
+
+## Pipeline management
+
+`pipeline status|create|plan|apply|jobs|publish` creates and manages multi-job GitHub Actions / GitLab CI for evaluate profiles and configures artifact/JUnit publishing. Evaluation generates reports; publication is a pipeline concern and must not mask evaluate exit status.
 
 `inspect --ref BASE..HEAD` compares those commits; `inspect --ref HEAD --base main` starts at their merge base. A bare commit compares with its first parent, including root commits. Affected files, filename-based test candidates, added suppressions and unfinished-work markers are review signals, not coverage proof. Uncommitted changes appear separately in the survey.
 

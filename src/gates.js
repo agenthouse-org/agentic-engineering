@@ -3,6 +3,9 @@ import {assert,read,write,inside,hash,exclusive} from './io.js';
 import {resolve,approval} from './policy.js';
 import {run} from './process.js';
 import {checkVisualPlan} from './visual-plan.js';
+import {checkTestPlan, loadTestPlan} from './test-plan.js';
+import {checkArchitecture} from './architecture.js';
+import {checkCodingStandards} from './coding-standards.js';
 import {validateAssessment} from './assessment.js';
 
 export const CRITERIA={ready:['outcome','scope','acceptance','verification','dependencies','risks'],verify:['changes'],done:['changes','evidence','acceptanceEvidence','releasePlan','rollbackPlan']};
@@ -43,15 +46,58 @@ export function gate(root,{item,phase='ready',decision,policyFile}={}) {
       findings.push({id:'visualPlan',status:'incomplete',reason:error.message});
     }
   }
+  if(phase==='ready' && (typeof record.fields?.testPlan==='string' && record.fields.testPlan.trim() || record.testPlan)) {
+    try {
+      const checked=checkTestPlan(root,{item});
+      findings.push(...checked.findings.filter(f=>f.status!=='passed'));
+    } catch(error) {
+      findings.push({id:'testPlan',status:'incomplete',reason:error.message});
+    }
+  }
+  if(phase==='ready' && (typeof record.fields?.architectureCatalog==='string' && record.fields.architectureCatalog.trim() || record.architectureCatalog)) {
+    try {
+      const checked=checkArchitecture(root,{item});
+      findings.push(...checked.findings.filter(f=>f.status!=='passed').map(f=>({...f,id:f.id==='content'?'architectureCatalog':f.id})));
+    } catch(error) {
+      findings.push({id:'architectureCatalog',status:'incomplete',reason:error.message});
+    }
+  }
+  if(phase==='ready' && (typeof record.fields?.codingStandards==='string' && record.fields.codingStandards.trim() || record.codingStandards)) {
+    try {
+      const checked=checkCodingStandards(root,{item});
+      findings.push(...checked.findings.filter(f=>f.status!=='passed').map(f=>({...f,id:f.id==='content'?'codingStandards':f.id})));
+    } catch(error) {
+      findings.push({id:'codingStandards',status:'incomplete',reason:error.message});
+    }
+  }
   if(phase==='done') {
     for(const file of record.evidence || []) {
       const bytes=fs.readFileSync(inside(root,file)),result=JSON.parse(bytes);evidence.push({file,sha256:hash(bytes),result});
       if(!record.build || result.subject!==record.build || result.policyDigest!==snapshot.digest)findings.push({id:file,status:'incomplete',reason:'Stale build or policy evidence'});
       if(result.status!=='satisfied' || result.exitCode!==0)findings.push({id:file,status:'failed',reason:'Evidence does not pass'});
     }
+    let planItems=[];
+    try {
+      if(typeof record.fields?.testPlan==='string' && record.fields.testPlan.trim() || record.testPlan) {
+        const loaded=loadTestPlan(root,{item});
+        planItems=loaded.data.items || [];
+      }
+    } catch(error) {
+      findings.push({id:'testPlan',status:'incomplete',reason:error.message});
+    }
     for(const c of record.criteria) {
       if(c.applicable===false) {if(!rules.allowNotApplicable || !c.reason)findings.push({id:c.id,status:'incomplete',reason:'Applicability exception not allowed or unexplained'});continue;}
-      if(!evidence.some(e=>e.result.checks?.some(x=>x.status==='passed'&&(x.id===c.id||x.criteria?.includes(c.id)))))findings.push({id:c.id,status:'incomplete',reason:'Criterion has no passing evidence'});
+      const links=planItems.filter(i=>i.criterionId===c.id);
+      if(planItems.length || typeof record.fields?.testPlan==='string' && record.fields.testPlan.trim() || record.testPlan) {
+        if(!links.length)findings.push({id:c.id,status:'incomplete',reason:'Criterion has no test'});
+        else if(links.every(i=>i.status==='untestable') && !String(links[0].reason || '').trim())
+          findings.push({id:c.id,status:'incomplete',reason:'Untestable criterion needs a reason'});
+      }
+      const passed=evidence.some(e=>e.result.checks?.some(x=>x.status==='passed'&&(x.id===c.id||x.criteria?.includes(c.id))));
+      if(!passed) {
+        const anyCheck=evidence.some(e=>e.result.checks?.some(x=>x.id===c.id||x.criteria?.includes(c.id)));
+        findings.push({id:c.id,status:'incomplete',reason:anyCheck?'Criterion has no passing evidence':'Criterion has no passing evidence'});
+      }
     }
   }
   if(rules.requireRed || rules.requireGreen) {

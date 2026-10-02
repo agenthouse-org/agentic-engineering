@@ -5,7 +5,7 @@
       "id": "frontend-acceptance",
       "source": "agenthouse-skills",
       "processes": ["feature-request", "bug", "change", "release", "product-lifecycle"],
-      "roles": ["engineer"],
+      "roles": ["engineer", "test-manager"],
       "stages": ["define", "deliver"],
       "use": "When this work changes a user interface, follow the pinned frontend-acceptance method for visual acceptance."
     },
@@ -13,7 +13,7 @@
       "id": "web-usability-conformity",
       "source": "agenthouse-skills",
       "processes": ["feature-request", "bug", "change", "release", "product-lifecycle"],
-      "roles": ["engineer"],
+      "roles": ["engineer", "test-manager"],
       "stages": ["deliver"],
       "use": "When a user interface needs a conformity or accessibility audit, follow the pinned web-usability-conformity method."
     }

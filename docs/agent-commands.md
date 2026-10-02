@@ -1,6 +1,6 @@
 # Agent commands
 
-This checkout provides 48 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
+This checkout provides 51 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
 
 ## Load central skills
 
@@ -24,14 +24,14 @@ Reload the host or start a fresh session after first enrollment if the command i
 ## Default command map
 
 Understand: ah-survey, ah-inspect, ah-controls.
-Shape: ah-define-product-requirements, ah-draft-user-story, ah-assess-story-readiness, ah-validate-scope, ah-assess-tech-feasibility, ah-visual-plan.
-Build: ah-work, ah-spec, ah-check-commit.
+Shape: ah-define-product-requirements, ah-draft-user-story, ah-assess-story-readiness, ah-validate-scope, ah-assess-tech-feasibility, ah-architecture, ah-coding-standards, ah-visual-plan, ah-test-plan.
+Build: ah-work, ah-write-tests, ah-spec, ah-check-commit.
 Verify: ah-evaluate, ah-review, ah-review-change, ah-review-mr, ah-frontend-acceptance, ah-usability.
 Approve: ah-sign, ah-gate.
-Operate: ah-update, ah-rollback, ah-recover, ah-housekeep, ah-doctor, ah-session.
+Operate: ah-pipeline, ah-update, ah-rollback, ah-recover, ah-housekeep, ah-doctor, ah-session.
 Product: ah-roles, ah-process.
 
-Assess judges a story, scope or feasibility; evaluate runs checks on a build; gate decides ready or done from evidence. Use `help "I need to plan this"` for at most three suggested skills.
+Assess judges a story, scope or feasibility; evaluate runs checks on a build; gate decides ready or done from evidence. Use `help "I need to plan this"` for at most three suggested skills. Use `help roles`, `help processes`, and `help map` for Markdown discovery of roles, processes, and the command support table.
 
 ## Complete command map (administration included)
 
@@ -46,6 +46,11 @@ Assess judges a story, scope or feasibility; evaluate runs checks on a build; ga
 | `ah-init` | `init` |
 | `ah-work` | `work new`, `show`, `advance`, `branch` |
 | `ah-visual-plan` | `visual-plan check` |
+| `ah-test-plan` | `test-plan check`, `write` |
+| `ah-write-tests` | `write-tests prepare`, `mark-written` |
+| `ah-architecture` | `architecture list`, `show`, `check`, `write` |
+| `ah-coding-standards` | `coding-standards show`, `check`, `write` |
+| `ah-pipeline` | `pipeline status`, `create`, `plan`, `apply`, `jobs`, `publish` |
 | `ah-evaluate` | `evaluate` |
 | `ah-doctor` | `doctor` |
 | `ah-resolve` | `resolve` |
@@ -74,6 +79,8 @@ The framework includes these engineering workflows:
 - `ah-check-commit`: checks relevant to a commit and regression evidence.
 - `ah-review-change`: requirement-based review and findings.
 - `ah-visual-plan`: local wireframes and mermaid architecture diagrams, then `visual-plan check`.
+- `ah-architecture`: list/show ADRs and architecture catalogs, then `architecture check` / `write` linked as `fields.architectureCatalog`.
+- `ah-coding-standards`: show module or project coding-standards catalogs, then `coding-standards check` / `write` linked as `fields.codingStandards`.
 - `ah-web-usability-conformity`: routes to the pinned upstream usability method and its explicitly provisioned audit runtime.
 - `ah-frontend-acceptance`: routes to the pinned upstream specialist skill.
 - `ah-npm-provenance`: explains npm provenance, asks whether to add it, and inspects or writes local publish files. It does not publish or configure npmjs.com.

@@ -56,9 +56,21 @@ Baseline metadata and prior snapshots are retained in `.agenthouse-global/` so a
 
 ## Included baseline definitions
 
-Roles: product manager, market researcher, engineer, support specialist, and sales specialist.
+Roles: product manager, market researcher, architect, engineer, test manager, devops engineer, support specialist, and sales specialist.
 
 Processes: product lifecycle, market validation, feature request, bug, change, release, and incident response.
+
+Discover them as Markdown without running list/show first:
+
+```text
+ah-engineering help roles
+ah-engineering help role architect
+ah-engineering help processes
+ah-engineering help process feature-request
+ah-engineering help map
+```
+
+`help map` prints a command × role × process table derived from packaged baselines and skill discovery.
 
 Specialist skills remain owned by their upstream or framework projects. The baseline points to skill identifiers and reports whether those methods are mapped, available in the pinned package, or missing. An unmapped role/process is reported as a candidate gap for consumer review; it is not a required failure. The baseline does not copy specialist instructions into role definitions. Discovered skills stay outside those definition files, so adopting or merging a baseline does not freeze the skill list.
 

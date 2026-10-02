@@ -4,7 +4,7 @@ description: "Navigate the product lifecycle or subprocesses for features, bugs,
 license: MIT
 ---
 
-Generated from ah-engineering 1.7.0.
+Generated from ah-engineering 1.8.0.
 
 # agenthouse process
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Use process list/show to select applicable guidance and process start to present stages, roles, outputs, linked skills, and skillDiscovery. Discovered skills are installed specialist methods, including pinned agenthouse-skills dependencies, whose applicability matches this process. Read an installed discovered skill from context and follow that skill. Unscoped installed specialist skills are listed separately for review. Discovery is advisory and does not grant approval. Do not create tracker state unless separately requested. For “where are we?”, gather evidence, use process where, state its uncertainty, and ask the user to compare with authoritative status. Never invent progress, transition, acceptance or approval.
+Use process list/show to select applicable guidance and process start to present stages, roles, outputs, linked skills, and skillDiscovery. Discovered skills are installed specialist methods, including pinned agenthouse-skills dependencies, whose applicability matches this process. Read an installed discovered skill from context and follow that skill. Unscoped installed specialist skills are listed separately for review. Discovery is advisory and does not grant approval. Do not create tracker state unless separately requested. For “where are we?”, gather evidence, use process where, state its uncertainty, and ask the user to compare with authoritative status. Never invent progress, transition, acceptance or approval. Point users to help processes and help process PROCESS_ID for Markdown process pages.
 
 CLI reference:
 
@@ -28,4 +28,5 @@ process check [--id PROCESS_ID] [--repository PATH]
 process merge --id PROCESS_ID [--repository PATH]
 process ignore --id PROCESS_ID [--repository PATH]
 Navigate product lifecycle processes and subprocesses. Start prints guidance; it does not create or track workflow status. Show and start include skillDiscovery for installed specialist skills, including pinned agenthouse-skills dependencies, whose applicability matches this process. Where gives tentative orientation from supplied text and asks you to confirm against the authoritative status source. Consumer copies use AGENTHOUSE_GLOBAL_REPO or ~/.agenthouse/global. Baseline updates require explicit review and merge.
+For Markdown discovery: help processes, help process PROCESS_ID, help map.
 ```

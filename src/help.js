@@ -2,12 +2,15 @@ import {commandMap,goalHelp} from './command-map.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {assert,PACKAGE,VERSION} from './io.js';
+import {rolesIndexMarkdown,processesIndexMarkdown,roleMarkdown,processMarkdown,mapMarkdown} from './discovery-help.js';
 
 export const topics={
   assessment:'assessment --item FILE --selectors FILE [--ref COMMIT] [--output FILE]\nassessment --summary FILE\nCollect reproducible literal occurrences for feasibility analysis, or validate a linked assessment summary. Does not run project checks or approve a proposal.',
   context:'context\nPrint this project’s pinned central lifecycle and skill paths. Read those files from any agent; no project skill copies or automatic host discovery are required.',
-  roles:'roles list\nroles show --id ROLE_ID\nroles use --id ROLE_ID\nroles adopt [--id ROLE_ID] [--repository PATH]\nroles check [--id ROLE_ID] [--repository PATH]\nroles merge --id ROLE_ID [--repository PATH]\nroles ignore --id ROLE_ID [--repository PATH]\nDiscover generic roles, load one for this task, or explicitly adopt and review baseline changes. Show and use include skillDiscovery for installed specialist skills whose applicability names this role. Consumer copies live in AGENTHOUSE_GLOBAL_REPO or ~/.agenthouse/global. Adoption never overwrites an existing file. Updates are reviewed separately and merged only on explicit request; conflicts leave local files unchanged. Role decision rights do not approve governance actions.',
-  process:'process list\nprocess show --id PROCESS_ID\nprocess start --id PROCESS_ID\nprocess where --description "current situation and evidence"\nprocess adopt [--id PROCESS_ID] [--repository PATH]\nprocess check [--id PROCESS_ID] [--repository PATH]\nprocess merge --id PROCESS_ID [--repository PATH]\nprocess ignore --id PROCESS_ID [--repository PATH]\nNavigate product lifecycle processes and subprocesses. Start prints guidance; it does not create or track workflow status. Show and start include skillDiscovery for installed specialist skills, including pinned agenthouse-skills dependencies, whose applicability matches this process. Where gives tentative orientation from supplied text and asks you to confirm against the authoritative status source. Consumer copies use AGENTHOUSE_GLOBAL_REPO or ~/.agenthouse/global. Baseline updates require explicit review and merge.',
+  roles:'roles list\nroles show --id ROLE_ID\nroles use --id ROLE_ID\nroles adopt [--id ROLE_ID] [--repository PATH]\nroles check [--id ROLE_ID] [--repository PATH]\nroles merge --id ROLE_ID [--repository PATH]\nroles ignore --id ROLE_ID [--repository PATH]\nDiscover generic roles, load one for this task, or explicitly adopt and review baseline changes. Show and use include skillDiscovery for installed specialist skills whose applicability names this role. Consumer copies live in AGENTHOUSE_GLOBAL_REPO or ~/.agenthouse/global. Adoption never overwrites an existing file. Updates are reviewed separately and merged only on explicit request; conflicts leave local files unchanged. Role decision rights do not approve governance actions.\nFor Markdown discovery: help roles, help role ROLE_ID, help map.',
+  process:'process list\nprocess show --id PROCESS_ID\nprocess start --id PROCESS_ID\nprocess where --description "current situation and evidence"\nprocess adopt [--id PROCESS_ID] [--repository PATH]\nprocess check [--id PROCESS_ID] [--repository PATH]\nprocess merge --id PROCESS_ID [--repository PATH]\nprocess ignore --id PROCESS_ID [--repository PATH]\nNavigate product lifecycle processes and subprocesses. Start prints guidance; it does not create or track workflow status. Show and start include skillDiscovery for installed specialist skills, including pinned agenthouse-skills dependencies, whose applicability matches this process. Where gives tentative orientation from supplied text and asks you to confirm against the authoritative status source. Consumer copies use AGENTHOUSE_GLOBAL_REPO or ~/.agenthouse/global. Baseline updates require explicit review and merge.\nFor Markdown discovery: help processes, help process PROCESS_ID, help map.',
+  architecture:'architecture list [--item FILE | --catalog FILE | --path DIR]\narchitecture show --id ID [--item FILE | --catalog FILE | --path DIR]\narchitecture check (--item FILE | --catalog FILE) [--output FILE]\narchitecture write --item FILE --entries JSON [--output PATH] [--owner-role architect] [--standard-ref REF]\nList or show architecture ADRs/catalog entries, validate a catalog, or write fields.architectureCatalog. Check validates structure and linked paths, not architectural correctness or approval.',
+  'coding-standards':'coding-standards show [--item FILE | --catalog FILE] [--module node-typescript|php-laravel]\ncoding-standards check (--item FILE | --catalog FILE) [--output FILE]\ncoding-standards write --item FILE --entries JSON [--output PATH] [--owner-role architect] [--standard-ref REF] [--module NAME]\nShow, validate, or write coding-standards catalogs linked as fields.codingStandards. Mechanism hints are not enforcement; use controls and evaluate for real checks.',
   controls:'controls [--policy-file FILE]\nMap resolved rule identifiers to actual runtime mechanisms and configured checks. Unknown rules remain guidance; deployment activation is not inferred.',
   hook:'hook [--vendor claude|cursor|ci] [--input FILE]\nProcess a native or normalized JSON event from stdin or FILE with the pinned hooks runtime. Uses frozen project policy; no check installs software.',
   'hook-config':'hook-config [--vendor claude] [--install | --remove]\nPrint settings, or install/remove owned hook entries while preserving other settings. Activate once per repository after reviewing host requirements. Run from the enrolled repository root.',
@@ -15,6 +18,9 @@ export const topics={
   survey:'survey [--output FILE]\nInspect Git state, stacks, scripts, agent files, pipelines, backlog locations, and evidence for test layers. Static nominal signals are review prompts. No discovered command is executed.',
   'visual-plan':'visual-plan check (--item FILE | --plan FILE) [--output FILE]\nValidate a local visual-plan record, hashed wireframe HTML fragments, and mermaid diagrams. Exit 0 passed, 1 failed, 4 incomplete. Does not render, host, or publish a review UI.',
   'npm-provenance':'npm-provenance status [--output FILE]\nnpm-provenance apply [--provider github|gitlab] [--workflow FILE] [--publish trusted|token] [--access public|restricted]\nInspect local npm publish files for provenance, or write a new GitHub Actions / GitLab job when the target file is missing. Does not publish, store tokens, or change npmjs.com. Exit 0 ready or inapplicable, 1 failed, 4 incomplete.',
+  'test-plan':'test-plan check (--item FILE | --plan FILE) [--output FILE]\ntest-plan write --item FILE --items JSON [--output PATH] [--standard-ref REF] [--owner-role test-manager] [--default-method tdd] [--baseline JSON] [--decisions JSON]\nValidate or write a criterion-to-test plan into the work record. Levels include interaction. Methods: tdd, characterization, verify-after. Exit 0 passed, 1 failed, 4 incomplete.',
+  'write-tests':'write-tests prepare --item FILE [--plan FILE] [--evaluator ID]\nwrite-tests mark-written --item FILE --criteria ID[,ID] [--plan FILE]\nRequire a green baseline, list planned tests to author, then mark written items. For method tdd hand off to spec --phase red before implementation. Does not invent implementation code.',
+  pipeline:'pipeline status [--provider github|gitlab] [--output FILE]\npipeline create [--provider github|gitlab] [--workflow FILE] [--jobs LIST]\npipeline plan [--provider github|gitlab] [--workflow FILE] [--jobs LIST] [--output PLAN]\npipeline apply --plan PLAN\npipeline jobs\npipeline publish [--provider github|gitlab]\nCreate and manage multi-job CI for evaluate profiles and publish test results. Does not push remotes or mask evaluate exit status. Exit 0 ready/created/applied, 1 failed, 4 incomplete.',
   inspect:'inspect [--ref HEAD|BASE..HEAD] [--base BRANCH] [--output FILE]\nAnalyze committed changes, candidate tests, added suppressions and residue. --base compares from the merge base.',
   review:'review --item FILE --evidence REPORT_JSON[,REPORT_JSON] [--baseline REPORT_JSON] [--ref HEAD|BASE..HEAD] [--base BRANCH] [--output FILE]\nMap criterion IDs to checks for the exact commit and frozen policy. Technical coverage does not grant review approval. Exit 0 passed, 1 failed, 4 incomplete.',
   gate:'gate --item FILE --phase ready|verify|done [--decision FILE] [--policy-file FILE] [--output FILE]\nEvaluate configured lifecycle criteria, evidence and independent signed approval. Exit 0 passed, 1 failed, 3 pending, 4 incomplete.',
@@ -76,16 +82,37 @@ function suggestedSkill(topic,names) {
   const matches=names.filter(name=>name.replace(/^ah-/,'').split('-').includes(needle));
   return matches.length===1?matches[0]:null;
 }
+function discoveryTopic(topic) {
+  const text=String(topic||'').trim();
+  if(text==='roles')return rolesIndexMarkdown();
+  if(text==='processes')return processesIndexMarkdown();
+  if(text==='map' || text==='support' || text==='command-map')return mapMarkdown();
+  const role=text.match(/^(?:role|roles)\s+([a-zA-Z0-9_.-]+)$/i);
+  if(role) {
+    const body=roleMarkdown(role[1]);
+    assert(body,`Unknown role: ${role[1]}. Run "ah-engineering help roles".`);
+    return body;
+  }
+  const proc=text.match(/^(?:process|processes)\s+([a-zA-Z0-9_.-]+)$/i);
+  if(proc) {
+    const body=processMarkdown(proc[1]);
+    assert(body,`Unknown process: ${proc[1]}. Run "ah-engineering help processes".`);
+    return body;
+  }
+  return null;
+}
 export function help(topic) {
   if(topic) {
+    const discovered=discoveryTopic(topic);
+    if(discovered)return discovered;
     if(guideFiles[topic])return guide(topic);
-    if(topics[topic])return `agenthouse engineering ${VERSION}\n\n${topics[topic]}\n\nAll commands accept --root PATH. Use help for the command map.`;
+    if(topics[topic])return `agenthouse engineering ${VERSION}\n\n${topics[topic]}\n\nAll commands accept --root PATH. Use help for the command map. Discovery: help roles, help processes, help map.`;
     const names=skillNames(),name=topic.startsWith('ah-')?topic:`ah-${topic}`;
     if(names.includes(name))return skillHelp(name);
     const suggestion=suggestedSkill(topic,names);
     assert(!suggestion,`Unknown help topic: ${topic}. Did you mean coding-agent skill ${suggestion}? Run "ah-engineering help ${suggestion}" or invoke "$${suggestion}" in Codex.`);
     const goal=goalHelp(topic);if(goal)return goal;
-    assert(false,`Unknown help topic: ${topic}. Run "ah-engineering help" for CLI commands, "ah-engineering help agents" for coding-agent skills, or "ah-engineering help cookbook" for examples.`);
+    assert(false,`Unknown help topic: ${topic}. Run "ah-engineering help" for CLI commands, "ah-engineering help roles|processes|map" for discovery, "ah-engineering help agents" for coding-agent skills, or "ah-engineering help cookbook" for examples.`);
   }
   return `agenthouse engineering ${VERSION}
 
@@ -93,7 +120,7 @@ ${commandMap()}
 
 Assess = judge a story, scope or feasibility; evaluate = run checks on a build; gate = decide ready or done from evidence.
 
-Setup: onboard, demo. Use help COMMAND, help "your goal", help agents or help extended.
+Setup: onboard, demo. Discover: help roles, help processes, help map. Also help COMMAND, help "your goal", help agents.
 Run node .agenthouse/run.mjs for the repository pin. No paid account is required.`;
 
 }

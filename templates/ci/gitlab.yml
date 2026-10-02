@@ -1,10 +1,28 @@
-agenthouse-evaluate:
+stages:
+  - test
+
+agenthouse-pull-request:
   image: node:22
   stage: test
   script:
     - npm ci --ignore-scripts
     - node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
     - node .agenthouse/run.mjs evaluate --profile pull-request --ci --frozen --subject "$CI_COMMIT_SHA"
+  artifacts:
+    when: always
+    paths:
+      - .agenthouse/local/reports/
+    reports:
+      junit: .agenthouse/local/reports/*/junit.xml
+
+agenthouse-frontend:
+  image: node:22
+  stage: test
+  script:
+    - npm ci --ignore-scripts
+    - node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+    - npx playwright install --with-deps chromium
+    - node .agenthouse/run.mjs evaluate --profile frontend --ci --frozen --subject "$CI_COMMIT_SHA"
   artifacts:
     when: always
     paths:

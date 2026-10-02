@@ -24,6 +24,11 @@ import {hook,hookConfiguration,hookSettings} from './hooks.js';
 import {controls} from './controls.js';
 import {checkVisualPlan} from './visual-plan.js';
 import {statusNpmProvenance,applyNpmProvenance} from './npm-provenance.js';
+import {checkTestPlan, writeTestPlan} from './test-plan.js';
+import {prepareWriteTests, markTestsWritten} from './write-tests.js';
+import {statusPipeline, createPipeline, planPipeline, applyPipeline, pipelineJobs, publishPipeline} from './pipeline.js';
+import {listArchitecture, showArchitecture, checkArchitecture, writeArchitecture} from './architecture.js';
+import {showCodingStandards, checkCodingStandards, writeCodingStandards} from './coding-standards.js';
 import {planModule,applyModulePlan} from './module-plan.js';
 import {roleProcessList,roleProcessShow,roleProcessAdopt,roleProcessCheck,roleProcessMerge,roleProcessIgnore,processOrientation} from './roles-processes.js';
 
@@ -47,6 +52,11 @@ allowed.usability=['url','fixture','output','npm-cli','offline'];
 allowed.work.push('gate-decision','path','from','parent');
 allowed['visual-plan']=['item','plan','output'];
 allowed['npm-provenance']=['provider','workflow','publish','access','output'];
+allowed['test-plan']=['item','plan','output','items','standard-ref','owner-role','default-method','baseline','decisions'];
+allowed['write-tests']=['item','plan','evaluator','criteria'];
+allowed.pipeline=['provider','workflow','jobs','plan','output'];
+allowed.architecture=['item','catalog','path','id','output','entries','owner-role','standard-ref'];
+allowed['coding-standards']=['item','catalog','module','output','entries','owner-role','standard-ref'];
 allowed.dependencies.push('name');
 allowed.housekeep=['check','clean'];
 allowed.onboard.push('branch-pattern','branch-example','branch-base');
@@ -58,7 +68,7 @@ export async function main(args) {
     console.log(help(topic));return 0;
   }
   assert(Object.hasOwn(allowed,command),`Unknown command ${command}`);
-  assert(['work','dependencies','usability','visual-plan','npm-provenance','roles','process'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
+  assert(['work','dependencies','usability','visual-plan','npm-provenance','roles','process','test-plan','write-tests','pipeline','architecture','coding-standards'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
   for(const key of Object.keys(o))assert(['root','help',...allowed[command]].includes(key),`Unknown option --${key} for ${command}`);
   const root=path.resolve(o.root || process.cwd());
   let result;
@@ -69,6 +79,61 @@ export async function main(args) {
     case 'hook-config': {assert(!(o.install && o.remove),'Choose install or remove');hookConfiguration(o.vendor);result=o.install || o.remove?exclusive(root,()=>{const plan=hookSettings(root,{remove:o.remove});if(plan.changes.length)transact(root,plan.changes);return {status:plan.status};}):hookConfiguration(o.vendor);break;}
     case 'visual-plan': {const action=pos.shift();assert(action==='check','Choose visual-plan check');result=checkVisualPlan(root,{item:o.item,plan:o.plan});break;}
     case 'npm-provenance': {const action=pos.shift();assert(['status','apply'].includes(action),'Choose npm-provenance status or apply');result=action==='apply'?applyNpmProvenance(root,{provider:o.provider,workflow:o.workflow,publish:o.publish,access:o.access}):statusNpmProvenance(root,{provider:o.provider,workflow:o.workflow,publish:o.publish});break;}
+    case 'test-plan': {
+      const action=pos.shift();
+      assert(['check','write'].includes(action),'Choose test-plan check or write');
+      if(action==='check')result=checkTestPlan(root,{item:o.item,plan:o.plan});
+      else {
+        assert(o.items,'--items JSON required for test-plan write');
+        const items=JSON.parse(o.items);
+        const decisions=o.decisions?JSON.parse(o.decisions):[];
+        const baseline=o.baseline?JSON.parse(o.baseline):undefined;
+        result=writeTestPlan(root,{item:o.item,plan:o.plan,output:o.output,standardRef:o['standard-ref'],ownerRole:o['owner-role'],defaultMethod:o['default-method'],items,decisions,baseline});
+      }
+      break;
+    }
+    case 'write-tests': {
+      const action=pos.shift();
+      assert(['prepare','mark-written'].includes(action),'Choose write-tests prepare or mark-written');
+      result=action==='prepare'
+        ?prepareWriteTests(root,{item:o.item,plan:o.plan,evaluator:o.evaluator})
+        :markTestsWritten(root,{item:o.item,plan:o.plan,criterionIds:String(o.criteria||'').split(',').map(s=>s.trim()).filter(Boolean)});
+      break;
+    }
+    case 'pipeline': {
+      const action=pos.shift();
+      assert(['status','create','plan','apply','jobs','publish'].includes(action),'Choose pipeline status, create, plan, apply, jobs, or publish');
+      if(action==='status')result=statusPipeline(root,{provider:o.provider});
+      else if(action==='create')result=createPipeline(root,{provider:o.provider,workflow:o.workflow,jobs:o.jobs});
+      else if(action==='plan')result=planPipeline(root,{provider:o.provider,workflow:o.workflow,jobs:o.jobs,output:o.output});
+      else if(action==='apply')result=applyPipeline(root,{plan:o.plan});
+      else if(action==='jobs')result=pipelineJobs();
+      else result=publishPipeline(root,{provider:o.provider});
+      break;
+    }
+    case 'architecture': {
+      const action=pos.shift();
+      assert(['list','show','check','write'].includes(action),'Choose architecture list, show, check, or write');
+      if(action==='list')result=listArchitecture(root,{item:o.item,catalog:o.catalog,path:o.path});
+      else if(action==='show')result=showArchitecture(root,{id:o.id,item:o.item,catalog:o.catalog,path:o.path});
+      else if(action==='check')result=checkArchitecture(root,{item:o.item,catalog:o.catalog});
+      else {
+        assert(o.entries,'--entries JSON required for architecture write');
+        result=writeArchitecture(root,{item:o.item,catalog:o.catalog,output:o.output,ownerRole:o['owner-role'],standardRef:o['standard-ref'],entries:JSON.parse(o.entries)});
+      }
+      break;
+    }
+    case 'coding-standards': {
+      const action=pos.shift();
+      assert(['show','check','write'].includes(action),'Choose coding-standards show, check, or write');
+      if(action==='show')result=showCodingStandards(root,{item:o.item,catalog:o.catalog,module:o.module});
+      else if(action==='check')result=checkCodingStandards(root,{item:o.item,catalog:o.catalog});
+      else {
+        assert(o.entries,'--entries JSON required for coding-standards write');
+        result=writeCodingStandards(root,{item:o.item,catalog:o.catalog,output:o.output,ownerRole:o['owner-role'],standardRef:o['standard-ref'],module:o.module,entries:JSON.parse(o.entries)});
+      }
+      break;
+    }
     case 'assessment':result=o.summary?validateAssessment(root,o.summary):assessmentInventory(root,{item:o.item,selectors:o.selectors,ref:o.ref});break;
     case 'roles': {
       const action=pos.shift(),repository=o.repository;
@@ -195,6 +260,6 @@ export async function main(args) {
       break;
     }
   }
-  if(['survey','inspect','review','gate','spec','backlog','visual-plan','npm-provenance'].includes(command) && o.output)write(inside(root,o.output),result);
+  if(['survey','inspect','review','gate','spec','backlog','visual-plan','npm-provenance','test-plan','write-tests','pipeline','architecture','coding-standards'].includes(command) && o.output)write(inside(root,o.output),result);
   console.log(JSON.stringify(result,null,2));return result.exitCode || 0;
 }

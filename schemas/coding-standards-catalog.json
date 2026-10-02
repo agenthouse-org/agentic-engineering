@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "entries"],
+  "properties": {
+    "schemaVersion": {"enum": [1]},
+    "kind": {"const": "coding-standards-catalog"},
+    "ownerRole": {"type": "string", "minLength": 1},
+    "standardRef": {"type": "string", "minLength": 1},
+    "module": {"enum": ["node-typescript", "php-laravel"]},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "mechanism"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "mechanism": {"enum": ["advisory", "eslint", "prettier", "phpcs", "phpstan", "custom-check", "evaluate-check"]},
+          "ruleIds": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "checkId": {"type": "string", "minLength": 1},
+          "summary": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

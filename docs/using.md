@@ -1,6 +1,6 @@
 # Using agenthouse engineering
 
-Version 1.7.0 discovers installed specialist skills for roles and processes, including pinned agenthouse-skills dependencies. Version 1.6.0 adds evidence-traced product requirements and story mapping to the existing define stage. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for GitHub and GitLab behavior.
+Version 1.8.0 adds ticket-level test authoring, pipeline management, architecture and coding guideline catalogs, an architect role, and Markdown discovery help. Version 1.7.0 discovers installed specialist skills for roles and processes, including pinned agenthouse-skills dependencies. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for GitHub and GitLab behavior.
 
 This is a runnable developer preview. The core requires Node.js 22 or newer and has no runtime package dependencies. See [implementation status](implementation-status.md) for tested behavior and remaining platform work. Native agent hooks and remote product-specific connectors are not claimed as complete.
 

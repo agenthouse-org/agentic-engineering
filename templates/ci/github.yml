@@ -3,7 +3,7 @@ on: [pull_request]
 permissions:
   contents: read
 jobs:
-  evaluate:
+  pull-request:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +25,28 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: agenthouse-evaluation-reports
+          path: .agenthouse/local/reports/
+          include-hidden-files: true
+          if-no-files-found: warn
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts
+      - name: Restore the exact project runtime into the machine cache
+        run: node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+      - name: Provision browsers for interaction checks
+        run: npx playwright install --with-deps chromium
+      - name: Evaluate frontend profile
+        run: node .agenthouse/run.mjs evaluate --profile frontend --ci --frozen --subject "${{ github.sha }}"
+      - name: Preserve frontend evaluation reports even when evaluation fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agenthouse-frontend-reports
           path: .agenthouse/local/reports/
           include-hidden-files: true
           if-no-files-found: warn

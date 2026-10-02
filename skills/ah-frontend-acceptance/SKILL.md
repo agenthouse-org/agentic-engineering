@@ -4,7 +4,7 @@ description: "Compare UI work to the story, bug, wireframe, or reference image u
 license: MIT
 ---
 
-Generated from ah-engineering 1.7.0.
+Generated from ah-engineering 1.8.0.
 
 # agenthouse frontend-acceptance
 

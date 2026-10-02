@@ -13,7 +13,7 @@
     {"id":"operate-support","purpose":"Operate the service and support users.","outputs":["Service and support evidence","Incidents and feedback"]},
     {"id":"learn-retire","purpose":"Measure outcomes, improve, or retire responsibly.","outputs":["Outcome review","Improvement or retirement decision"]}
   ],
-  "roles": ["product-manager","market-researcher","engineer","support-specialist","sales-specialist"],
+  "roles": ["product-manager","market-researcher","architect","engineer","support-specialist","sales-specialist"],
   "subprocesses": ["market-validation","feature-request","bug","change","release","incident"],
   "statusAuthority": "Use the consumer's configured tracker or ask the user. This definition does not store work status."
 }

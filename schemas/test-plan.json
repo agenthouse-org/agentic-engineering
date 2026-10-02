@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "items"],
+  "properties": {
+    "schemaVersion": {"enum": [1]},
+    "standardRef": {"type": "string", "minLength": 1},
+    "ownerRole": {"type": "string", "minLength": 1},
+    "defaultMethod": {"enum": ["tdd", "characterization", "verify-after"]},
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "evaluator": {"type": "string", "minLength": 1},
+        "report": {"type": "string", "minLength": 1},
+        "status": {"enum": ["passed", "failed", "incomplete", "error", "pending"]}
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["criterionId", "status"],
+        "properties": {
+          "criterionId": {"type": "string", "minLength": 1},
+          "level": {"enum": ["unit", "component", "integration", "functional-api", "end-to-end", "interaction", "regression", "contract"]},
+          "method": {"enum": ["tdd", "characterization", "verify-after"]},
+          "path": {"type": "string", "minLength": 1},
+          "caseId": {"type": "string", "minLength": 1},
+          "status": {"enum": ["planned", "written", "untestable"]},
+          "reason": {"type": "string", "minLength": 1},
+          "modifyExisting": {"type": "boolean"}
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action", "reason"],
+        "properties": {
+          "action": {"enum": ["modify-existing", "delete-existing", "reuse-existing", "collapse-level"]},
+          "path": {"type": "string", "minLength": 1},
+          "criterionId": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

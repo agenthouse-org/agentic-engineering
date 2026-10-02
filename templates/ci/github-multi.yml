@@ -1,0 +1,96 @@
+name: agenthouse evaluation
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+permissions:
+  contents: read
+jobs:
+  # ah-job: pull-request
+  pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts
+      - name: Restore the exact project runtime into the machine cache
+        run: node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+      - name: Evaluate pull-request profile
+        run: node .agenthouse/run.mjs evaluate --profile pull-request --ci --frozen --subject "${{ github.sha }}"
+      - name: Publish evaluation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agenthouse-pull-request-reports
+          path: .agenthouse/local/reports/
+          include-hidden-files: true
+          if-no-files-found: warn
+  # ah-job: frontend
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts
+      - name: Restore the exact project runtime into the machine cache
+        run: node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+      - name: Provision browsers for interaction checks
+        run: npx playwright install --with-deps chromium
+      - name: Evaluate frontend profile
+        run: node .agenthouse/run.mjs evaluate --profile frontend --ci --frozen --subject "${{ github.sha }}"
+      - name: Publish frontend evaluation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agenthouse-frontend-reports
+          path: .agenthouse/local/reports/
+          include-hidden-files: true
+          if-no-files-found: warn
+  # ah-job: release
+  release:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts
+      - name: Restore the exact project runtime into the machine cache
+        run: node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+      - name: Evaluate release profile
+        run: node .agenthouse/run.mjs evaluate --profile release --ci --frozen --subject "${{ github.sha }}"
+      - name: Publish release evaluation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agenthouse-release-reports
+          path: .agenthouse/local/reports/
+          include-hidden-files: true
+          if-no-files-found: warn
+  # ah-job: post-deploy
+  post-deploy:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts
+      - name: Restore the exact project runtime into the machine cache
+        run: node node_modules/@agenthouse/engineering/bin/ah-engineering.js restore
+      - name: Evaluate post-deploy profile
+        run: node .agenthouse/run.mjs evaluate --profile post-deploy --ci --frozen --subject "${{ github.sha }}"
+      - name: Publish post-deploy evaluation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agenthouse-post-deploy-reports
+          path: .agenthouse/local/reports/
+          include-hidden-files: true
+          if-no-files-found: warn

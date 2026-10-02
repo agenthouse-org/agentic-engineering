@@ -4,7 +4,7 @@ description: "List installed agenthouse skills and suggest which one fits a goal
 license: MIT
 ---
 
-Generated from ah-engineering 1.7.0.
+Generated from ah-engineering 1.8.0.
 
 # agenthouse help
 
@@ -14,10 +14,10 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Assess means judge a story, scope or feasibility; evaluate means run checks on a build; gate means decide ready or done from evidence. For a natural-language goal return its phase, primary skill, usual next skill and one line about what it will not do. Recommend at most three skills. Use ah-assess-tech-feasibility for feasibility, impact, blast radius, migration and architecture decisions; ah-review-mr for a PR/MR URL. Explain the installed command map and recommend the next command for the user’s goal. This request is read-only; do not enroll or update anything.
+Assess means judge a story, scope or feasibility; evaluate means run checks on a build; gate means decide ready or done from evidence. For a natural-language goal return its phase, primary skill, usual next skill and one line about what it will not do. Recommend at most three skills. Use ah-assess-tech-feasibility for feasibility, impact, blast radius, migration and architecture decisions; ah-architecture for architecture catalogs and ADRs; ah-coding-standards for coding conventions; ah-review-mr for a PR/MR URL. Explain discovery with help roles, help processes, and help map. Explain the installed command map and recommend the next command for the user’s goal. This request is read-only; do not enroll or update anything.
 
 CLI reference:
 
 ```text
-help [COMMAND|agents|cookbook|extended|ah-SKILL]
+help [COMMAND|roles|processes|map|role ID|process ID|agents|cookbook|extended|ah-SKILL]
 ```

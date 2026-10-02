@@ -4,10 +4,11 @@ import {spawnSync} from 'node:child_process';
 import {assert,inside,hash,read} from './io.js';
 import {resolve} from './policy.js';
 
-export const TEST_LAYERS=['unit','component','integration','functional-api','end-to-end','regression','contract'];
+export const TEST_LAYERS=['unit','component','integration','functional-api','end-to-end','interaction','regression','contract'];
 const TEST_FILE=/(^|\/)(tests?|spec|__tests__|e2e|cypress|playwright)\/|\.(test|spec)\.|Test\.php$/i;
 const BUILTIN_LAYER_PATTERNS=[
   ['contract',/(^|[\/:_.-])(contract|pact|schema)([\/:_.-]|$)/i],
+  ['interaction',/(^|[\/:_.-])(interaction|ui-journey|user-journey|browser-journey)([\/:_.-]|$)/i],
   ['end-to-end',/(^|[\/:_.-])(e2e|end[-_. ]?to[-_. ]?end|playwright|cypress)([\/:_.-]|$)/i],
   ['functional-api',/(^|[\/:_.-])(functional|feature|api|http|route)([\/:_.-]|$)/i],
   ['component',/(^|[\/:_.-])component([\/:_.-]|$)/i],
@@ -147,8 +148,34 @@ export function evidenceReview(root,{ref='HEAD',base,item,evidence=[],baseline}=
   const work=item?read(inside(root,item)):null;
   const criteria=work?.criteria || [];
   const confirmed=!work?.fields?.criteriaConfirmationRequired || work.criteriaConfirmation?.digest===hash(criteria);
-  const coverage=criteria.map(c=>({id:c.id,expectation:c.expectation,state:c.state,checks:records.filter(r=>!r.stale).flatMap(r=>r.checks.filter(x=>x.id===c.id || x.criteria?.includes(c.id)))}));
-  for(const criterion of coverage)criterion.verdict=criterion.state==='open'?'open':!confirmed || !criterion.checks.length?'incomplete':criterion.checks.some(c=>c.status==='failed')?'fail':criterion.checks.every(c=>c.status==='passed')?'pass':'incomplete';
+  const coverage=criteria.map(c=>{
+    const checks=records.filter(r=>!r.stale).flatMap(r=>r.checks.filter(x=>x.id===c.id || x.criteria?.includes(c.id)));
+    let testLink=null;
+    if(work) {
+      const planPath=typeof work.fields?.testPlan==='string'?work.fields.testPlan.trim():'';
+      const hasPlan=Boolean(planPath) || (work.testPlan && typeof work.testPlan==='object');
+      if(hasPlan) {
+        try {
+          const planData=planPath?read(inside(root,planPath)):work.testPlan;
+          const links=(planData?.items || []).filter(i=>i.criterionId===c.id);
+          if(!links.length)testLink={status:'none',reason:'Criterion has no test'};
+          else if(links.every(i=>i.status==='untestable'))testLink={status:'untestable',reason:links[0].reason || 'Marked untestable'};
+          else testLink={status:links.some(i=>i.status==='written')?'written':'planned',links};
+        } catch {
+          testLink={status:'incomplete',reason:'Test plan could not be read'};
+        }
+      }
+    }
+    return {id:c.id,expectation:c.expectation,state:c.state,checks,testLink};
+  });
+  for(const criterion of coverage) {
+    if(criterion.state==='open')criterion.verdict='open';
+    else if(criterion.testLink?.status==='none') {criterion.verdict='incomplete';criterion.reason='Criterion has no test';}
+    else if(!confirmed || !criterion.checks.length) {criterion.verdict='incomplete';if(!criterion.checks.length)criterion.reason='Criterion has no passing evidence';}
+    else if(criterion.checks.some(c=>c.status==='failed'))criterion.verdict='fail';
+    else if(criterion.checks.every(c=>c.status==='passed'))criterion.verdict='pass';
+    else criterion.verdict='incomplete';
+  }
   let baselineComparison=null;
   if(baseline) {
     const prior=read(inside(root,baseline));

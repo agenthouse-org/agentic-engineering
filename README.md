@@ -4,7 +4,7 @@
 
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
-**Version 1.7.0.** Roles and processes discover installed specialist skills, including pinned agenthouse-skills dependencies, without copying those skills into consumer definitions. See [release notes](docs/releases/1.7.0.md) and [implementation status](docs/implementation-status.md).
+**Version 1.8.0.** Test authoring, pipeline management, architecture and coding guideline catalogs, architect role, and Markdown discovery for roles, processes, and command support. See [release notes](docs/releases/1.8.0.md) and [implementation status](docs/implementation-status.md).
 
 
 ## Install on your computer
@@ -20,7 +20,7 @@ npm install --global @agenthouse/engineering --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
-To pin the CLI version, use `npm install --global @agenthouse/engineering@1.7.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
+To pin the CLI version, use `npm install --global @agenthouse/engineering@1.8.0 --ignore-scripts`. You do not need to clone the framework repository. npm uses the `@agenthouse` scope; the source repository lives under `agenthouse-org` on GitHub.
 
 The release workflow attaches an attested update bundle to GitHub releases. For an offline CLI installation, obtain a reviewed `.tgz` package as described below.
 
@@ -38,7 +38,7 @@ Public discovery checks npm `latest` first and requires package integrity, regis
 If your team or a maintainer has supplied the `.tgz` package, run this from the directory containing it:
 
 ```text
-npm install --global ./agenthouse-engineering-1.7.0.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.8.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -52,7 +52,7 @@ To package the source yourself, run these commands in a tools directory outside 
 git clone https://github.com/agenthouse-org/agentic-engineering.git agenthouse-engineering
 cd agenthouse-engineering
 npm pack --ignore-scripts
-npm install --global ./agenthouse-engineering-1.7.0.tgz --ignore-scripts
+npm install --global ./agenthouse-engineering-1.8.0.tgz --ignore-scripts
 ah-engineering onboard --root "C:/src/my-existing-app"
 ```
 
@@ -110,7 +110,7 @@ Product requirements definition, story drafting, readiness, scope validation, vi
 
 ### Included skills
 
-The framework ships **49 agent-facing skills** (48 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
+The framework ships **52 agent-facing skills** (51 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
 
 | Skill | Purpose |
 | --- | --- |
