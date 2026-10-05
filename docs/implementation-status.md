@@ -1,8 +1,8 @@
 # Implementation and verification status
 
-Version 1.8.0 adds ticket-level test authoring, pipeline management, architecture and coding guideline catalogs, an architect role, and Markdown discovery help. Version 1.7.0 discovers installed specialist skills for roles and processes, including pinned agenthouse-skills dependencies. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
+Version 1.8.1 updates the bundled usability checker to patched `brace-expansion` 2.1.7 and `fast-uri` 3.1.8. Version 1.8.0 adds ticket-level test authoring, pipeline management, architecture and coding guideline catalogs, an architect role, and Markdown discovery help. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
 
-Version 1.8.0 release line. Updated 2026-10-02.
+Version 1.8.1 release line. Updated 2026-10-05.
 
 Development checkout verification on Windows, 2026-09-25: CI templates preserve JUnit reports on failures and keep evaluation status authoritative; focused template contract tests added. Generated command skills and release allowlist checks are run before release. The release workflow is responsible for cross-platform, browser, usability, and package verification for this version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
 

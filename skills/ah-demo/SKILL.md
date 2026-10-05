@@ -4,7 +4,7 @@ description: "Run a failing check, apply a fix, then a passing report in a new e
 license: MIT
 ---
 
-Generated from ah-engineering 1.8.0.
+Generated from ah-engineering 1.8.1.
 
 # agenthouse demo
 

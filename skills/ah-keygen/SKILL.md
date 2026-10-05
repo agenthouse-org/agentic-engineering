@@ -4,7 +4,7 @@ description: "Create an Ed25519 key pair at a requested path without overwriting
 license: MIT
 ---
 
-Generated from ah-engineering 1.8.0.
+Generated from ah-engineering 1.8.1.
 
 # agenthouse keygen
 

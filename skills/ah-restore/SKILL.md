@@ -4,7 +4,7 @@ description: "Restore missing central assets or legacy project projections from 
 license: MIT
 ---
 
-Generated from ah-engineering 1.8.0.
+Generated from ah-engineering 1.8.1.
 
 # agenthouse restore
 

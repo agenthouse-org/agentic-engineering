@@ -4,7 +4,7 @@ description: "Choose shared or private repository integration, coding agents, ar
 license: MIT
 ---
 
-Generated from ah-engineering 1.8.0.
+Generated from ah-engineering 1.8.1.
 
 # agenthouse onboard
 

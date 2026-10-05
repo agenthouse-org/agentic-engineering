@@ -4,7 +4,7 @@ description: "Run one coding-agent or CI hook event through the installed hooks 
 license: MIT
 ---
 
-Generated from ah-engineering 1.8.0.
+Generated from ah-engineering 1.8.1.
 
 # agenthouse hook
 
