@@ -1,5 +1,6 @@
 import {housekeep,assertOutput} from './housekeep.js';
 import {dependencyStatus} from './dependencies.js';
+import {policyStatus} from './policy-channel.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {randomUUID} from 'node:crypto';
@@ -54,6 +55,7 @@ export function collectEvidence(root,folder,evidence=[]) {
   });
 }
 async function execute(root,e,context) {
+  if(e.kind==='policy-channel'){const status=policyStatus(root,{required:true});return {status:{0:'passed',1:'failed',4:'incomplete'}[status.exitCode],reason:'Organization policy permission from signed channel metadata',findings:[status]};}
   if(e.kind==='visual') return visual(root,e,context);
   if(e.kind==='work-item') return readiness(read(inside(root,e.file)),e.stage);
   if(e.kind==='evidence') {

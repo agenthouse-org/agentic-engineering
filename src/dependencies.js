@@ -1,3 +1,4 @@
+import {verifyOrganizationSkill,verifyOrganizationLock} from './organization-skills.js';
 import {runtimeDirectory,skillDirectory} from './storage.js';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -6,11 +7,12 @@ import {assert,hash,inside,read,walk} from './io.js';
 export const DEPENDENCY='frontend-acceptance';
 export const SOURCES={'frontend-acceptance':'engineering/frontend-acceptance','web-usability-conformity':'usability/web-usability-conformity'};
 export const DEPENDENCY_FILE='dependencies/frontend-acceptance.json';
-export function verifyDependency(data) {
-  assert(data?.schemaVersion===1 && data.kind==='skill' && Object.hasOwn(SOURCES,data.id),'Unsupported dependency');
+export function verifyDependency(data,{organization=false}={}) {
+  assert(data?.schemaVersion===1 && data.kind==='skill' && (organization?/^[a-z0-9][a-z0-9-]{0,99}$/.test(data.id):Object.hasOwn(SOURCES,data.id)),'Unsupported dependency');
   assert(/^\d+\.\d+\.\d+$/.test(data.version),'Invalid dependency version');
-  assert(data.source?.repository==='https://github.com/agenthouse-org/skills.git' && /^[a-f0-9]{40}$/.test(data.source.commit) && data.source.path===SOURCES[data.id],'Invalid upstream provenance');
-  assert(data.license==='MIT' && data.files && typeof data.files==='object','Missing dependency license/files');
+  if(!organization)assert(data.source?.repository==='https://github.com/agenthouse-org/skills.git' && /^[a-f0-9]{40}$/.test(data.source.commit) && data.source.path===SOURCES[data.id],'Invalid upstream provenance');
+  if(organization)assert(typeof data.source?.repository==='string' && /^[a-f0-9]{40}$/.test(data.source.commit) && typeof data.source.path==='string','Invalid organization skill provenance');
+  assert((organization?typeof data.license==='string':data.license==='MIT') && data.files && typeof data.files==='object','Missing dependency license/files');
   assert(Object.keys(data.files).length>0 && Object.keys(data.files).length<500,'Dependency file limit');
   const hashes={};let total=0;
   for(const [file,encoded] of Object.entries(data.files)) {
@@ -24,7 +26,7 @@ export function verifyDependency(data) {
   const entry=Buffer.from(data.files['SKILL.md'] || '','base64').toString('utf8');
   assert(entry.match(/^name:\s*["']?([a-z0-9-]+)/m)?.[1]===data.id,'Dependency skill identity mismatch');
   assert(entry.match(/^version:\s*(.+)$/m)?.[1].trim()===data.version,'Dependency skill version mismatch');
-  assert(/^license:\s*MIT\s*$/m.test(entry),'Skill license mismatch');
+  assert(entry.match(/^license:\s*(.+)$/m)?.[1].trim()===data.license,'Skill license mismatch');
   assert(hash(hashes)===data.digest,'Dependency digest mismatch');
   return {id:data.id,version:data.version,source:data.source,license:data.license,digest:data.digest,files:hashes};
 }
@@ -79,11 +81,13 @@ export function dependencyStatus(root) {
   const lock=read(inside(root,'.agenthouse/dependencies.lock.json'));
   assert(hash(lock)===hash({schemaVersion:1,dependencies:expected}),'Dependency lock changed');
   const hooks=installedHooks(root);if(hooks)checkDependencyPin(root,hooks);
+  const organizationDependencies={};
   const imports=inside(root,'.agenthouse/skills.json');
   if(fs.existsSync(imports))for(const [id,entry] of Object.entries(read(imports))) {
+    if(entry.envelope){const verified=verifyOrganizationSkill(root,entry.envelope);verifyOrganizationLock(id,entry,verified);organizationDependencies[id]={...verified.lock,publisher:verified.publisher};}
     const directory=skillDirectory(root,id,active);
     assert(fs.existsSync(directory) && hash(walk(directory).sort())===hash(Object.keys(entry.files).sort()),`Imported skill inventory changed: ${id}`);
     for(const [file,digest] of Object.entries(entry.files))assert(hash(fs.readFileSync(inside(directory,file)))===digest,`Imported skill modified: ${id}/${file}`);
   }
-  return {...lock,runtimeDependencies:hooks?{hooks}:{}};
+  return {...lock,...(Object.keys(organizationDependencies).length?{organizationDependencies}:{}),runtimeDependencies:hooks?{hooks}:{}};
 }

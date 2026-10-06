@@ -1,0 +1,4 @@
+{
+  "type":"object","additionalProperties":false,"required":["schemaVersion","kind","repository","path","sequence","issuedAt","expiresAt","policy","digest","permitted"],
+  "properties":{"schemaVersion":{"enum":[1]},"kind":{"enum":["policy-channel"]},"repository":{"type":"string","minLength":1},"path":{"type":"string","minLength":1},"sequence":{"type":"integer","minimum":1},"issuedAt":{"type":"string"},"expiresAt":{"type":"string"},"policy":{"type":"object"},"digest":{"type":"string","pattern":"^[a-f0-9]{64}$"},"permitted":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["digest"],"properties":{"digest":{"type":"string","pattern":"^[a-f0-9]{64}$"},"until":{"type":"string"}}}}}
+}

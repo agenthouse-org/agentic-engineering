@@ -1,6 +1,8 @@
 import {assessmentInventory,validateAssessment} from './assessment.js';
 import {help} from './help.js';
 import {onboard,demo} from './onboard.js';
+import {organizationSkillBundle,restoreOrganizationSkills} from './organization-skills.js';
+import {policyStatus,trackPolicy,adoptPolicy,policyChannel} from './policy-channel.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -32,7 +34,7 @@ import {showCodingStandards, checkCodingStandards, writeCodingStandards} from '.
 import {planModule,applyModulePlan} from './module-plan.js';
 import {roleProcessList,roleProcessShow,roleProcessAdopt,roleProcessCheck,roleProcessMerge,roleProcessIgnore,processOrientation} from './roles-processes.js';
 
-const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated','central','clean','preview','latest','list','propose-criteria']);
+const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated','central','clean','preview','latest','list','propose-criteria','required']);
 function parse(args) {
   const o={},pos=[];
   for(let i=0;i<args.length;i++) {
@@ -44,6 +46,7 @@ function parse(args) {
 }
 const allowed={context:[],onboard:['integration','artifact-paths','agents','policy','project','autonomy','docs','non-interactive'],demo:[],dependencies:['bundle','sha256','public-key','check','allow-breaking'],init:['integration','central','agents','scope','policy','project','autonomy'],resolve:['frozen','policy-file'],evaluate:['list','plan','profile','subject','base-url','output','ci','frozen','policy-file'],doctor:['plugin-version'],restore:['bundle','ignore-generated'],bundle:['output','key'],update:['bundle','sha256','public-key','check','allow-breaking','latest','track','npm-cli'],rollback:[],session:['npm-cli'],uninstall:[],recover:[],work:['id','title','kind','to','decision','policy-file'],sign:['input','key','output','delegation'],keygen:['output'],skill:['source','name','sha256'],module:['name','output','preview','apply','workspace','layers','profile','advisory-profile','milestone-reference','milestone-owner','milestone-status'],roles:['id','repository'],process:['id','repository','description']};
 Object.assign(allowed,{survey:['output'],inspect:['ref','base','output'],review:['ref','base','baseline','item','evidence','output'],gate:['item','phase','decision','policy-file','output'],spec:['item','phase','evaluator','output'],backlog:['propose-criteria','source','id','title','provider','external-id','output']});
+allowed.policy=['origin','file','digest','check','required','roots','output','repository','path','sequence','expires-at','permitted'];
 allowed.assessment=['item','selectors','ref','summary','output'];
 allowed.controls=['policy-file'];
 allowed.hook=['vendor','input'];
@@ -57,7 +60,7 @@ allowed['write-tests']=['item','plan','evaluator','criteria'];
 allowed.pipeline=['provider','workflow','jobs','plan','output'];
 allowed.architecture=['item','catalog','path','id','output','entries','owner-role','standard-ref'];
 allowed['coding-standards']=['item','catalog','module','output','entries','owner-role','standard-ref'];
-allowed.dependencies.push('name');
+allowed.dependencies.push('name','source','repository','revision','path','publisher','key','output');
 allowed.housekeep=['check','clean'];
 allowed.onboard.push('branch-pattern','branch-example','branch-base');
 export async function main(args) {
@@ -68,11 +71,25 @@ export async function main(args) {
     console.log(help(topic));return 0;
   }
   assert(Object.hasOwn(allowed,command),`Unknown command ${command}`);
-  assert(['work','dependencies','usability','visual-plan','npm-provenance','roles','process','test-plan','write-tests','pipeline','architecture','coding-standards'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
+  assert(['policy','work','dependencies','usability','visual-plan','npm-provenance','roles','process','test-plan','write-tests','pipeline','architecture','coding-standards'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
   for(const key of Object.keys(o))assert(['root','help',...allowed[command]].includes(key),`Unknown option --${key} for ${command}`);
   const root=path.resolve(o.root || process.cwd());
   let result;
   switch(command) {
+    case 'policy': {
+      const action=pos.shift();
+      assert(['status','check','track','adopt','bundle'].includes(action),'Choose policy bundle, status, check, track, or adopt');
+      if(action==='bundle'){assert(o.file && o.output,'--file and --output required');result=policyChannel({file:o.file,repository:o.repository,sourcePath:o.path,sequence:o.sequence,expiresAt:o['expires-at'],permitted:o.permitted});}
+      else if(action==='track'){assert(o.origin,'--origin required');result=trackPolicy(root,o.origin);}
+      else if(action==='adopt')result=adoptPolicy(root,{file:o.file,digest:o.digest,check:o.check});
+      else if(o.roots) {
+        const roots=read(path.resolve(o.roots));assert(Array.isArray(roots) && roots.length && roots.every(r=>typeof r==='string' && path.isAbsolute(r)),'--roots must contain absolute repository paths');
+        const projects=roots.map(r=>{try{return {root:r,...policyStatus(r,{required:o.required,record:action==='check'})};}catch(error){return {root:r,error:error.message,exitCode:4};}});
+        result={schemaVersion:1,projects,exitCode:Math.max(...projects.map(p=>p.exitCode))};
+      }else result=policyStatus(root,{required:o.required,record:action==='check'});
+      if(o.output)write(path.resolve(o.output),result);
+      break;
+    }
     case 'usability': {const action=pos.shift();assert(['setup','run'].includes(action),'Choose usability setup or run');result=action==='setup'?await setupUsability(root,{npmCli:o['npm-cli'],offline:o.offline}):await auditUsability(root,{url:o.url,fixture:o.fixture,output:o.output});break;}
     case 'hook': {const r=await hook(root,{vendor:o.vendor,input:o.input});if(r.stdout)process.stdout.write(r.stdout+'\n');if(r.stderr)process.stderr.write(r.stderr+'\n');return r.exitCode;}
     case 'controls':result=controls(root,{policyFile:o['policy-file']});break;
@@ -201,7 +218,8 @@ export async function main(args) {
         if(!keep.kept && (keep.dumps.length || keep.stray.length))problems.push(`Inspection screenshot dumps outside ${keep.canonical} (${[...keep.dumps,...keep.stray].join(', ')}); write captures under ${keep.canonical}/<work-id>/ then run housekeep`);
         if(keep.notes.length)problems.push(`Scratch files at repository root (${keep.notes.join(', ')}); write GitHub bodies under .agenthouse/local/ then run housekeep`);
       }
-      result={version:VERSION,pluginVersion:o['plugin-version'] || null,repositoryVersion:state?.version || null,platform:process.platform,detectedAgents:detect(root),installed:state?.agents || [],problems,warnings,scope:config?.project,limitations:['Agent instruction adapters are advisory; native host loading is not certified.','External platform integrations use organization-owned CLI evaluators.']};
+      let upstreamPolicy;try{upstreamPolicy=policyStatus(root);for(const s of upstreamPolicy.sources)if(s.freshness!=='current' || s.compliance!=='permitted')warnings.push('Policy '+s.file+': '+s.freshness+' / '+s.compliance);}catch(error){problems.push(error.message);}
+      result={policyStatus:upstreamPolicy,version:VERSION,pluginVersion:o['plugin-version'] || null,repositoryVersion:state?.version || null,platform:process.platform,detectedAgents:detect(root),installed:state?.agents || [],problems,warnings,scope:config?.project,limitations:['Agent instruction adapters are advisory; native host loading is not certified.','External platform integrations use organization-owned CLI evaluators.']};
       console.log(JSON.stringify(result,null,2));return problems.length?2:0;
     }
     case 'work': {
@@ -241,10 +259,12 @@ export async function main(args) {
     }
     case 'dependencies': {
       const action=pos.shift();
-      if(action==='status')result=dependencyStatus(root);
+      if(action==='bundle'){assert(o.source && o.key && o.output,'--source, --key and --output required');result=organizationSkillBundle({source:o.source,repository:o.repository,revision:o.revision,sourcePath:o.path,publisher:o.publisher,key:o.key});write(path.resolve(o.output),result);result={file:path.resolve(o.output),publisher:result.publisher,digest:result.payload.digest};}
+      else if(action==='restore')result=restoreOrganizationSkills(root);
+      else if(action==='status')result=dependencyStatus(root);
       else if(action==='pin' || action==='unpin')result=pinDependency(root,action==='unpin',o.name);
       else if(action==='update'){assert(o.bundle,'--bundle required');result=updateDependency(root,{bundle:o.bundle,sha256:o.sha256,publicKey:o['public-key'],check:o.check,allowBreaking:o['allow-breaking']});}
-      else throw new Error('Choose dependencies status, update, pin, or unpin');
+      else throw new Error('Choose dependencies bundle, restore, status, update, pin, or unpin');
       break;
     }
     case 'skill':assert(o.source,'--source required');result=importSkill(root,o.source,{name:o.name,expectedDigest:o.sha256});break;

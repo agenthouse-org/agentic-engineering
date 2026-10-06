@@ -1,6 +1,6 @@
 # Agent commands
 
-This checkout provides 51 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
+This checkout provides 54 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
 
 ## Load central skills
 

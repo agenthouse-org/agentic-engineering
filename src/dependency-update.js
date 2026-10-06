@@ -1,3 +1,4 @@
+import {updateOrganizationSkill} from './organization-skills.js';
 import {runtimeDirectory} from './storage.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,6 +21,7 @@ export function pinDependency(root,unpin=false,id=DEPENDENCY) {
   });
 }
 export function updateDependency(root,options) {
+  if(read(path.resolve(options.bundle)).publisher)return updateOrganizationSkill(root,options);
   const installed=dependencyStatus(root).dependencies;
   const raw=fs.readFileSync(path.resolve(options.bundle));
   const data=options.publicKey?verifyEnvelope(JSON.parse(raw),fs.readFileSync(path.resolve(options.publicKey),'utf8')):JSON.parse(raw);

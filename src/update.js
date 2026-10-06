@@ -1,6 +1,7 @@
 import {runtimeDirectory} from './storage.js';
 import {updateDependency} from './dependency-update.js';
 import {dependencyStatus,hookLock,bundledDependencies,checkDependencyPin,checkPresentPins} from './dependencies.js';
+import {policyStatus,channelPath} from './policy-channel.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -168,11 +169,17 @@ export function session(root,options={}) {
       catch(error){dependencyUpdate={status:'deferred',reason:error.message};}
     }
   }
+  const organizationUpdates=[];
+  if(fs.existsSync(policy))for(const channel of read(policy).channels || [])if(channel.automatic) {
+    try {organizationUpdates.push(updateDependency(root,{bundle:channelPath(root,channel.bundle)}));}
+    catch(error){organizationUpdates.push({status:'deferred',reason:error.message});}
+  }
   const dependencies=dependencyStatus(root);
   const recorded=read(inside(root,'.agenthouse/resolved.json')),available=resolve(root,{persist:false}).snapshot;
   const policyChange=canonical(recorded)===canonical(available)?{status:'current',digest:recorded.digest}:{status:'changed',currentDigest:recorded.digest,availableDigest:available.digest,
     changedRules:[...new Set([...(recorded.rules || []).map(item=>item.id),...(available.rules || []).map(item=>item.id)])].filter(id=>canonical((recorded.rules || []).find(item=>item.id===id))!==canonical((available.rules || []).find(item=>item.id===id))),
     requiredChecks:{current:recorded.requiredChecks || [],available:available.requiredChecks || []},action:'Review the changed policy. Keep this task on the frozen snapshot or run resolve to adopt the new revision explicitly.'};
+  policyChange.scope='local-snapshot';
   const id=new Date().toISOString().replaceAll(':','-');
   const active=read(inside(root,'.agenthouse/active.json'));
   // A subsequent launcher invocation selects a newly activated runtime. The
@@ -185,7 +192,7 @@ export function session(root,options={}) {
     const review=roleProcessCheck(kind);
     baselineUpdates[kind]={summary:review.summary,evaluatedVersion:VERSION,results:review.results.map(({id,status,baselineVersion,availableVersion,ignored,baselineChanges,conflicts})=>({id,status,baselineVersion,availableVersion,ignored,baselineChanges,conflictFields:(conflicts||[]).map(conflict=>conflict.field)}))};
   }catch(error){baselineUpdates[kind]={status:'error',reason:error.message};}
-  const result={id,active,executingVersion:VERSION,update:updateResult,dependencyUpdate,dependencies,baselineUpdates,policyChange,housekeeping};
+  const result={id,active,executingVersion:VERSION,update:updateResult,dependencyUpdate,organizationUpdates,dependencies,baselineUpdates,policyChange,policyStatus:policyStatus(root,{record:true}),housekeeping};
   write(inside(root,`.agenthouse/sessions/${id}.json`),result);
   return result;
 }

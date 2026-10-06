@@ -1,3 +1,4 @@
+import {originPins} from './policy-channel.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {verify, sign} from 'node:crypto';
@@ -65,6 +66,8 @@ export function resolve(root, {frozen = false, policyFile, frameworkVersion=VERS
     sources:layers.map(({data}) => ({id:data.id, revision:data.revision, digest:hash(data)})),
     rules:[...rules.values()].sort((a,b)=>a.id.localeCompare(b.id)), provenance,
     requiredChecks:[...requiredChecks].sort(), owner, authorities};
+  const origins=originPins(root,config.policySources || []);
+  if(origins.length)snapshot.origins=origins;
   snapshot.digest = hash(snapshot);
   if (frozen) {
     assert(fs.existsSync(lockPath(root)), 'Missing resolved snapshot; run resolve before frozen evaluation');

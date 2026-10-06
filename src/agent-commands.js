@@ -2,6 +2,7 @@ import {topics} from './help.js';
 import {assert,VERSION} from './io.js';
 
 const guidance={
+  policy:'Use policy status/check to distinguish integrity, freshness and permission. Read docs/organization-policy.md. Adoption requires the reviewed candidate digest; report semantic changes and approval invalidation before adopting. Never treat unknown freshness as current. Trust configuration must come from the governing authority; do not authorize your own key.',
   assessment:'Use the assessment inventory and summary contracts in docs/technical-feasibility.md. Literal matches are candidate occurrences, not semantic call counts. Use ah-assess-tech-feasibility for the complete assessment workflow.',
   context:'Read the returned pinned lifecycle and skill files, using the target repository as the working directory. Never substitute a newer global skill for the project pin.',
   roles:'Use roles list/show to orient, and roles use to load a role profile for the current task. For a consumer-wide adaptation use roles adopt, edit the owned JSON under AGENTHOUSE_GLOBAL_REPO, then roles check. Review upstream baseline changes and merge explicitly; never replace local role content without inspecting conflicts. Role decision-right descriptions are not approvals.',
@@ -171,6 +172,7 @@ Run relevant available checks through the configured CLI and inspect UI screensh
 The upstream evidence-record template is a written report, not permission to commit screenshot dumps. Inspection captures are ephemeral: write them only under .agenthouse/evidence/<work-id>/. Never write galleries to tests/output, tests/screenshots, screenshots/, or a newly invented dump folder. After inspecting, run node .agenthouse/run.mjs housekeep instead of inventing a screenshot directory or deleting files ad hoc. Housekeep verifies the configured output paths with Git and preserves evidence. Cleanup requires explicit artifacts.cleanup paths and housekeep --clean; it never infers disposable data from names. Durable Git coverage is reviewed Playwright snapshots and tests. Record criterion findings, hashes, and evaluation report paths on the work item. CI archives the actual report folder printed by evaluate; central installations default to .agenthouse/local/reports/.`]
 };
 const descriptions={
+  policy:'Track signed organization policy origins, report drift and permission, or adopt reviewed revisions. Use when maintaining organization policy across repositories.',
   assessment:'Collect commit-bound feasibility inventory or validate an assessment document bundle. Use when supporting a technical feasibility assessment with reproducible evidence.',
   context:'Locate this project’s lifecycle and skills in central storage. Use when loading agenthouse guidance in any coding agent.',
   help:'List installed agenthouse skills and suggest which one fits a goal. Use when asking what agenthouse can do, which ah-* skill to pick, or for the command map.',

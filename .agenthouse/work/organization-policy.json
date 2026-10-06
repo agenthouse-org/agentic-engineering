@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "id": "organization-policy",
+  "title": "Track and explicitly adopt organization governance revisions",
+  "kind": "feature",
+  "stage": "discover",
+  "revision": 1,
+  "fields": {
+    "outcome": "Organization consumers detect policy drift and explicitly adopt reviewed revisions; distribute signed scoped convention skills without forking agenthouse.",
+    "scope": "Signed offline/central policy channels, origin pins, transactional adoption, permission evaluator, portable inventory, scoped skill updates, docs and 1.9.0 release. Git/npm fetching and hosted governance are excluded.",
+    "decisions": [
+      "docs/adr/0019-organization-policy-channels.md"
+    ],
+    "verification": "tests/organization-policy.test.js, full Node suite, package checks, frozen evaluation and release workflow",
+    "changes": "1.9.0: signed policy channels and scoped organization skills; see ADR-0019 and organization-policy.md",
+    "evidence": "177 Node tests passed; npm run check passed; packed artifact installed offline and demo verified failing-before/passing-after behavior. Cross-platform/browser verification runs in release CI.",
+    "releasePlan": "Commit and push reviewed implementation; publish GitHub v1.9.0; verify cross-platform/browser workflow, npm version and attached attested bundle.",
+    "rollbackPlan": "Do not reuse npm versions. Publish a corrective patch if required. Consumers retain existing exact runtimes until explicit update; policy adoption uses transactional recovery."
+  },
+  "criteria": [
+    {
+      "id": "AC-1",
+      "text": "Two consumers observe drift without automatic adoption"
+    },
+    {
+      "id": "AC-2",
+      "text": "Unknown/withdrawn authority never passes a required permission check"
+    },
+    {
+      "id": "AC-3",
+      "text": "Adoption requires reviewed digest and preserves local changes on conflict"
+    },
+    {
+      "id": "AC-4",
+      "text": "Organization publishers cannot replace reserved dependencies or exceed trust scope"
+    },
+    {
+      "id": "AC-5",
+      "text": "Signed skill updates respect compatibility, integrity and pins"
+    },
+    {
+      "id": "AC-6",
+      "text": "Existing snapshots remain compatible; offline operation uses no hidden fetch"
+    },
+    {
+      "id": "AC-7",
+      "text": "Document and publish verified 1.9.0 artifacts"
+    }
+  ],
+  "evidence": [],
+  "history": []
+}

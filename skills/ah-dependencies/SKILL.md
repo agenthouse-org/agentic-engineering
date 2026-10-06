@@ -4,7 +4,7 @@ description: "Show, pin, unpin, or update bundled skills such as frontend-accept
 license: MIT
 ---
 
-Generated from ah-engineering 1.8.1.
+Generated from ah-engineering 1.9.0.
 
 # agenthouse dependencies
 
@@ -19,6 +19,8 @@ Choose status, pin, unpin, or update. Default to status if unclear. For updates 
 CLI reference:
 
 ```text
+dependencies bundle --source DIR --repository ID --revision COMMIT --path SOURCE_PATH --publisher ID --key FILE --output FILE
+dependencies restore
 dependencies status
 dependencies pin | unpin [--name frontend-acceptance|web-usability-conformity|hooks]
 dependencies update --bundle FILE (--sha256 HASH | --public-key FILE) [--check] [--allow-breaking]

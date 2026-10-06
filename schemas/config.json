@@ -121,7 +121,8 @@
               "evidence",
               "approval",
               "visual",
-              "work-item"
+              "work-item",
+              "policy-channel"
             ]
           },
           "executable": {

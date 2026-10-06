@@ -33,7 +33,7 @@ node .agenthouse/run.mjs work show --id first-change
 
 Edit `.agenthouse/work/first-change.json` with the actual outcome and evidence. [Lifecycle fields](lifecycle.md) explain each stage. Ready gates can surface oversized tickets (`ticketSize`); configure `git.branchNaming` before `work branch`. The initial pull-request profile checks that the first-change plan has a verification strategy. This is intentionally an incomplete starter until the team configures its actual checks; it does not pretend to test application code.
 
-The starter uses supervised autonomy and creates a local Ed25519 owner key in `.agenthouse/local/owner.key`, which is ignored by Git. This local owner is a single-developer convenience, not an enterprise authority. Enterprise enrollment uses `init --policy /path/to/organization-policy.json`, copying the chosen policy snapshot. Keep private keys in the organization's approved secret store and supply a trusted policy mount in CI.
+The starter uses supervised autonomy and creates a local Ed25519 owner key in `.agenthouse/local/owner.key`, which is ignored by Git. This local owner is a single-developer convenience, not an enterprise authority. Enterprise enrollment uses `init --policy /path/to/organization-policy.json`, copying the chosen policy snapshot. This copy has no upstream update tracking until an origin is explicitly configured; see [organization policy channels](organization-policy.md) for signed discovery and reviewed adoption. Keep private keys in the organization's approved secret store and supply a trusted policy mount in CI.
 
 ## Configure your own processes
 

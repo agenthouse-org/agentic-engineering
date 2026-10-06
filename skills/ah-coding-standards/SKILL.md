@@ -4,7 +4,7 @@ description: "Show, check, or write coding-standards catalogs and optional modul
 license: MIT
 ---
 
-Generated from ah-engineering 1.8.1.
+Generated from ah-engineering 1.9.0.
 
 # agenthouse coding-standards
 

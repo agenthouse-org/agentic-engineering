@@ -5,7 +5,7 @@ export const phases={
   verify:['evaluate','review','review-change','review-mr','frontend-acceptance','usability'],
   approve:['sign','gate'],
   product:['roles','process'],
-  operate:['pipeline','update','rollback','recover','housekeep','doctor','session']
+  operate:['policy','pipeline','update','rollback','recover','housekeep','doctor','session']
 };
 export function commandMap(){return Object.entries(phases).map(([phase,names])=>`${phase}: ${names.map(n=>'ah-'+n).join(', ')}`).join('\n');}
 export function goalHelp(goal) {

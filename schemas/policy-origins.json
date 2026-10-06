@@ -1,0 +1,7 @@
+{
+  "type":"object","additionalProperties":false,"required":["schemaVersion","sources"],
+  "properties":{"schemaVersion":{"enum":[1]},"sources":{"type":"array","items":{
+    "type":"object","additionalProperties":false,"required":["file","repository","path","channel","publicKey","revision","digest"],
+    "properties":{"file":{"type":"string","minLength":1},"repository":{"type":"string","minLength":1},"path":{"type":"string","minLength":1},"channel":{"type":"string","minLength":1},"publicKey":{"type":"string","minLength":1},"revision":{"type":"string","minLength":1},"digest":{"type":"string","pattern":"^[a-f0-9]{64}$"}}
+  }}}
+}

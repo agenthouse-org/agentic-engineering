@@ -1,8 +1,8 @@
 # Implementation and verification status
 
-Version 1.8.1 updates the bundled usability checker to patched `brace-expansion` 2.1.7 and `fast-uri` 3.1.8. Version 1.8.0 adds ticket-level test authoring, pipeline management, architecture and coding guideline catalogs, an architect role, and Markdown discovery help. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for platform-specific behavior and limits.
+Version 1.9.0 adds signed organization policy channels, explicit adoption, permission evaluation, repository inventory and scoped skill publishers. See [organization policy](organization-policy.md) for contracts and limits.
 
-Version 1.8.1 release line. Updated 2026-10-05.
+Version 1.9.0 release line. Updated 2026-10-06.
 
 Development checkout verification on Windows, 2026-09-25: CI templates preserve JUnit reports on failures and keep evaluation status authoritative; focused template contract tests added. Generated command skills and release allowlist checks are run before release. The release workflow is responsible for cross-platform, browser, usability, and package verification for this version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
 

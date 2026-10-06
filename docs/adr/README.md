@@ -29,3 +29,5 @@ Proposed implementation details live in the linked design documents until implem
 | [0016](0016-skill-discovery.md) | Runtime discovery of installed specialist skills for roles and processes |
 | [0017](0017-test-authoring-and-pipeline.md) | Ticket-level test authoring, test-manager/devops roles, TDD methods, and CI pipeline create/manage/publish |
 | [0018](0018-architecture-and-coding-guidelines.md) | Architect role, architecture and coding-standards catalogs, and Markdown discovery help |
+
+| [0019](0019-organization-policy-channels.md) | Signed organization policy channels, explicit adoption and scoped skill publishers |
