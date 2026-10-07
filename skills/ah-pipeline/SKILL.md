@@ -4,7 +4,7 @@ description: "Create and manage multi-job GitHub Actions or GitLab CI for evalua
 license: MIT
 ---
 
-Generated from ah-engineering 1.9.0.
+Generated from ah-engineering 1.9.1.
 
 # agenthouse pipeline
 

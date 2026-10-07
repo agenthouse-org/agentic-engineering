@@ -8,11 +8,11 @@
       "name": "ah-engineering",
       "source": "./",
       "description": "Agent-neutral engineering lifecycle, visual acceptance, evidence and governance.",
-      "version": "1.9.0"
+      "version": "1.9.1"
     }
   ],
   "metadata": {
     "description": "agenthouse engineering workflows, evidence and governance",
-    "version": "1.9.0"
+    "version": "1.9.1"
   }
 }

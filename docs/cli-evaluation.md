@@ -5,6 +5,17 @@
 
 Status: required product capability, 2026-09-13. The evaluation CLI is implemented in the local 0.1.0 preview. The examples below describe the wider target: JSON configuration and the commands in the operating guide are implemented; YAML and the umbrella --evidence import option remain proposed.
 
+**In this document** (skim before reading further; design target plus shipped operating guide)
+
+- [DevOps experience](#devops-experience) — one noninteractive evaluation command across local, agent, and CI. *Operators*
+- [Proposed commands](#proposed-commands) — profile flags, `--ci`/`--frozen`, evidence import, profile coverage. *Both*
+- [Built-in and organization-owned evaluators](#built-in-and-organization-owned-evaluators) — exit-code and JSON adapters, trust boundaries. *Both*
+- [Shared result contract](#shared-result-contract) — check/gate statuses and process exit codes. *Both*
+- [Reports and artifacts](#reports-and-artifacts) — JSON, JUnit, HTML, and publication limits. *Operators*
+- [CI/CD integration recipe](#cicd-integration-recipe) — templates, report upload, pipeline commands. *Operators*
+- [Current reuse and a known integration gap](#current-reuse-and-a-known-integration-gap) — placeholder for remaining integration notes. *Both*
+- [Verification scenarios required for release](#verification-scenarios-required-for-release) — pass/fail/incomplete scenarios that must hold. *Both*
+
 ## DevOps experience
 
 An engineer installs an identified framework release, selects an evaluation profile, supplies the build/workspace and any evidence inputs, and runs one noninteractive command. The command produces a useful terminal summary, structured results, test reports, visual evidence where applicable, and a reliable process status. It does not require an interactive coding agent, a paid service, or a framework-specific CI platform.

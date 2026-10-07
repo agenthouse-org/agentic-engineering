@@ -4,7 +4,7 @@ description: "Verify that configured generated output stays out of Git; preserve
 license: MIT
 ---
 
-Generated from ah-engineering 1.9.0.
+Generated from ah-engineering 1.9.1.
 
 # agenthouse housekeep
 

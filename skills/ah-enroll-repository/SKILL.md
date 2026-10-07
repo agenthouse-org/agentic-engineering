@@ -4,7 +4,7 @@ description: "Set up agenthouse in this repository by choosing coding agents, po
 license: MIT
 ---
 
-Generated from ah-engineering 1.9.0.
+Generated from ah-engineering 1.9.1.
 
 # agenthouse enroll-repository
 

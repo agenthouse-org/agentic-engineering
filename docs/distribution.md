@@ -5,6 +5,18 @@
 
 Status: target distribution design. Local tarball installation, framework bundles, signature/checksum verification, local-channel updates and rollback are implemented; remote distribution services and full dependency closure remain open.
 
+**In this document** (skim before reading further)
+
+- [Current central installation](#current-central-installation) — pointer to central storage and ADR-0014. *Operators*
+- [User experience](#user-experience) — installer goals and enterprise/offline constraints. *Operators*
+- [Proposed installation model](#proposed-installation-model) — managed vs consumer-owned assets and conflict handling. *Both*
+- [Distribution paths](#distribution-paths) — public, enterprise, restricted, and offline paths. *Operators*
+- [Software updates versus policy changes](#software-updates-versus-policy-changes) — automatic compatible updates vs governance adoption. *Both*
+- [Task snapshots](#task-snapshots) — per-task identity and CI frozen snapshots. *Both*
+- [Proposed transaction](#proposed-transaction) — verify, activate, health-check, rollback. *Operators*
+- [Generated files and restoring a clone](#generated-files-and-restoring-a-clone) — legacy project-copy restore and digest matching. *Operators*
+- [Plugin discovery and organization overlays](#plugin-discovery-and-organization-overlays) — host plugins, private overlays, version pins. *Both* (overlay authors: also read [agent-loaded Markdown](organization-policy.md#agent-loaded-markdown-for-overlays))
+
 ## Current central installation
 
 The unreleased central-storage implementation supersedes the project-copy defaults below for new enrollment. See [central installation](central-installation.md) and [ADR-0014](adr/0014-central-storage-and-repository-integration.md). Existing installations preserve their layout until explicit migration.
@@ -92,7 +104,7 @@ The supplied package already includes .codex-plugin/plugin.json,
 package directory through the host's plugin mechanism to discover the same
 generated skills outside enrolled repositories. Host installation/search and reload
 behavior must be validated for the host version; source packaging alone is not
-proof of live global search. See the 1.3.0 release notes for distribution details.
+proof of live global search. See the [changelog](CHANGELOG.md) and [1.3.0 release notes](releases/1.3.0.md) for packaging history.
 
 For an offline/private organization overlay, vendor an exact reviewed package
 under an immutable version-and-digest directory and use a local marketplace
@@ -103,6 +115,9 @@ changed bytes before installing. Do not assume either host supports transitive
 plugin dependencies: install the pinned framework entry alongside the organization
 enroll skill. The organization enroll skill selects policy; the framework plugin
 does not carry consumer policy. Avoid moving Git branch references for pins.
+Keep agent session-entry and skill Markdown short; structure longer overlay
+standards with a section overview or on-demand references as described in
+[agent-loaded Markdown for overlays](organization-policy.md#agent-loaded-markdown-for-overlays).
 
 Generated skills and legacy command projections identify their generating package
 version. An enrolled invocation loads context from the repository pin, never a

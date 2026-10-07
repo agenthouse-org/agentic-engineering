@@ -2,6 +2,18 @@
 
 This checkout provides 54 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
 
+`context` returns this file's path alongside lifecycle and skills. Skim the overview, then open only the section you need.
+
+**In this document**
+
+- [Load central skills](#load-central-skills) — use `context` and the repository pin, not a newer global plugin. *Agents*
+- [Legacy project invocation](#legacy-project-invocation) — host entry points and installed locations. *Both*
+- [Default command map](#default-command-map) — lifecycle-grouped skills for ordinary work. *Agents*
+- [Complete command map (administration included)](#complete-command-map-administration-included) — full skill↔CLI table and workflow skills. *Both*
+- [Before enrollment](#before-enrollment) — bootstrap when project commands are not yet installed. *Agents*
+- [Maintenance](#maintenance) — regenerating skills and ownership of wrappers. *Operators*
+- [Host format references](#host-format-references) — upstream host documentation links. *Operators*
+
 ## Load central skills
 
 From the enrolled repository run `node .agenthouse/run.mjs context`. Read its returned lifecycle and relevant skill paths, then execute commands from the repository root. Shared instruction bridges direct agents to this command; private setup leaves existing instructions untouched, so request it explicitly. The central store does not automatically register native menus. Separately installed host plugins may expose skills; use context to select the repository pin instead of substituting a plugin’s newer method.

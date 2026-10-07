@@ -1,10 +1,8 @@
 # Implementation and verification status
 
-Version 1.9.0 adds signed organization policy channels, explicit adoption, permission evaluation, repository inventory and scoped skill publishers. See [organization policy](organization-policy.md) for contracts and limits.
+Current shipped behavior and verification evidence. What changed by release is in the [changelog](CHANGELOG.md). Organization policy channels are documented in [organization policy](organization-policy.md).
 
-Version 1.9.0 release line. Updated 2026-10-06.
-
-Development checkout verification on Windows, 2026-09-25: CI templates preserve JUnit reports on failures and keep evaluation status authoritative; focused template contract tests added. Generated command skills and release allowlist checks are run before release. The release workflow is responsible for cross-platform, browser, usability, and package verification for this version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
+Development checkout verification on Windows, 2026-09-25: CI templates preserve JUnit reports on failures and keep evaluation status authoritative; focused template contract tests added. Generated command skills and release allowlist checks are run before release. The release workflow is responsible for cross-platform, browser, usability, and package verification for each published version. The upstream hooks suite (eight test files) was last recorded as passing on 2026-09-15.
 
 | Capability | Shipped behavior | Verification |
 | --- | --- | --- |
@@ -42,21 +40,4 @@ Cross-platform CI passed on Windows, Linux and macOS with both browser scenarios
 
 Exact-pin restore and owned generated-file ignore rules are implemented locally, with missing/edited/linked projection diagnostics. Tests cover recorded agents, cached and bundle sources, conflicts, preserved consumer state and interrupted transactions. Historical projection formats and Linux/macOS restoration require separate verification before claiming compatibility.
 
-## Version 1.3.0 consumer-feedback changes (2026-09-24)
-
-The 1.3.0 release provided 45 generated commands plus the lifecycle skill. Published
-availability is established separately by the GitHub release and npm workflow.
-
-| Request | Implemented here | Remaining environment validation |
-| --- | --- | --- |
-| Feasibility | New skill, deterministic Git-blob occurrence inventory, classified counts, common scenario scale, hashed document/diagram summary and ready-gate linkage | Semantic completeness and real assessment-ticket pilots; literal search is not whole-program analysis |
-| Plugin discovery | Existing packaged manifests retained; generated version markers, enrollment/pin routing instructions, explicit doctor plugin comparison, pinned local overlay documentation | Current-host global listing/search; doctor needs the invoking plugin version supplied explicitly |
-| Evaluation clarity | Read-only --list/--plan, profile/build identity, evaluator module/file/rule origins in JSON/HTML | Existing consumer checks without origin metadata report project configuration rather than invented module provenance |
-| Discovery | Compact lifecycle map, natural-language goal routing, administration in extended help, story-type follow-ups | Agent interpretation of unrecognized goals remains conversational |
-| Incoming review | URL review orchestration skill, inspected disposable recipe contract, prose criterion proposals/confirmation, per-criterion outcomes, inherited-failure annotation, opt-in verify specification gate | Live providers, container provisioning/cleanup and tracker transition mapping are project/host responsibilities; no built-in service connector or automatic recipe runner is claimed |
-
-Verification: all 139 Node tests passed on Windows; generated skill and release
-allowlist checks passed. The report acceptance browser check passed at 390px and
-1280px and the 390px capture was visually inspected: profile, module, source file
-and rule are readable for both stack examples. Run
-`node tests/browser/report-acceptance.mjs` to reproduce those captures.
+Historical consumer-feedback verification detail for feasibility, plugin discovery, evaluation clarity, discovery, and incoming review lives in the [1.3.0 release notes](releases/1.3.0.md).

@@ -5,6 +5,19 @@
 
 Status: required product capability, 2026-09-13. The preview implements the Playwright reporter and visual evidence evaluator. The frontend-acceptance skill supplies the agent-facing method; the operating guide explains the executable contract and remaining work.
 
+**In this document** (skim before reading further; agents follow the installed frontend-acceptance skill for the method)
+
+- [Purpose](#purpose) — why UI work needs concept and behavioral evidence. *Both*
+- [Equally valid starting points](#equally-valid-starting-points) — image, wireframe, story, or bug as acceptance input. *Agents*
+- [Versioned acceptance contract](#versioned-acceptance-contract) — criteria, hashes, and observable requirements. *Both*
+- [Four complementary checks](#four-complementary-checks) — concept, regression, behavior, accessibility. *Both*
+- [How agentic engineering uses the skill](#how-agentic-engineering-uses-the-skill) — define→accept flow and skill vs framework ownership. *Agents*
+- [Capture and comparison controls](#capture-and-comparison-controls) — environment, masks, inspection vs scores. *Both*
+- [Results and approval](#results-and-approval) — criterion statuses and baseline change process. *Both*
+- [Evidence bundle](#evidence-bundle) — what to retain and where not to dump captures. *Both*
+- [Verification scenarios required for release](#verification-scenarios-required-for-release) — required pass/fail examples. *Both*
+- [Implementation reference](#implementation-reference) — Playwright snapshot docs as adapter background. *Operators*
+
 ## Purpose
 
 Verify that the real user interface fulfills its intended concept and behavior. A clean build, passing DOM checks, or an unchanged screenshot cannot by itself demonstrate that the requested outcome was delivered.
@@ -47,7 +60,7 @@ A regression baseline can accurately preserve a wrong design. Approve it against
 
 ## How agentic engineering uses the skill
 
-The workflow and skill are both named **frontend acceptance**, using the identifier `frontend-acceptance` in agenthouse-skills. The source was renamed to remove an ambiguous acronym. Version 0.2.0 is published in agenthouse-skills release-2026-09-13; existing installations require migration to the renamed skill.
+The workflow and skill are both named **frontend acceptance**, using the identifier `frontend-acceptance` in agenthouse-skills. The source was renamed to remove an ambiguous acronym. The pinned dependency uses that identifier; installations that still carry the old name need an explicit migration.
 
 The reusable skill guides the agent to derive criteria, plan browser checks, implement, inspect screenshots, explain findings, and improve regression coverage. Framework code owns execution contracts, pipeline aggregation, policy resolution, and artifact provenance. Skill prose is not an executable CI evaluator. Reusable method changes belong upstream in agenthouse-skills. The rename changes naming and package identity, not the acceptance method.
 

@@ -1,6 +1,6 @@
 # Central installation and repository integration
 
-Status: implemented for version 1.2.0. Published availability is verified through the release workflow and npm registry. Version 1.1.0 retains the previous project-copy behavior.
+Status: implemented. Published availability is verified through the release workflow and npm registry. Older project-copy enrollments retain that layout until explicitly migrated.
 
 ## Choose what a repository shares
 

@@ -1,9 +1,20 @@
 # Organization policy and extension channels
 
-Version 1.9.0 adds signed, offline-capable organization channels. Existing
-`onboard --policy` installations retain their copied policy. They report
-upstream freshness as `untracked` until tracking is explicitly configured.
-There is no implicit Git fetch, registry request, or policy adoption.
+Signed, offline-capable organization channels let a governing authority publish
+policy without silent adoption. Existing `onboard --policy` installations retain
+their copied policy. They report upstream freshness as `untracked` until tracking
+is explicitly configured. There is no implicit Git fetch, registry request, or
+policy adoption. See the [changelog](CHANGELOG.md) for when channels shipped.
+
+**In this document** (skim before reading further)
+
+- [Publish a policy channel](#publish-a-policy-channel) — bundle, sign, and distribute organization policy metadata. *Operators*
+- [Enroll or migrate an existing consumer](#enroll-or-migrate-an-existing-consumer) — origin pins, `policy track`, and freshness reporting. *Operators*
+- [Review and adopt](#review-and-adopt) — digest-bound preview and adoption without silent overwrite. *Operators*
+- [Required checks and repository inventory](#required-checks-and-repository-inventory) — `policy check --required`, evaluator wiring, multi-root inventory. *Both*
+- [Organization skills and convention bundles](#organization-skills-and-convention-bundles) — trusted publishers, signed skill bundles, and between-session channels. *Both*
+- [Agent-loaded Markdown for overlays](#agent-loaded-markdown-for-overlays) — keep session-loaded files short; overview or externalise long prose. *Both* (overlay authors)
+- [Enforcement boundary and current limits](#enforcement-boundary-and-current-limits) — what signatures authenticate and what the framework does not claim. *Both*
 
 ## Publish a policy channel
 
@@ -41,7 +52,7 @@ directory, or `AGENTHOUSE_HOME/channels/organization.json`.
 
 ## Enroll or migrate an existing consumer
 
-After updating the consumer's pinned runtime to 1.9.0, create an origin descriptor:
+After the consumer's pinned runtime includes organization policy channels, create an origin descriptor:
 
 ```json
 {
@@ -196,6 +207,75 @@ signed envelopes for subsequent verification. Runtime rollback does not roll
 back organization imports. Publish a reviewed higher skill version for recovery;
 do not reuse versions. Run `dependencies restore` to reconstruct missing organization skills from their retained signed envelopes on a new machine. Current trust and pins are rechecked; changed files are never overwritten. Partially damaged central content is rejected instead of replaced because another repository may share it. Preserve signed bundles and the import lock for offline reconstruction.
 
+## Agent-loaded Markdown for overlays
+
+Organization governance overlays often add prose standards, enroll skills, and
+session entry files that agents load together with this engine. Agents follow
+long Markdown badly once a file grows past a screen or two: they skip headings,
+miss rules below the fold, and cannot tell from the top whether the needed
+section exists. Treat the following as the documented convention for overlay
+authors. It is **advisory guidance**. `doctor` and `evaluate` do not enforce it.
+
+### Principle
+
+Keep files an agent is made to load at session start, or on every skill
+invocation, short. Push length into files the agent opens only when the task
+needs them.
+
+In this package the practical line is:
+
+- Always-invoked skills under `skills/*/SKILL.md` and `docs/lifecycle.md` stay
+  short (typically under about 50 lines, without a large level-2 heading tree).
+- Detail belongs in human or on-demand guides under `docs/`, or in skill
+  sibling reference files read when the skill says so.
+- When a Markdown file still exceeds about **100 lines**, or has **more than
+  four level-2 headings**, open it with a **section overview** (see below).
+  `docs/agent-commands.md` is an example: `context` returns its path, so it
+  carries an overview even though agents also receive short skill files.
+
+Do not add an overview to a file that is already short enough to scan in one
+pass.
+
+### Mitigations when a file must be long
+
+1. **Externalise.** Move detail into reference files the agent reads on demand.
+   In the parent file, state in one line what each reference holds and when to
+   open it. Prefer this for session-entry and skill files.
+2. **Add a section overview.** Directly under the title (after any one-line
+   status blurb), list every level-2 heading with a one-line summary and, where
+   it helps, the audience (`Agents`, `Operators`, or `Both`). Anchor links are
+   enough. Prefer this for guides that stay as one document.
+
+Use both when a skill stays short and points at longer references that
+themselves need overviews.
+
+### How the engine supports this
+
+- `context` returns the pinned `lifecycle` path, `commands` (`docs/agent-commands.md`),
+  and each skill's `SKILL.md` path. It does not automatically hand every
+  organization prose file to the agent. Overlay entry points (for example
+  `AGENTS.md`, enroll skills, or host instruction bridges) decide what else is
+  loaded at session start.
+- Skill directories may include sibling resources. Context instructions tell
+  agents to resolve relative skill resources against the containing skill
+  directory. A consumer-owned or organization skill may point at its own
+  reference files the same way. Those references are not separate `context`
+  keys; the skill names when to open them.
+- Organization convention bundles distributed as skills can carry short entry
+  prose plus reference files. They remain skills/resources; they do not install
+  evaluator code or acquire policy authority.
+
+### Advisory versus checked
+
+This convention is not a CLI control. Missing overviews, long session-entry
+files, and overlay prose that agents load poorly do **not** produce `doctor`
+warnings or `evaluate` failures. A mechanical check would need a declared
+inventory of agent-loaded paths and a stable definition of "has an overview";
+overlays do not yet declare that inventory in policy, and heuristics would be
+noisy. Prefer stating the rule here and keeping engine agent-loaded files short
+by construction. If a future policy field names agent-entry Markdown paths, an
+advisory `doctor` finding can be considered then.
+
 ## Enforcement boundary and current limits
 
 Protect the CLI, policy origins, trust configuration, evaluators and required CI
@@ -206,7 +286,7 @@ the declared publisher; it does not prove the quality of skill instructions or
 truth of their declared Git provenance. A documentation URL remains guidance
 until its obligations are mapped to checks or authorized assessments.
 
-This release does not fetch Git/npm policy packages, implement delegated per-rule
+The framework does not fetch Git/npm policy packages, implement delegated per-rule
 exceptions, attest remote branch protections, synchronize documentation platforms,
 or provide a hosted fleet service. It supplies the distribution, explicit adoption
 and reporting foundation for those integrations without claiming they exist.

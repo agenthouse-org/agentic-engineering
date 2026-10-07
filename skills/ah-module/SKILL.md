@@ -4,7 +4,7 @@ description: "Show a stack template, or preview/apply a reviewed plan that wires
 license: MIT
 ---
 
-Generated from ah-engineering 1.9.0.
+Generated from ah-engineering 1.9.1.
 
 # agenthouse module
 

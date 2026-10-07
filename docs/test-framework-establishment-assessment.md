@@ -2,6 +2,15 @@
 
 Status: scope assessment, repository-owner decisions, and working-tree implementation completed 2026-09-22. This document does not approve a release or change an enrolled repository's policy.
 
+**In this document** (assessment record; not agent session guidance)
+
+- [Recommendation](#recommendation) — bounded survey/module/profile path versus creating a full test framework. *Both*
+- [Explicit boundary](#explicit-boundary) — what the capability does and does not claim. *Both*
+- [Work records](#work-records) — lifecycle items for update channel, survey, wiring, adoption. *Operators*
+- [Resolved decisions](#resolved-decisions) — answers to update, survey, wiring, and staged-enforcement questions. *Both*
+- [Implementation notes](#implementation-notes) — concrete IDs and verification choices already shipped. *Operators*
+- [`/ah-validate-scope` result](#ah-validate-scope-result) — Decide/Coverage/sequencing for this assessment. *Both*
+
 ## Recommendation
 
 agenthouse should add a bounded capability for **assessing and connecting an existing repository's test machinery**, not a promise to create a complete test framework for any stack.

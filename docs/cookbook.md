@@ -1,8 +1,24 @@
 # agenthouse engineering cookbook
 
-Version 1.5.0 adds conditional CI test-report publication guidance. See [CLI evaluation and CI/CD integration](cli-evaluation.md) for configuring JUnit XML upload and platform ingestion without masking failures.
+This guide shows the common paths from installation to a verified change. Commands use the globally installed `ah-engineering` executable for setup and the repository-pinned launcher for daily work. For JUnit XML upload and platform ingestion without masking failures, see [CLI evaluation and CI/CD integration](cli-evaluation.md).
 
-This guide shows the common paths from installation to a verified change. Commands use the globally installed `ah-engineering` executable for setup and the repository-pinned launcher for daily work.
+**In this document** (skim before reading further; open only the recipe you need)
+
+- [The two command types](#the-two-command-types) — CLI versus coding-agent skills and how help topics differ. *Both*
+- [Recipe: work from a role or process](#recipe-work-from-a-role-or-process) — load roles/processes and review consumer baseline drift. *Agents*
+- [Recipe: install and enroll a repository](#recipe-install-and-enroll-a-repository) — global CLI install, onboard, and doctor verification. *Operators*
+- [Recipe: discover and invoke agent skills](#recipe-discover-and-invoke-agent-skills) — host invocation examples and `help agents`. *Both*
+- [Recipe: start the first change](#recipe-start-the-first-change) — create a work item, configure evaluators, resolve and evaluate. *Both*
+- [Recipe: assess scope before implementation](#recipe-assess-scope-before-implementation) — product requirements, validate-scope, ready gate, ticket size. *Agents*
+- [Recipe: related branch for a split work item](#recipe-related-branch-for-a-split-work-item) — parent work, `work branch`, and `git.branchNaming`. *Both*
+- [Recipe: visual plan before UI or data-model work](#recipe-visual-plan-before-ui-or-data-model-work) — wireframes/mermaid and `visual-plan check`. *Agents*
+- [Recipe: add npm provenance before a public publish](#recipe-add-npm-provenance-before-a-public-publish) — status/apply for trusted publishing workflows. *Operators*
+- [Recipe: review a change](#recipe-review-a-change) — survey, inspect, and `ah-review-change`. *Agents*
+- [Recipe: UI and browser evidence](#recipe-ui-and-browser-evidence) — frontend-acceptance, evidence paths, usability audit. *Agents*
+- [Recipe: diagnose an installation](#recipe-diagnose-an-installation) — doctor, session, recover, and pin mismatches. *Both*
+- [Common mistakes](#common-mistakes) — skill names, missing host discovery, agent list, launcher drift. *Both*
+- [More documentation](#more-documentation) — pointers to operating, workflow, and acceptance guides. *Both*
+- [Administration](#administration) — where admin CLI help topics live. *Operators*
 
 ## The two command types
 
@@ -284,6 +300,7 @@ Compare `ah-engineering --help` with `node .agenthouse/run.mjs --help`. Use the 
 
 ## More documentation
 
+- `docs/CHANGELOG.md`: what changed by release (newest first)
 - `docs/agent-commands.md`: host-specific skill installation and invocation
 - `docs/using.md`: operating and configuration details
 - `docs/workflow-tools.md`: survey, inspect, review, gates, and specification evidence
