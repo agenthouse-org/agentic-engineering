@@ -12,6 +12,8 @@ First check that `.agenthouse/run.mjs` and `.agenthouse/active.json` exist. If a
 
 Before implementation, identify the requested outcome, scope, acceptance criteria and applicable decisions. Record material gaps and assumptions. Select evidence appropriate to the change: a documentation correction and a permission boundary change need different verification. Keep replies to Decide / Ready or Blocked / Open unless the user asks for more.
 
+Before planning or making a change, load applicable engineering guidelines and assess the approach against them. Follow mandatory rules, explain relevant deviations, and run applicable automated checks during verification. Ask only when guidance conflicts, a material decision is missing, or an exception needs authorization. Reuse current context and existing authorization; read docs/engineering-guidelines.md from the pinned runtime for discovery and assessment details.
+
 If the ticket looks too large (more than about eight criteria, multiple independent outcomes, or `gate --phase ready` reports `ticketSize`), stop at Decide: recommend split slices, ask whether to create follow-up work items, then offer a related `work branch` from the current or chosen base. Configure `git.branchNaming` in `.agenthouse/config.json` first if missing. Never invent `fields.sizeOverride`; write it only after explicit user consent to proceed without splitting.
 
 For UI layout or data-model work that must be seen before code, use ah-visual-plan (wireframe, mermaid, both, or neither) and store the path in `fields.visualPlan`. Do not invent screens when neither is enough.

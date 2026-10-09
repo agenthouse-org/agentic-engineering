@@ -36,7 +36,7 @@ Reload the host or start a fresh session after first enrollment if the command i
 ## Default command map
 
 Understand: ah-survey, ah-inspect, ah-controls.
-Shape: ah-define-product-requirements, ah-draft-user-story, ah-assess-story-readiness, ah-validate-scope, ah-assess-tech-feasibility, ah-architecture, ah-coding-standards, ah-visual-plan, ah-test-plan.
+Shape: ah-define-product-requirements, ah-draft-user-story, ah-assess-story-readiness, ah-validate-scope, ah-assess-tech-feasibility, ah-architecture, ah-engineering-guidelines, ah-coding-standards, ah-visual-plan, ah-test-plan.
 Build: ah-work, ah-write-tests, ah-spec, ah-check-commit.
 Verify: ah-evaluate, ah-review, ah-review-change, ah-review-mr, ah-frontend-acceptance, ah-usability.
 Approve: ah-sign, ah-gate.
@@ -61,6 +61,7 @@ Assess judges a story, scope or feasibility; evaluate runs checks on a build; ga
 | `ah-test-plan` | `test-plan check`, `write` |
 | `ah-write-tests` | `write-tests prepare`, `mark-written` |
 | `ah-architecture` | `architecture list`, `show`, `check`, `write` |
+| `ah-engineering-guidelines` | `engineering-guidelines show`, `check`, `write` |
 | `ah-coding-standards` | `coding-standards show`, `check`, `write` |
 | `ah-pipeline` | `pipeline status`, `create`, `plan`, `apply`, `jobs`, `publish` |
 | `ah-evaluate` | `evaluate` |
@@ -92,7 +93,7 @@ The framework includes these engineering workflows:
 - `ah-review-change`: requirement-based review and findings.
 - `ah-visual-plan`: local wireframes and mermaid architecture diagrams, then `visual-plan check`.
 - `ah-architecture`: list/show ADRs and architecture catalogs, then `architecture check` / `write` linked as `fields.architectureCatalog`.
-- `ah-coding-standards`: show module or project coding-standards catalogs, then `coding-standards check` / `write` linked as `fields.codingStandards`.
+- `ah-engineering-guidelines`: manage and consult engineering guidance before changes; `show/check/write` retain the `fields.codingStandards` link. `ah-coding-standards` remains compatible. See [engineering guidelines](engineering-guidelines.md) for assessment and verification.
 - `ah-web-usability-conformity`: routes to the pinned upstream usability method and its explicitly provisioned audit runtime.
 - `ah-frontend-acceptance`: routes to the pinned upstream specialist skill.
 - `ah-npm-provenance`: explains npm provenance, asks whether to add it, and inspects or writes local publish files. It does not publish or configure npmjs.com.

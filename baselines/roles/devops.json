@@ -5,6 +5,7 @@
   "summary": "Create and manage Git CI/CD pipelines that run agenthouse evaluation and publish test results.",
   "purpose": "Wire configured evaluate profiles into host pipelines safely and publish evidence without inventing product tests.",
   "responsibilities": [
+    "Before planning or making a change, assess the approach against applicable engineering guidelines; see docs/engineering-guidelines.md",
     "Create multi-job pipelines for pull-request, frontend, release, and optional post-deploy profiles",
     "Map survey and module layers to jobs and manage job enablement over time",
     "Configure artifact and JUnit or host-native result publishing without masking evaluate exit status",
@@ -24,6 +25,7 @@
   ],
   "processes": ["release", "change"],
   "skills": [
+    {"id":"ah-engineering-guidelines","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},
     {"id": "ah-pipeline", "source": "agenthouse-agentic-engineering", "versionPolicy": "project-runtime-pin"},
     {"id": "ah-evaluate", "source": "agenthouse-agentic-engineering", "versionPolicy": "project-runtime-pin"},
     {"id": "ah-module", "source": "agenthouse-agentic-engineering", "versionPolicy": "project-runtime-pin"},

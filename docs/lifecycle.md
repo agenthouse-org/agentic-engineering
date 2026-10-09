@@ -2,6 +2,8 @@
 
 Use the smallest evidence set that demonstrates the requested outcome. Keep work scoped and link each requirement to its verification. The lifecycle record is stored as `.agenthouse/work/<id>.json`; long explanations and artifacts can be referenced from its fields.
 
+Before planning or making a change, load applicable engineering guidelines and assess the approach against them (`engineering.guidelines-before-change`). Follow mandatory rules, explain relevant deviations, and run applicable automated checks during verification. Ask only when guidance conflicts, a material decision is missing, or an exception needs authorization. See [engineering guidelines](engineering-guidelines.md) for discovery, assessment, and compatibility.
+
 | Stage | Record before leaving the stage |
 | --- | --- |
 | discover | `outcome`: actor, desired observable change, success measure, exclusions |

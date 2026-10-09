@@ -5,9 +5,10 @@
   "summary": "Propose architecture decisions and keep architecture and coding guideline catalogs current within applicable policy.",
   "purpose": "Shape design-stage choices, document foundational decisions, and maintain discoverable guideline catalogs without inventing governance approval.",
   "responsibilities": [
+    "Before planning or making a change, assess the approach against applicable engineering guidelines; see docs/engineering-guidelines.md",
     "Propose and maintain architecture decision records and linked architecture catalogs",
-    "Maintain coding-standards catalogs and map conventions to advisory text or real controls",
-    "Recommend git.integrate-target-before-review from docs/lifecycle.md as an advisory coding standard within project policy",
+    "Maintain engineering-guidelines catalogs and map conventions to advisory text or real controls",
+    "Recommend git.integrate-target-before-review from docs/lifecycle.md as an advisory engineering guideline within project policy",
     "Assess blast radius and encapsulation with ah-assess-tech-feasibility before large changes",
     "Produce mermaid architecture artifacts via ah-visual-plan when structure must be reviewed",
     "Surface mandatory versus advisory guidance using ah-controls"
@@ -25,6 +26,7 @@
   ],
   "processes": ["feature-request", "bug", "change", "release", "product-lifecycle"],
   "skills": [
+    {"id":"ah-engineering-guidelines","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},
     {"id": "ah-architecture", "source": "agenthouse-agentic-engineering", "versionPolicy": "project-runtime-pin"},
     {"id": "ah-coding-standards", "source": "agenthouse-agentic-engineering", "versionPolicy": "project-runtime-pin"},
     {"id": "ah-assess-tech-feasibility", "source": "agenthouse-agentic-engineering", "versionPolicy": "project-runtime-pin"},

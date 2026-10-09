@@ -14,5 +14,5 @@
   ],
   "outputs": ["Outcome and acceptance","Product requirements and story map","Decision record","Architecture and coding-standard catalogs when applicable","Verification and acceptance evidence","Outcome follow-up"],
   "roles": ["product-manager","architect","engineer","test-manager"],
-  "skills": ["ah-define-product-requirements","ah-validate-scope","ah-draft-user-story","ah-assess-story-readiness","ah-architecture","ah-coding-standards","ah-assess-tech-feasibility","ah-work","ah-test-plan","ah-write-tests","ah-review-change"]
+  "skills": ["ah-engineering-guidelines","ah-define-product-requirements","ah-validate-scope","ah-draft-user-story","ah-assess-story-readiness","ah-architecture","ah-coding-standards","ah-assess-tech-feasibility","ah-work","ah-test-plan","ah-write-tests","ah-review-change"]
 }

@@ -135,3 +135,57 @@ test('default help stays short and points to discovery topics',()=>{
   assert.match(text,/help map/);
   assert.doesNotMatch(text,/keygen/);
 });
+
+test('engineering-guidelines and coding-standards share catalogs in both directions',t=>{
+  const root=temp(t),item=workItem(root,'engineering');
+  const run=(command,...args)=>spawnSync(process.execPath,[cli,command,...args,'--root',root],{encoding:'utf8'});
+  for(const [writer,reader] of [['engineering-guidelines','coding-standards'],['coding-standards','engineering-guidelines']]) {
+    const entries=[{id:'delivery.rollback',title:'Document rollback',mechanism:'advisory',summary:'Record recovery steps before release.'}];
+    const written=run(writer,'write','--item',item,'--entries',JSON.stringify(entries),'--output','engineering.json');
+    assert.equal(written.status,0,written.stderr);
+    const result=JSON.parse(written.stdout),record=JSON.parse(fs.readFileSync(path.join(root,item),'utf8'));
+    assert.equal(record.fields.codingStandards,result.catalog);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(root,result.catalog),'utf8')).kind,'coding-standards-catalog');
+    const shown=run(reader,'show','--item',item);
+    assert.equal(shown.status,0,shown.stderr);
+    assert.deepEqual(JSON.parse(shown.stdout).entries,entries);
+    const output='check.json',checked=run(reader,'check','--catalog',result.catalog,'--output',output);
+    assert.equal(checked.status,0,checked.stderr);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,output),'utf8')),JSON.parse(checked.stdout));
+  }
+  assert.deepEqual(JSON.parse(run('engineering-guidelines','show','--module','php-laravel').stdout),JSON.parse(run('coding-standards','show','--module','php-laravel').stdout));
+});
+
+test('engineering-guidelines preserves incomplete, failed, and invalid catalog results without mutation',t=>{
+  const root=temp(t),item=workItem(root),catalog='guidelines.json';
+  const run=(command,...args)=>spawnSync(process.execPath,[cli,command,...args,'--root',root],{encoding:'utf8'});
+  const cases=[
+    {entries:[{id:'security.review',title:'Security review',mechanism:'advisory',path:'missing.md'}],status:4},
+    {entries:[{id:'tests.required',title:'Required tests',mechanism:'evaluate-check'}],status:4},
+    {entries:[{id:'duplicate',title:'One',mechanism:'advisory'},{id:'duplicate',title:'Two',mechanism:'advisory'}],status:1},
+    {entries:[{id:'invalid',title:'Invalid',mechanism:'unknown'}],status:2}
+  ];
+  for(const example of cases) {
+    const bytes=JSON.stringify({schemaVersion:1,kind:'coding-standards-catalog',entries:example.entries});
+    fs.writeFileSync(path.join(root,catalog),bytes);
+    const before=fs.readFileSync(path.join(root,item),'utf8');
+    for(const command of ['engineering-guidelines','coding-standards']) {
+      const result=run(command,'check','--catalog',catalog);
+      assert.equal(result.status,example.status,result.stdout+result.stderr);
+    }
+    assert.equal(fs.readFileSync(path.join(root,catalog),'utf8'),bytes);
+    assert.equal(fs.readFileSync(path.join(root,item),'utf8'),before);
+  }
+  assert.equal(run('engineering-guidelines','write','--item',item,'--entries','not-json').status,2);
+});
+
+test('engineering guidelines are discoverable in help, skills, roles, and processes',()=>{
+  assert.match(help('engineering-guidelines'),/engineering-guidelines show/);
+  assert.match(help('engineering guidelines for this repo'),/Primary: ah-engineering-guidelines/);
+  assert.match(help('ah-engineering-guidelines'),/engineering-guidelines/);
+  assert.match(mapMarkdown(),/ah-engineering-guidelines/);
+  for(const role of ['engineer','architect','devops','test-manager'])
+    assert.ok(roleProcessShow('roles',role).definition.skills.some(s=>s.id==='ah-engineering-guidelines'));
+  for(const process of ['feature-request','bug','change','release'])
+    assert.match(processMarkdown(process),/ah-engineering-guidelines/);
+});

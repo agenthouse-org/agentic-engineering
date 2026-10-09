@@ -14,5 +14,5 @@
   ],
   "outputs": ["Reproduction","Expected/observed behavior","Fix and regression evidence","Release/support note when needed"],
   "roles": ["support-specialist","product-manager","engineer","test-manager","architect"],
-  "skills": ["ah-work","ah-coding-standards","ah-test-plan","ah-write-tests","ah-spec","ah-review-change"]
+  "skills": ["ah-engineering-guidelines","ah-work","ah-coding-standards","ah-test-plan","ah-write-tests","ah-spec","ah-review-change"]
 }

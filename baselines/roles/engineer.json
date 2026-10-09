@@ -5,6 +5,7 @@
   "summary": "Turn an agreed outcome into a maintainable change with suitable evidence.",
   "purpose": "Deliver scoped technical changes while surfacing risks, constraints, and learning.",
   "responsibilities": [
+    "Before planning or making a change, assess the approach against applicable engineering guidelines; see docs/engineering-guidelines.md",
     "Inspect the existing system and applicable architecture and coding standards",
     "Implement the agreed behavior after required red evidence when the test plan uses TDD",
     "Write or adjust tests only under an accepted test plan",
@@ -20,6 +21,7 @@
   "decisionRights": ["Choose implementation details within applicable architecture, coding standards, and policy"],
   "processes": ["feature-request", "bug", "change", "release"],
   "skills": [
+    {"id":"ah-engineering-guidelines","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},
     {"id":"ah-work","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},
     {"id":"ah-spec","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},
     {"id":"ah-write-tests","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},

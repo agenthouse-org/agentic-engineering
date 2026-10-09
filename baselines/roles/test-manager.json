@@ -5,6 +5,7 @@
   "summary": "Decide what must be tested, at which level, and with which method, then keep criterion coverage governed.",
   "purpose": "Own test-plan quality and criterion-to-test coverage for a work item without implementing product behavior.",
   "responsibilities": [
+    "Before planning or making a change, assess the approach against applicable engineering guidelines; see docs/engineering-guidelines.md",
     "Derive and review a test plan from acceptance criteria and the organization testing standard",
     "Choose levels including unit through interaction and end-to-end, and methods including TDD when the standard selects them",
     "Flag criteria that cannot be tested as written",
@@ -25,6 +26,7 @@
   ],
   "processes": ["feature-request", "bug", "change", "release"],
   "skills": [
+    {"id":"ah-engineering-guidelines","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},
     {"id": "ah-test-plan", "source": "agenthouse-agentic-engineering", "versionPolicy": "project-runtime-pin"},
     {"id": "ah-write-tests", "source": "agenthouse-agentic-engineering", "versionPolicy": "project-runtime-pin"},
     {"id": "ah-spec", "source": "agenthouse-agentic-engineering", "versionPolicy": "project-runtime-pin"},

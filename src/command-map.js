@@ -1,6 +1,6 @@
 export const phases={
   understand:['survey','inspect','controls'],
-  shape:['define-product-requirements','draft-user-story','assess-story-readiness','validate-scope','assess-tech-feasibility','architecture','coding-standards','visual-plan','test-plan'],
+  shape:['define-product-requirements','draft-user-story','assess-story-readiness','validate-scope','assess-tech-feasibility','architecture','engineering-guidelines','coding-standards','visual-plan','test-plan'],
   build:['work','write-tests','spec','check-commit'],
   verify:['evaluate','review','review-change','review-mr','frontend-acceptance','usability'],
   approve:['sign','gate'],
@@ -12,6 +12,7 @@ export function goalHelp(goal) {
   const routes=[
     [/feasib|blast radius|migration|architecture decision|impact/i,'shape','assess-tech-feasibility','architecture','It does not run project checks or approve a decision.'],
     [/architecture guideline|ADR catalog|foundational ADR|architecture catalog/i,'shape','architecture','assess-tech-feasibility','It does not approve exceptions or invent governance authority.'],
+    [/engineering guideline|engineering standard/i,'shape','engineering-guidelines','controls','Catalog validation does not assess compliance; read the guidance and run applicable checks.'],
     [/coding standard|style guide|lint rule|coding guideline/i,'shape','coding-standards','controls','Mechanism hints are not enforcement; use controls and evaluate for real checks.'],
     [/merge request|pull request|\bMR\b|\bPR\b|https?:\/\//i,'verify','review-mr','review','It does not post, push, merge or alter tracker state.'],
     [/what.*(?:run|check)|dry.run|evaluate|run.*check/i,'verify','evaluate','review','Use evaluate --list first; evaluation does not assess requirements or design.'],

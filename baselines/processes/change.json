@@ -14,5 +14,5 @@
   ],
   "outputs": ["Impact assessment","Decision and migration plan","Architecture catalog updates when applicable","Verification evidence","Release communication"],
   "roles": ["product-manager","architect","engineer","test-manager","devops"],
-  "skills": ["ah-assess-tech-feasibility","ah-architecture","ah-coding-standards","ah-work","ah-test-plan","ah-write-tests","ah-pipeline","ah-gate"]
+  "skills": ["ah-engineering-guidelines","ah-assess-tech-feasibility","ah-architecture","ah-coding-standards","ah-work","ah-test-plan","ah-write-tests","ah-pipeline","ah-gate"]
 }

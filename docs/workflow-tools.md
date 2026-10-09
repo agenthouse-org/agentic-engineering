@@ -16,7 +16,7 @@ Use `ah-engineering` or the enrolled `node .agenthouse/run.mjs`. Every command h
 
 `architecture list|show|check|write` manages architecture ADR catalogs linked as `fields.architectureCatalog`. Listing can scan `docs/adr` (or `--path`). Check validates catalog structure and linked Markdown paths; it does not prove architectural correctness or grant exception approval.
 
-`coding-standards show|check|write` manages coding-convention catalogs linked as `fields.codingStandards`, optionally showing a module standards document (`--module node-typescript|php-laravel`). Mechanism hints (`advisory`, lint tools, `evaluate-check`) are not enforcement; use `controls` and `evaluate` for real checks. Ready gates verify linked catalogs when those fields are present. See [ADR-0018](adr/0018-architecture-and-coding-guidelines.md).
+`engineering-guidelines show|check|write` manages engineering-guideline catalogs linked as `fields.codingStandards`, optionally showing a module standards document (`--module node-typescript|php-laravel`). Mechanism hints (`advisory`, lint tools, `evaluate-check`) are not enforcement; use `controls` and `evaluate` for real checks. Ready gates verify linked catalogs when those fields are present. `coding-standards` remains a compatibility alias with the same format and fields. See [engineering guidelines](engineering-guidelines.md) for assessment before changes and the distinction from catalog validation.
 
 ## Pipeline management
 

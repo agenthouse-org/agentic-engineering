@@ -59,7 +59,7 @@ allowed['test-plan']=['item','plan','output','items','standard-ref','owner-role'
 allowed['write-tests']=['item','plan','evaluator','criteria'];
 allowed.pipeline=['provider','workflow','jobs','plan','output'];
 allowed.architecture=['item','catalog','path','id','output','entries','owner-role','standard-ref'];
-allowed['coding-standards']=['item','catalog','module','output','entries','owner-role','standard-ref'];
+allowed['engineering-guidelines']=allowed['coding-standards']=['item','catalog','module','output','entries','owner-role','standard-ref'];
 allowed.dependencies.push('name','source','repository','revision','path','publisher','key','output');
 allowed.housekeep=['check','clean'];
 allowed.onboard.push('branch-pattern','branch-example','branch-base');
@@ -71,10 +71,10 @@ export async function main(args) {
     console.log(help(topic));return 0;
   }
   assert(Object.hasOwn(allowed,command),`Unknown command ${command}`);
-  assert(['policy','work','dependencies','usability','visual-plan','npm-provenance','roles','process','test-plan','write-tests','pipeline','architecture','coding-standards'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
+  assert(['policy','work','dependencies','usability','visual-plan','npm-provenance','roles','process','test-plan','write-tests','pipeline','architecture','coding-standards','engineering-guidelines'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
   for(const key of Object.keys(o))assert(['root','help',...allowed[command]].includes(key),`Unknown option --${key} for ${command}`);
   const root=path.resolve(o.root || process.cwd());
-  let result;
+  let result,outputHandled=false;
   switch(command) {
     case 'policy': {
       const action=pos.shift();
@@ -140,14 +140,16 @@ export async function main(args) {
       }
       break;
     }
+    case 'engineering-guidelines':
     case 'coding-standards': {
       const action=pos.shift();
-      assert(['show','check','write'].includes(action),'Choose coding-standards show, check, or write');
+      assert(['show','check','write'].includes(action),`Choose ${command} show, check, or write`);
       if(action==='show')result=showCodingStandards(root,{item:o.item,catalog:o.catalog,module:o.module});
       else if(action==='check')result=checkCodingStandards(root,{item:o.item,catalog:o.catalog});
       else {
-        assert(o.entries,'--entries JSON required for coding-standards write');
+        assert(o.entries,`--entries JSON required for ${command} write`);
         result=writeCodingStandards(root,{item:o.item,catalog:o.catalog,output:o.output,ownerRole:o['owner-role'],standardRef:o['standard-ref'],module:o.module,entries:JSON.parse(o.entries)});
+        outputHandled=true;
       }
       break;
     }
@@ -280,6 +282,6 @@ export async function main(args) {
       break;
     }
   }
-  if(['survey','inspect','review','gate','spec','backlog','visual-plan','npm-provenance','test-plan','write-tests','pipeline','architecture','coding-standards'].includes(command) && o.output)write(inside(root,o.output),result);
+  if(!outputHandled && ['survey','inspect','review','gate','spec','backlog','visual-plan','npm-provenance','test-plan','write-tests','pipeline','architecture','coding-standards','engineering-guidelines'].includes(command) && o.output)write(inside(root,o.output),result);
   console.log(JSON.stringify(result,null,2));return result.exitCode || 0;
 }
