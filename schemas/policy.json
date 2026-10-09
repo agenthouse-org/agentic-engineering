@@ -6,6 +6,27 @@
     "expiresAt": {"type": "string"}, "owner": {"type": "string", "minLength": 1},
     "authorities": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}},
     "requiredChecks": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "authorUnavailableDuringReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["appliesWhen", "sop", "triggeredBy", "mrTraceability"],
+      "properties": {
+        "appliesWhen": {"type": "object", "additionalProperties": false, "minProperties": 1,
+          "properties": {
+            "unreachableWorkingDays": {"type": "integer", "minimum": 1},
+            "declaredAbsence": {"type": "boolean"},
+            "urgencyClasses": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+          }
+        },
+        "sop": {"type": "object", "additionalProperties": false, "required": ["id"],
+          "properties": {"id": {"type": "string", "minLength": 1}, "reference": {"type": "string", "minLength": 1}, "description": {"type": "string", "minLength": 1}}
+        },
+        "triggeredBy": {"type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"enum": ["project-owner", "team-lead", "team-member"]}},
+        "mrTraceability": {"type": "object", "additionalProperties": false, "required": ["required"],
+          "properties": {"required": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}
+        }
+      }
+    },
     "rules": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "mode", "value"],
       "properties": {"id": {"type": "string", "minLength": 1}, "mode": {"enum": ["mandatory", "default", "advisory"]}, "value": {}, "decision": {"type": "string"}, "description": {"type": "string"}}
     }}

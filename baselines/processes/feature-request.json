@@ -10,7 +10,8 @@
     "When the request spans multiple stories, define product requirements and a story map before story drafting",
     "Define scope, exclusions, and acceptance examples",
     "Assess product and technical options; record architecture and coding-standard catalogs when design choices apply",
-    "Plan, deliver, verify, accept, and evaluate the outcome"
+    "Plan criterion-linked tests and verification: use the repository end-to-end runner or Playwright for changed browser journeys, frontend-acceptance for visual criteria, and integration tests for changed system boundaries",
+    "Deliver, verify, accept, and evaluate the outcome"
   ],
   "outputs": ["Outcome and acceptance","Product requirements and story map","Decision record","Architecture and coding-standard catalogs when applicable","Verification and acceptance evidence","Outcome follow-up"],
   "roles": ["product-manager","architect","engineer","test-manager"],

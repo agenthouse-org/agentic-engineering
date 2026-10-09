@@ -4,7 +4,7 @@ description: "Check ready or done criteria, evidence files, and independent sign
 license: MIT
 ---
 
-Generated from ah-engineering 1.11.0.
+Generated from ah-engineering 1.12.0.
 
 # agenthouse gate
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Use the requested ready or done phase. Keep completeness, evidence failure and approval pending distinct. Never fabricate acceptance evidence or sign an independent decision as the author.
+Use the requested ready or done phase. Keep completeness, evidence failure and approval pending distinct. Never fabricate acceptance evidence or sign an independent decision as the author. Report openDecisions in the gate output. An open review.author-unavailable-during-review decision is a governance notice for the project owner, not permission for the agent to alter MR roles, approve, merge, or push a foreign branch.
 
 CLI reference:
 

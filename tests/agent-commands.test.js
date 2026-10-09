@@ -63,6 +63,14 @@ test('frontend-acceptance treats inspection screenshots as ephemeral, not Git ev
   assert.match(lifecycle,/housekeep/);
   assert.match(lifecycle,/tests\/output/);
 });
+test('review routes browser, visual, and integration evidence without requiring every test type',()=>{
+  const review=agentSkills()['ah-review'];
+  assert.match(review,/Playwright or repository end-to-end checks/);
+  assert.match(review,/frontend-acceptance for visual criteria/);
+  assert.match(review,/planned integration-test evidence/);
+  assert.match(review,/Do not require browser tests for unrelated work/);
+  assert.match(review,/do not write or alter tests during review/);
+});
 test('define-product-requirements preserves evidence boundaries and lifecycle scope',()=>{
   const skill=agentSkills()['ah-define-product-requirements'];
   assert.match(skill,/product requirements and story map artifact/);

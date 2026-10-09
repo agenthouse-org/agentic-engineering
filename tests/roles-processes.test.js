@@ -99,6 +99,19 @@ test('process and role views discover installed agenthouse-skills without copyin
   assert.deepEqual(product.skillDiscovery.skills,[]);
 });
 
+test('delivery processes route browser, visual, and integration verification by changed behavior',()=>{
+  for(const id of ['feature-request','bug','change']) {
+    const {definition}=roleProcessShow('processes',id);
+    const steps=definition.steps.join(' ');
+    assert.match(steps,/Playwright/);
+    assert.match(steps,/frontend-acceptance/);
+    assert.match(steps,/integration tests/);
+  }
+  const {definition:lifecycle}=roleProcessShow('processes','product-lifecycle');
+  assert.ok(lifecycle.stages.find(stage=>stage.id==='plan').outputs.includes('Criterion-linked test plan and verification approach'));
+  assert.ok(lifecycle.stages.find(stage=>stage.id==='deliver').outputs.includes('Verification evidence at the planned test level'));
+});
+
 test('skill discovery honors frontmatter, reports unscoped installs, and keeps explicit baseline skills mapped',()=>{
   const index=new Map([['frontend-acceptance',{id:'frontend-acceptance',source:'agenthouse-skills',processes:['bug'],roles:[],stages:[],use:'Use the pinned method.'}]]);
   const installed=[

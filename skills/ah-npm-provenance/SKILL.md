@@ -4,7 +4,7 @@ description: "Inspect local publish files for npm provenance, or write a GitHub 
 license: MIT
 ---
 
-Generated from ah-engineering 1.11.0.
+Generated from ah-engineering 1.12.0.
 
 # agenthouse npm-provenance
 

@@ -5,6 +5,8 @@
 
 Status: confirmed governance direction. The preview implements policy resolution, signed decisions and direct delegation; broader governance records and provider workflows below remain target behavior.
 
+For MR/PR review when an author is unavailable, the consumer must choose and record a local procedure. See [author unavailable during review](author-unavailable-during-review.md). The framework reports the missing decision; it does not select a role swap, a merge, or a branch-push authority.
+
 ## Authority and process
 
 The organization names a central architecture/AI governance owner responsible for exceptions to organization-wide decisions. The owner can delegate approval authority. Teams define their governance workflow, including how requests are raised, reviewed, and recorded, within the authority granted to them.

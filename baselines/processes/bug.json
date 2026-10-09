@@ -9,7 +9,7 @@
     "Triage severity, affected users, and workaround",
     "Agree scope and expected behavior",
     "Reproduce where practical and implement a focused correction within coding standards",
-    "Verify the correction and relevant regression risks",
+    "Plan and verify the correction and relevant regression risks at the affected test level; use the repository end-to-end runner or Playwright for browser journeys, frontend-acceptance for visual criteria, and integration tests for changed system boundaries",
     "Communicate, release, and capture follow-up learning"
   ],
   "outputs": ["Reproduction","Expected/observed behavior","Fix and regression evidence","Release/support note when needed"],

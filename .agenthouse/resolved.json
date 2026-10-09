@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "frameworkVersion": "1.5.1",
+  "frameworkVersion": "1.12.0",
   "configDigest": "25587a3b46762776be9edfbe21637cf5a9d79eeb8e0a79ba8e03433a602eccc5",
   "sources": [
     {
@@ -16,5 +16,15 @@
   "authorities": {
     "project-owner": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA2Ky/M72t2xANs4GbJMUg7xWLLhrgYXXFqWoBLlnzWIo=\n-----END PUBLIC KEY-----\n"
   },
-  "digest": "033c9698c76b050178e7b13cdf347f834f295a40849416b6029485c584e19a48"
+  "openDecisions": [
+    {
+      "id": "review.author-unavailable-during-review",
+      "status": "open",
+      "owner": "project-owner",
+      "reason": "Local governance does not define what to do when an MR author is unavailable during review.",
+      "recordAt": "policy.authorUnavailableDuringReview",
+      "action": "The project owner must record the applicability, SOP, authorized trigger roles, and required MR traceability. See docs/author-unavailable-during-review.md for consumer-selectable reference SOPs."
+    }
+  ],
+  "digest": "f9323ea5d7d72328e3a8955351ce100843ca777686e0165cf386a75a59d45cca"
 }

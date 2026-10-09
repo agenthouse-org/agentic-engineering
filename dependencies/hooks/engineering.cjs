@@ -16,8 +16,8 @@ function normalize(vendor, raw) {
 function tokens(command) {
   if (typeof command !== 'string') throw Error('Missing command');
   // Shell expansion cannot be interpreted safely by a policy matcher.
-  if (/`|\$\(|\$\{|\r|\n/.test(command)) throw Error('Dynamic shell expansion requires separate review');
-  const parts=command.match(/"(?:\\.|[^"\\])*"|'[^']*'|&&|\|\||[;|&]|[^\s;|&]+/g) || [];
+  if (/`|\$\(|\$\{/.test(command)) throw Error('Dynamic shell expansion requires separate review');
+  const parts=command.match(/"(?:\\.|[^"\\])*"|'[^']*'|&&|\|\||[;|&\r\n]|[^\s;|&\r\n]+/g) || [];
   return parts.map(t=>t.replace(/^(['"])(.*)\1$/,'$2'));
 }
 function guard(command, policy, branch) {
@@ -26,7 +26,7 @@ function guard(command, policy, branch) {
   const protectedBranches=policy.protectedBranches || [];
   for(let i=0;i<words.length;i++) {
     if (!/(^|[\\/])git(?:\.exe)?$/i.test(words[i]))continue;
-    const end=words.findIndex((t,j)=>j>i && [';','&&','||','|','&'].includes(t)),segment=words.slice(i+1,end<0?undefined:end);
+    const end=words.findIndex((t,j)=>j>i && [';','&&','||','|','&','\r','\n'].includes(t)),segment=words.slice(i+1,end<0?undefined:end);
     if(policy.blockNoVerify!==false && (segment.includes('--no-verify') || (segment.includes('commit')&&segment.includes('-n'))))return {status:'denied',reason:'Repository verification bypass is disabled'};
     if(segment.includes('push')) {
       const push=segment.slice(segment.indexOf('push')+1);

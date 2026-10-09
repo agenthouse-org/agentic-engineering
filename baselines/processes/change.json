@@ -8,7 +8,7 @@
     "State the motivation and affected outcomes",
     "Assess stakeholders, compatibility, and risk",
     "Choose an authorized approach and migration path; update architecture catalogs when decisions change",
-    "Plan implementation and verification against coding standards",
+    "Plan implementation and criterion-linked verification against coding standards; use the repository end-to-end runner or Playwright for changed browser journeys, frontend-acceptance for visual criteria, and integration tests for changed system boundaries",
     "Review evidence and required approvals",
     "Communicate, release, and learn"
   ],

@@ -4,7 +4,7 @@ description: "Rebuild or freeze-check the merged policy file at .agenthouse/reso
 license: MIT
 ---
 
-Generated from ah-engineering 1.11.0.
+Generated from ah-engineering 1.12.0.
 
 # agenthouse resolve
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Use --frozen for a verification request. Refresh only when resolving reviewed configuration changes is intended; do not hide drift by automatically refreshing.
+Use --frozen for a verification request. Refresh only when resolving reviewed configuration changes is intended; do not hide drift by automatically refreshing. Report openDecisions from the resolved snapshot. In particular, if review.author-unavailable-during-review is open, identify the project owner and policy.authorUnavailableDuringReview as the place to record the consumer decision; do not choose an SOP for them.
 
 CLI reference:
 

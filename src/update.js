@@ -192,7 +192,7 @@ export function session(root,options={}) {
     const review=roleProcessCheck(kind);
     baselineUpdates[kind]={summary:review.summary,evaluatedVersion:VERSION,results:review.results.map(({id,status,baselineVersion,availableVersion,ignored,baselineChanges,conflicts})=>({id,status,baselineVersion,availableVersion,ignored,baselineChanges,conflictFields:(conflicts||[]).map(conflict=>conflict.field)}))};
   }catch(error){baselineUpdates[kind]={status:'error',reason:error.message};}
-  const result={id,active,executingVersion:VERSION,update:updateResult,dependencyUpdate,organizationUpdates,dependencies,baselineUpdates,policyChange,policyStatus:policyStatus(root,{record:true}),housekeeping};
+  const result={id,active,executingVersion:VERSION,update:updateResult,dependencyUpdate,organizationUpdates,dependencies,baselineUpdates,policyChange,openDecisions:available.openDecisions || [],policyStatus:policyStatus(root,{record:true}),housekeeping};
   write(inside(root,`.agenthouse/sessions/${id}.json`),result);
   return result;
 }

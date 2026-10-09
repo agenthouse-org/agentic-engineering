@@ -4,7 +4,7 @@ description: "Import one markdown or exported JSON work item into .agenthouse/wo
 license: MIT
 ---
 
-Generated from ah-engineering 1.11.0.
+Generated from ah-engineering 1.12.0.
 
 # agenthouse backlog
 

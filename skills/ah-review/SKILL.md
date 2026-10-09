@@ -4,7 +4,7 @@ description: "Match each work-item acceptance criterion to build and policy evid
 license: MIT
 ---
 
-Generated from ah-engineering 1.11.0.
+Generated from ah-engineering 1.12.0.
 
 # agenthouse review
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Use review with the actual item, commit and evidence reports. Inspect missing coverage, criteria with no test plan link, and stale build/policy evidence. Perform a substantive code review as well; technical coverage is not independent approval. Lead with pass / fail / incomplete and required findings; expand only if the user asks.
+Use review with the actual item, commit and evidence reports. Inspect missing coverage, criteria with no test plan link, and stale build/policy evidence. Use the changed behavior and test plan to select evidence: run configured Playwright or repository end-to-end checks for changed browser journeys when available; use frontend-acceptance for visual criteria; and expect planned integration-test evidence for changed system boundaries. Do not require browser tests for unrelated work. If required test evidence is absent, report the criterion incomplete and route test authoring to ah-test-plan and ah-write-tests; do not write or alter tests during review. Perform a substantive code review as well; technical coverage is not independent approval. Lead with pass / fail / incomplete and required findings; expand only if the user asks.
 
 CLI reference:
 

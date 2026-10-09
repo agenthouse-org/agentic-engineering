@@ -34,3 +34,4 @@ Proposed implementation details live in the linked design documents until implem
 | [0020](0020-agent-loaded-markdown.md) | Short agent-loaded Markdown; section overviews or on-demand references for long files |
 | [0021](0021-target-branch-integration-guidance.md) | Advisory target-branch integration before MR/PR creation |
 | [0022](0022-engineering-guidelines.md) | Engineering guidelines interface and assessment before changes, with coding-standards compatibility |
+| [0023](0023-author-unavailable-review-governance.md) | Consumer-owned procedure for an unavailable MR/PR author during review |

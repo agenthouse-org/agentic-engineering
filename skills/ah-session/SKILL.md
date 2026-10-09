@@ -4,7 +4,7 @@ description: "Report the active agenthouse version, apply approved updates and h
 license: MIT
 ---
 
-Generated from ah-engineering 1.11.0.
+Generated from ah-engineering 1.12.0.
 
 # agenthouse session
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Explain applied/deferred runtime and dependency updates, baselineUpdates for roles/processes, housekeeping, and active version set. If baseline changes are available, summarize affected definitions and field diffs, then offer explicit merge or ignore; never merge automatically. If refresh-required is returned after runtime activation, explain that the current process used the old pinned code and baseline review is available on the next invocation. If policyChange is changed, show the new revision and affected rules/checks, keep the current frozen snapshot, and ask whether this work should adopt it. Run resolve only after the user chooses adoption. Noninteractive work must report the mismatch rather than choose.
+Explain applied/deferred runtime and dependency updates, baselineUpdates for roles/processes, housekeeping, active version set, and openDecisions. If baseline changes are available, summarize affected definitions and field diffs, then offer explicit merge or ignore; never merge automatically. If refresh-required is returned after runtime activation, explain that the current process used the old pinned code and baseline review is available on the next invocation. If policyChange is changed, show the new revision and affected rules/checks, keep the current frozen snapshot, and ask whether this work should adopt it. Run resolve only after the user chooses adoption. If review.author-unavailable-during-review is open, name it as a project-owner decision and point to policy.authorUnavailableDuringReview; do not supply a default SOP. Noninteractive work must report the mismatch rather than choose.
 
 CLI reference:
 

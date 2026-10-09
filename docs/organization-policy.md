@@ -1,5 +1,7 @@
 # Organization policy and extension channels
 
+An organization policy can define `authorUnavailableDuringReview` for every consumer. The entry is optional but its absence is surfaced as the open `review.author-unavailable-during-review` decision; see [author unavailable during review](author-unavailable-during-review.md) for the schema shape and consumer-selectable SOPs.
+
 Signed, offline-capable organization channels let a governing authority publish
 policy without silent adoption. Existing `onboard --policy` installations retain
 their copied policy. They report upstream freshness as `untracked` until tracking

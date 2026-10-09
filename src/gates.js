@@ -120,7 +120,7 @@ export function gate(root,{item,phase='ready',decision,policyFile}={}) {
     }
   }
   const status=findings.some(f=>f.status==='failed')?'failed':findings.some(f=>f.status==='incomplete')?'incomplete':findings.length?'pending':'passed';
-  return {schemaVersion:1,phase,item,subject,policyDigest:snapshot.digest,status,findings,evidence:evidence.map(({file,sha256})=>({file,sha256})),exitCode:{passed:0,failed:1,pending:3,incomplete:4}[status]};
+  return {schemaVersion:1,phase,item,subject,policyDigest:snapshot.digest,status,findings,openDecisions:snapshot.openDecisions || [],evidence:evidence.map(({file,sha256})=>({file,sha256})),exitCode:{passed:0,failed:1,pending:3,incomplete:4}[status]};
 }
 export async function specification(root,{item,phase,evaluator}={}) {
   assert(['red','green'].includes(phase),'Choose red or green');

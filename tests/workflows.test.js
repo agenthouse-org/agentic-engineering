@@ -174,6 +174,10 @@ test('upstream hook guards abstain from host approval on success and reject unsa
   const {runtime}=hookRuntime();assert.equal(runtime.guard('git commit --no-verify',{},'main').status,'denied');
   assert.equal(runtime.guard('git push --force origin main',{protectedBranches:['main']},'feature').status,'denied');
   assert.equal(runtime.guard('git push origin feature',{protectedBranches:['main']},'feature').status,'allowed');
+  assert.equal(runtime.guard("python3 -I - <<'EOF'\nprint('hello')\nEOF",{protectedBranches:['develop']},'feature').status,'allowed');
+  assert.equal(runtime.guard('echo one\necho two\ngit push --force origin develop',{protectedBranches:['develop']},'feature').status,'denied');
+  assert.equal(runtime.guard('echo $(date)',{},'feature').reason,'Dynamic shell expansion requires separate review');
+  assert.equal(runtime.guard('echo `date`',{},'feature').reason,'Dynamic shell expansion requires separate review');
   assert.deepEqual(JSON.parse(runtime.render('claude','before-command',{status:'allowed'}).stdout),{});
   const root=setup(t);write(path.join(root,'event.json'),{event:'after-edit',file:'../outside'});
   await assert.rejects(hook(root,{input:'event.json'}),/outside/);

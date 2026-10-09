@@ -6,6 +6,17 @@ import {assert, read, write, hash, canonical, inside, VERSION, validated, safeId
 
 export const configPath = root => inside(root, '.agenthouse/config.json');
 export const lockPath = root => inside(root, '.agenthouse/resolved.json');
+export const AUTHOR_UNAVAILABLE_DURING_REVIEW_DECISION = 'review.author-unavailable-during-review';
+export function authorUnavailableDuringReviewNotice(snapshot) {
+  return {
+    id: AUTHOR_UNAVAILABLE_DURING_REVIEW_DECISION,
+    status: 'open',
+    owner: snapshot.owner || 'project owner',
+    reason: 'Local governance does not define what to do when an MR author is unavailable during review.',
+    recordAt: 'policy.authorUnavailableDuringReview',
+    action: 'The project owner must record the applicability, SOP, authorized trigger roles, and required MR traceability. See docs/author-unavailable-during-review.md for consumer-selectable reference SOPs.'
+  };
+}
 export function loadConfig(root) {
   const config=validated('config', read(configPath(root)));
   assert(new Set(config.evaluators.map(e=>e.id)).size===config.evaluators.length,'Duplicate evaluator identifier');
@@ -24,7 +35,7 @@ export function resolve(root, {frozen = false, policyFile, frameworkVersion=VERS
   const sources = [...(policyFile ? [path.resolve(policyFile)] : []), ...(config.policySources || []).map(p => inside(root,p))];
   const layers = sources.map(file => ({file, data: validated('policy',read(file))}));
   const rules = new Map(), provenance = {}, requiredChecks = new Set();
-  let owner = null;
+  let owner = null, authorUnavailableDuringReview;
   const authorities = {};
   for (const {file,data} of layers) {
     if (data.expiresAt) assert(Date.parse(data.expiresAt) > Date.now(), `Policy expired: ${data.id}`);
@@ -37,6 +48,10 @@ export function resolve(root, {frozen = false, policyFile, frameworkVersion=VERS
       authorities[id] = key;
     }
     for (const id of data.requiredChecks || []) requiredChecks.add(id);
+    if(data.authorUnavailableDuringReview) {
+      authorUnavailableDuringReview=data.authorUnavailableDuringReview;
+      provenance.authorUnavailableDuringReview={source:data.id, revision:data.revision, file:path.relative(root,file).replaceAll('\\','/')};
+    }
     for (const rule of data.rules) {
       safeId(rule.id);
       const previous = rules.get(rule.id);
@@ -66,6 +81,8 @@ export function resolve(root, {frozen = false, policyFile, frameworkVersion=VERS
     sources:layers.map(({data}) => ({id:data.id, revision:data.revision, digest:hash(data)})),
     rules:[...rules.values()].sort((a,b)=>a.id.localeCompare(b.id)), provenance,
     requiredChecks:[...requiredChecks].sort(), owner, authorities};
+  if(authorUnavailableDuringReview)snapshot.authorUnavailableDuringReview=authorUnavailableDuringReview;
+  snapshot.openDecisions=authorUnavailableDuringReview ? [] : [authorUnavailableDuringReviewNotice(snapshot)];
   const origins=originPins(root,config.policySources || []);
   if(origins.length)snapshot.origins=origins;
   snapshot.digest = hash(snapshot);

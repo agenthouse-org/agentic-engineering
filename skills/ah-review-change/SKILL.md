@@ -4,7 +4,7 @@ description: "Review a change against its requirements, policy, and available ev
 license: MIT
 ---
 
-Generated from ah-engineering 1.11.0.
+Generated from ah-engineering 1.12.0.
 
 # agenthouse review-change
 
@@ -15,6 +15,8 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
 Use survey and inspect to establish repository facts. Run review with the actual item, change ref and evidence paths when available. Resolve requirements from local records or configured tools. Read the diff and applicable policy.
+
+When the author is absent or reported unreachable (including an MR note or no response for the policy's threshold), read `authorUnavailableDuringReview` from the resolved local policy. Follow its recorded SOP, trigger authority, and MR traceability. If it is absent, stop: state that `review.author-unavailable-during-review` is an open governance decision for the project owner, point to `policy.authorUnavailableDuringReview` and `docs/author-unavailable-during-review.md`, and offer the documented reference SOPs for the owner to choose. Never make a reviewer self-approve or merge a foreign MR. Never push to another person's branch unless the required MR entry explicitly records that push.
 
 Reply as Decide / Findings / Evidence. Do not narrate the whole change unless the user asks.
 

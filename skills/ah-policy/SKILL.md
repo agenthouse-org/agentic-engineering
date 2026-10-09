@@ -4,7 +4,7 @@ description: "Track signed organization policy origins, report drift and permiss
 license: MIT
 ---
 
-Generated from ah-engineering 1.11.0.
+Generated from ah-engineering 1.12.0.
 
 # agenthouse policy
 

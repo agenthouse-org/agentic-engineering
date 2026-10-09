@@ -4,7 +4,7 @@ description: "Install the pinned runtime, lifecycle skill, and required frontend
 license: MIT
 ---
 
-Generated from ah-engineering 1.11.0.
+Generated from ah-engineering 1.12.0.
 
 # agenthouse init
 
