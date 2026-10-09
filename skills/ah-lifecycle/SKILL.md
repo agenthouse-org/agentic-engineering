@@ -26,4 +26,6 @@ Use `node .agenthouse/run.mjs evaluate --profile <configured-profile> --frozen -
 
 Keep evidence and governance decisions separate. Do not sign an approval on behalf of a human or use a discovered private key unless the user has authorized that signing action. Follow the organization's delegation process for exceptions.
 
+Before opening an MR/PR, apply the advisory `git.integrate-target-before-review` rule in the pinned lifecycle guidance: prompt for integration of the latest intended target branch when needed, respecting existing authorization and project policy.
+
 At handoff, identify fulfilled criteria, actual checks, unresolved gaps, and the next lifecycle stage. For release and operational work include recovery and ownership. Feed recurring defects back into concrete criteria or checks.

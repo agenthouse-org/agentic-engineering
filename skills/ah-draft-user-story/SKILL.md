@@ -4,7 +4,7 @@ description: "Draft a story or bug with observable acceptance criteria, scope, a
 license: MIT
 ---
 
-Generated from ah-engineering 1.9.1.
+Generated from ah-engineering 1.10.0.
 
 # agenthouse draft-user-story
 

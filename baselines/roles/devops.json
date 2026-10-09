@@ -9,6 +9,7 @@
     "Map survey and module layers to jobs and manage job enablement over time",
     "Configure artifact and JUnit or host-native result publishing without masking evaluate exit status",
     "Preserve frozen policy and noninteractive CI semantics",
+    "Before opening an MR/PR for pipeline or operational changes, guide the user through the advisory git.integrate-target-before-review rule in docs/lifecycle.md",
     "Follow host best practices: least privilege, no secrets in logs, separate install from evaluate, fail closed"
   ],
   "boundaries": [

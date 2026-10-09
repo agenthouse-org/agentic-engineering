@@ -4,7 +4,7 @@ description: "Print, install, or remove agenthouse-owned hook entries in Claude/
 license: MIT
 ---
 
-Generated from ah-engineering 1.9.1.
+Generated from ah-engineering 1.10.0.
 
 # agenthouse hook-config
 

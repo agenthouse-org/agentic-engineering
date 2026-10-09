@@ -24,6 +24,12 @@ For frontend work derive acceptance from an image, wireframe, story, or bug repo
 
 Never change a test, baseline, threshold, scope, or policy solely to make an evaluation green. A justified change belongs in the decision/evidence trail. When a requirement is wrong, record the correction and re-evaluate affected criteria.
 
+## Before opening an MR/PR
+
+**`git.integrate-target-before-review` (advisory):** Identify the project's intended target branch (for example `main`, `develop`, or `master`) and ask the user to integrate its latest changes into the working branch. Guide them through the project's merge or rebase workflow, resolve conflicts, and rerun relevant checks. Respect existing authorization and project policy; if declined or unavailable, disclose that integration remains outstanding.
+
+Use project conventions and available context; ask if the target is ambiguous. Preserve user changes. Skip redundant integration when the branch is already current; if offline or freshness cannot be verified, disclose that limitation. This recommendation neither authorizes Git operations by itself nor adds a required gate.
+
 ## Ticket size and scope creep
 
 Ready gates treat oversized work as a pending `ticketSize` finding when there are more than `lifecycle.ready.maxCriteria` criteria (default 8) or `fields.sizeRisk` is `oversized`, unless `fields.sizeOverride` records an explicit user reason to proceed. Disable with `lifecycle.ready.ticketSize: false`. Prefer splitting into thinner local work items.

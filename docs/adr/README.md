@@ -32,3 +32,4 @@ Proposed implementation details live in the linked design documents until implem
 
 | [0019](0019-organization-policy-channels.md) | Signed organization policy channels, explicit adoption and scoped skill publishers |
 | [0020](0020-agent-loaded-markdown.md) | Short agent-loaded Markdown; section overviews or on-demand references for long files |
+| [0021](0021-target-branch-integration-guidance.md) | Advisory target-branch integration before MR/PR creation |

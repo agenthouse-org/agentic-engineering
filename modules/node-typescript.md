@@ -16,6 +16,8 @@ For frontend work use the pinned frontend-acceptance method. Exercise loading, e
 
 ## Dependencies and delivery
 
+Before opening an MR/PR, follow the advisory [target-branch integration rule](../docs/lifecycle.md#before-opening-an-mrpr) (`git.integrate-target-before-review`): prompt for integration when needed and rerun relevant checks, respecting existing authorization and project policy.
+
 Commit lockfiles, use reproducible installation in CI, and review dependency changes including install scripts. Keep credentials outside source and reports. Record configuration changes, backward compatibility and recovery steps before release. Instrument consequential behavior with useful, redacted diagnostics.
 
 The touched-file ESLint check is fast feedback. Whole-project type checks and tests still belong in evaluation and CI because a local edit can affect other files.

@@ -4,7 +4,7 @@ description: "Show, check, or write coding-standards catalogs and optional modul
 license: MIT
 ---
 
-Generated from ah-engineering 1.9.1.
+Generated from ah-engineering 1.10.0.
 
 # agenthouse coding-standards
 
@@ -15,6 +15,8 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
 Act as architect or engineer guidance for coding conventions. Prefer coding-standards show with a catalog, work item, or --module for packaged stack standards. Propose entries with id, title, mechanism (advisory, eslint, prettier, phpcs, phpstan, custom-check, evaluate-check), and optional ruleIds/checkId. Write fields.codingStandards with coding-standards write, then coding-standards check.
+
+Recommend git.integrate-target-before-review from docs/lifecycle.md in the pinned runtime as an advisory coding standard: prompt for integration of the latest intended target branch before an MR/PR when needed, respecting existing authorization and project policy.
 
 Mechanism hints are not enforcement. Use ah-controls and ah-evaluate for real checks. Do not invent policy rules or weaken inherited mandatory constraints.
 

@@ -4,7 +4,7 @@ description: "Switch latest vs exact update tracking, or verify and install a re
 license: MIT
 ---
 
-Generated from ah-engineering 1.9.1.
+Generated from ah-engineering 1.10.0.
 
 # agenthouse update
 

@@ -7,6 +7,7 @@
   "responsibilities": [
     "Propose and maintain architecture decision records and linked architecture catalogs",
     "Maintain coding-standards catalogs and map conventions to advisory text or real controls",
+    "Recommend git.integrate-target-before-review from docs/lifecycle.md as an advisory coding standard within project policy",
     "Assess blast radius and encapsulation with ah-assess-tech-feasibility before large changes",
     "Produce mermaid architecture artifacts via ah-visual-plan when structure must be reviewed",
     "Surface mandatory versus advisory guidance using ah-controls"

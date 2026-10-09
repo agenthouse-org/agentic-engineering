@@ -16,6 +16,8 @@ Inspect query counts and pagination for changed collection endpoints. Avoid acci
 
 ## Evidence and delivery
 
+Before opening an MR/PR, follow the advisory [target-branch integration rule](../docs/lifecycle.md#before-opening-an-mrpr) (`git.integrate-target-before-review`): prompt for integration when needed and rerun relevant checks, respecting existing authorization and project policy.
+
 Test business behavior, validation, authorization, tenancy, database effects and job failure paths using the repository's established runner. Capture a relevant regression before fixing a bug. Keep analyzer suppressions narrow, explained and reviewable. Formatting success is not correctness evidence.
 
 For Blade, Livewire or other UI changes, follow frontend-acceptance and retain actual browser evidence. The touched-file formatter check is feedback only; full tests and analysis remain in CI. Record deployment sequencing, worker restarts, configuration changes, monitoring and recovery instructions where applicable.

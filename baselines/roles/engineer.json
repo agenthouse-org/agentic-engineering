@@ -8,7 +8,8 @@
     "Inspect the existing system and applicable architecture and coding standards",
     "Implement the agreed behavior after required red evidence when the test plan uses TDD",
     "Write or adjust tests only under an accepted test plan",
-    "Provide relevant verification evidence and handoffs"
+    "Provide relevant verification evidence and handoffs",
+    "Before opening an MR/PR, guide the user through the advisory git.integrate-target-before-review rule in docs/lifecycle.md"
   ],
   "boundaries": [
     "Do not expand scope without agreement",
