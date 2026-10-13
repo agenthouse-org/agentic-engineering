@@ -125,14 +125,14 @@ export async function onboard(root,options={}) {
     if(!installed)install(root,{integration,artifactPaths,agents:(agents || 'codex').split(',').map(a=>a.trim()),policy,autonomy,project:options.project});
     const configPath=inside(root,'.agenthouse/config.json');
     const hasGit=fs.existsSync(path.join(root,'.git'));
-    let config=read(configPath);
+    let config=resolve(root).config;
     const branchPattern=options.branchPattern || options['branch-pattern'];
     const branchExample=options.branchExample || options['branch-example'];
     const branchBase=options.branchBase || options['branch-base'];
     if(!config.git?.branchNaming?.pattern) {
       if(branchPattern)writeBranchNaming(root,{pattern:branchPattern,example:branchExample,baseDefault:branchBase});
       else if(hasGit && prompt) {
-        const pattern=(await prompt.question('Git branch naming pattern with {id}, {slug}, optional {kind} (Enter to skip, example {id}-{slug}): ')).trim();
+        const pattern=(await prompt.question('Git branch naming pattern using {id}, {slug}, optional {kind} (Enter to skip, for example {id} or {id}-{slug}): ')).trim();
         if(pattern) {
           const example=(await prompt.question('Example branch name (Enter to skip): ')).trim() || undefined;
           const baseDefault=(await prompt.question('Default base branch when not branching from current (Enter for main): ')).trim() || 'main';

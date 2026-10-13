@@ -6,6 +6,7 @@ commands and verification detail.
 
 | Release | Summary |
 | --- | --- |
+| [1.12.1](releases/1.12.1.md) | Organization policy support for repository branch naming with project-safe base-branch overrides |
 | [1.12.0](releases/1.12.0.md) | Review governance for unavailable authors, explicit test-evidence routing, and refreshed enrolled runtime artifacts |
 | [1.11.0](releases/1.11.0.md) | Engineering-guidelines interface, coding-standards compatibility, and shared assessment before changes |
 | [1.10.0](releases/1.10.0.md) | Advisory target-branch integration before MR/PR creation across roles, skills, and stack standards |

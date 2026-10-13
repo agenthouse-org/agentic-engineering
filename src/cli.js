@@ -210,7 +210,7 @@ export async function main(args) {
       if(!state)problems.push('No installed runtime');
       if(state && state.version!==VERSION)problems.push(`Executing runtime ${VERSION} differs from repository pin ${state.version}`);
       if(o['plugin-version'] && o['plugin-version']!==state?.version)problems.push(`Plugin version ${o['plugin-version']} differs from repository pin ${state?.version || 'missing'}`);
-      if(config && !config.git?.branchNaming?.pattern && fs.existsSync(path.join(root,'.git')))warnings.push('Branch naming not configured (git.branchNaming.pattern); ask the team standard (for example {id}-{slug}) before work branch');
+      if(config && !config.git?.branchNaming?.pattern && fs.existsSync(path.join(root,'.git')))warnings.push('Branch naming not configured (git.branchNaming.pattern); configure a pattern using {id}, {slug}, or {kind} (for example {id} or {id}-{slug}) before work branch');
       if(fs.existsSync(inside(root,'.agenthouse/installation.json'))) {
         const keep=housekeep(root,{check:true});
         problems.push(...keep.errors);

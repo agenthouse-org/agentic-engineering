@@ -4,7 +4,7 @@ description: "Create, show, advance, or branch a local lifecycle work item under
 license: MIT
 ---
 
-Generated from ah-engineering 1.12.0.
+Generated from ah-engineering 1.12.1.
 
 # agenthouse work
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Choose new, show, advance, or branch from the request. Default to show when the action is unclear. Get missing identity/outcome from the user rather than fabricating it. Never create a work item or Git branch unless the user explicitly says yes. When splitting oversized or out-of-scope work: ask to create the follow-up item, then offer work branch from a chosen base using git.branchNaming; if the pattern is missing, ask for the team standard and store it through onboard --branch-pattern PATTERN, which validates and resolves configuration. Stage transitions require actual fields and applicable signed decisions; never manufacture approval.
+Choose new, show, advance, or branch from the request. Default to show when the action is unclear. Get missing identity/outcome from the user rather than fabricating it. Never create a work item or Git branch unless the user explicitly says yes. When splitting oversized or out-of-scope work: ask to create the follow-up item, then offer work branch from a chosen base using git.branchNaming; if the pattern is missing, ask for the team standard and store it through onboard --branch-pattern PATTERN, which validates and resolves configuration. The {id} placeholder is the local work-item id; it equals a JIRA key only when created with work new --id AAO-545 or imported with backlog, which preserves the external id. Stage transitions require actual fields and applicable signed decisions; never manufacture approval.
 
 CLI reference:
 

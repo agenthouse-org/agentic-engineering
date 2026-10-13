@@ -63,6 +63,26 @@ test('trusted external policy prevents replacement of a mandatory evaluator',t=>
 test('mandatory autonomy cannot be bypassed by project config',t=>{
   const root=setup(t),p=path.join(root,'.agenthouse/policy.json'),policy=read(p);policy.rules=[{id:'autonomy',mode:'mandatory',value:'supervised'}];write(p,policy);assert.throws(()=>resolve(root),/mandatory autonomy/);
 });
+test('branch-naming policy resolves defaults, project precedence, and provenance',t=>{
+  const root=setup(t),p=path.join(root,'.agenthouse/policy.json'),policy=read(p);
+  policy.rules=[{id:'branch-naming',mode:'default',value:{pattern:'{id}',example:'AA0-545'}}];write(p,policy);
+  let resolved=resolve(root);assert.equal(resolved.config.git.branchNaming.pattern,'{id}');assert.equal(resolved.snapshot.provenance['branch-naming'].source,'project-policy');
+  config(root,c=>{c.git={branchNaming:{pattern:'{id}-{slug}'}}});resolved=resolve(root);
+  assert.equal(resolved.config.git.branchNaming.pattern,'{id}-{slug}');assert.equal(resolved.snapshot.provenance['branch-naming'].source,'project');
+});
+test('mandatory branch-naming protects the format but permits a repository base',t=>{
+  const root=setup(t),p=path.join(root,'.agenthouse/policy.json'),policy=read(p);
+  policy.rules=[{id:'branch-naming',mode:'mandatory',value:{pattern:'{id}',example:'AA0-545',baseDefault:'main'}}];write(p,policy);
+  config(root,c=>{c.git={branchNaming:{baseDefault:'develop'}}});
+  assert.equal(resolve(root).config.git.branchNaming.baseDefault,'develop');
+  const file=path.join(root,'.agenthouse/config.json'),current=read(file);current.git.branchNaming.pattern='{id}-{slug}';write(file,current);
+  assert.throws(()=>resolve(root),/Project conflicts with mandatory branch-naming/);
+});
+test('branch-naming policy validates rendered branch safety during resolution',t=>{
+  const root=setup(t),p=path.join(root,'.agenthouse/policy.json'),policy=read(p);
+  policy.rules=[{id:'branch-naming',mode:'default',value:{pattern:'{id} {slug}'}}];write(p,policy);
+  assert.throws(()=>resolve(root),/Unsafe branch name/);
+});
 test('organization-required check cannot be omitted',async t=>{
   const root=setup(t);commands(root,'process.exit(0)');const p=path.join(root,'.agenthouse/policy.json'),policy=read(p);policy.requiredChecks=['security'];write(p,policy);resolve(root);
   assert.equal((await run(root)).exitCode,4);

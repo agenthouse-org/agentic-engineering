@@ -40,4 +40,6 @@ When splitting or opening follow-up work for scope creep: ask before `work new`;
 
 Optional linkage fields: `fields.parentWork`, `fields.relatedWork`, `fields.branch`.
 
+`git.branchNaming` may be supplied by an organization `branch-naming` policy rule. The `{id}` placeholder is the local work-item id; it equals a JIRA key such as `AAO-545` only when the item was created with `work new --id AAO-545` or imported with `backlog`, which preserves the external id.
+
 `work advance` verifies required record fields and applicable signed transition authority. Field completeness is not proof of product correctness; configure executable and assessment evaluators for that. Use organization policy for gate coverage and a protected CI job for authoritative technical checks. Local records and private signing keys are under the user's control; they are not a defense against a malicious repository owner.

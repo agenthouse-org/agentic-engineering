@@ -19,7 +19,7 @@ export function createBranch(root,id,{from,parentWork}={}) {
     const file=inside(root,`.agenthouse/work/${safeId(id)}.json`),item=read(file);
     const {config}=resolve(root);
     const naming=branchNaming(config);
-    assert(naming?.pattern,'Configure git.branchNaming.pattern in .agenthouse/config.json before work branch (ask the team standard, for example {id}-{slug})');
+    assert(naming?.pattern,'Configure git.branchNaming.pattern before work branch (use a format with {id}, {slug}, or {kind}, for example {id} or {id}-{slug})');
     const dirty=git(root,['status','--porcelain=v1'],{optional:true});
     assert(dirty!==null,'Git repository required for work branch');
     assert(!dirty,'Working tree must be clean before work branch');

@@ -4,7 +4,7 @@ description: "Run the installed web-usability audit and report real findings aga
 license: MIT
 ---
 
-Generated from ah-engineering 1.12.0.
+Generated from ah-engineering 1.12.1.
 
 # agenthouse web-usability-conformity
 

@@ -12,7 +12,7 @@ Treat ticket size as **advisory judgment plus a thin ready-gate check**. When `c
 
 During implementation, if a new ask falls outside recorded scope or criteria, the agent **warns, stops**, and Decide among: expand the record, override with a short `fields.scopeNotes` reason, or open **new** local work. New work and branches are **ask-first only**.
 
-Store the team's branch naming standard in project config as `git.branchNaming` (`pattern`, optional `example`, optional `baseDefault`). Placeholders are `{id}`, `{slug}`, and `{kind}`. Onboard or first branch use captures the pattern. `work branch --id ID [--from REF] [--parent ID]` creates and checks out a branch from a chosen base when the working tree is clean, writes `fields.branch`, and does not push or open a PR.
+Store the team's branch naming standard in project config as `git.branchNaming` (`pattern`, optional `example`, optional `baseDefault`). An organization may provide the same shape through the `branch-naming` policy rule. In default mode, project fields take precedence and missing fields inherit from policy; in mandatory mode, the policy controls the naming format while a repository may choose its own `baseDefault`. Placeholders are `{id}`, `{slug}`, and `{kind}`. Onboard or first branch use captures the pattern. `work branch --id ID [--from REF] [--parent ID]` creates and checks out a branch from a chosen base when the working tree is clean, writes `fields.branch`, and does not push or open a PR.
 
 ## Consequences
 

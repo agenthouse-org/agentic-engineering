@@ -147,6 +147,14 @@ test('work branch creates a related branch from a base and refuses dirty trees',
   writeBranchNaming(bare,{pattern:'{id}-{slug}'});
   assert.throws(()=>createBranch(bare,'no-git'),/Git repository required/);
 });
+test('work branch uses an organization branch-naming default',t=>{
+  const root=setup(t);git(root,'init');git(root,'config','user.email','test@example.invalid');git(root,'config','user.name','Test');
+  write(path.join(root,'readme.md'),'ok\n');git(root,'add','.');git(root,'commit','-m','initial');
+  const policy=read(path.join(root,'.agenthouse/policy.json'));policy.rules=[{id:'branch-naming',mode:'default',value:{pattern:'{id}',example:'AA0-545'}}];write(path.join(root,'.agenthouse/policy.json'),policy);
+  resolve(root);
+  newItem(root,'AA0-545','Add login form');git(root,'add','.');git(root,'add','-f','.agenthouse/policy.json','.agenthouse/work/AA0-545.json');git(root,'commit','-m','work item');
+  assert.equal(createBranch(root,'AA0-545',{from:'HEAD'}).branch,'AA0-545');
+});
 test('done gates consume actual evaluator success and reject stale policy or failed criteria',async t=>{
   const root=setup(t),record=item(root);config(root,c=>{c.lifecycle={done:{approval:false}};c.evaluators=[{id:'behavior',kind:'command',executable:'node',args:['-e','process.exit(0)'],result:'exit-code'}];c.profiles={'pull-request':{checks:[{evaluator:'behavior',required:true}]}};});
   const result=await evaluate(root,{frozen:true,subject:record.build});

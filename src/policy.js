@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {verify, sign} from 'node:crypto';
 import {assert, read, write, hash, canonical, inside, VERSION, validated, safeId} from './io.js';
+import {renderBranchName} from './branch-naming.js';
 
 export const configPath = root => inside(root, '.agenthouse/config.json');
 export const lockPath = root => inside(root, '.agenthouse/resolved.json');
@@ -65,6 +66,25 @@ export function resolve(root, {frozen = false, policyFile, frameworkVersion=VERS
     assert(!rule || rule.mode !== 'mandatory' || canonical(rule.value) === canonical(value), `Cannot override mandatory rule: ${id}`);
     rules.set(id,{id,value,mode:rule?.mode || 'default'});
     provenance[id] = {source:'project',file:'.agenthouse/config.json'};
+  }
+  const branchRule=rules.get('branch-naming');
+  if(branchRule) {
+    const value=branchRule.value;
+    assert(value && typeof value==='object' && !Array.isArray(value), 'Invalid branch-naming policy value');
+    assert(typeof value.pattern==='string' && value.pattern.trim(), 'Invalid branch-naming policy pattern');
+    renderBranchName(value.pattern,{id:'AA0-545',title:'Sample change',kind:'feature'});
+    const project=config.git?.branchNaming;
+    if(project) {
+      if(branchRule.mode==='mandatory') {
+        for(const key of ['pattern','example']) {
+          if(project[key]!==undefined)assert(canonical(project[key])===canonical(value[key]),'Project conflicts with mandatory branch-naming');
+        }
+      }
+      config.git.branchNaming={...value,...project};
+      provenance['branch-naming']={source:'project',file:'.agenthouse/config.json'};
+    } else {
+      config.git={...(config.git || {}),branchNaming:{...value}};
+    }
   }
   for(const [id,field] of [['autonomy','autonomy'],['documentation-authority','documentationAuthority'],['lifecycle','lifecycle'],['hooks','hooks']]) {
     const rule=rules.get(id);

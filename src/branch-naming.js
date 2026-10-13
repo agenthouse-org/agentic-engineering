@@ -7,7 +7,7 @@ export function slugify(title) {
 }
 
 export function renderBranchName(pattern,{id,title,kind='feature'}={}) {
-  assert(typeof pattern==='string' && pattern.trim(),'Configure git.branchNaming.pattern in .agenthouse/config.json (for example {id}-{slug})');
+  assert(typeof pattern==='string' && pattern.trim(),'Configure git.branchNaming.pattern (use a format with {id}, {slug}, or {kind}, for example {id} or {id}-{slug})');
   const slug=slugify(title || id);
   const name=pattern.trim()
     .replaceAll('{id}',String(id || ''))

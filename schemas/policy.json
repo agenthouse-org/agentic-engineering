@@ -1,6 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false,
   "required": ["schemaVersion", "id", "revision", "rules"],
+  "$defs": {
+    "branchNaming": {
+      "type": "object", "additionalProperties": false, "required": ["pattern"],
+      "properties": {
+        "pattern": {"type": "string", "minLength": 1},
+        "example": {"type": "string", "minLength": 1},
+        "baseDefault": {"type": "string", "minLength": 1}
+      }
+    }
+  },
   "properties": {
     "schemaVersion": {"enum": [1]}, "id": {"type": "string", "minLength": 1}, "revision": {"type": "string", "minLength": 1},
     "expiresAt": {"type": "string"}, "owner": {"type": "string", "minLength": 1},
@@ -28,7 +38,8 @@
       }
     },
     "rules": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "mode", "value"],
-      "properties": {"id": {"type": "string", "minLength": 1}, "mode": {"enum": ["mandatory", "default", "advisory"]}, "value": {}, "decision": {"type": "string"}, "description": {"type": "string"}}
+      "properties": {"id": {"type": "string", "minLength": 1}, "mode": {"enum": ["mandatory", "default", "advisory"]}, "value": {}, "decision": {"type": "string"}, "description": {"type": "string"}},
+      "allOf": [{"if": {"properties": {"id": {"const": "branch-naming"}}}, "then": {"properties": {"value": {"$ref": "#/$defs/branchNaming"}}}}]
     }}
   }
 }

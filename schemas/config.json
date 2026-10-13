@@ -36,9 +36,6 @@
         "branchNaming": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "pattern"
-          ],
           "properties": {
             "pattern": {
               "type": "string",
