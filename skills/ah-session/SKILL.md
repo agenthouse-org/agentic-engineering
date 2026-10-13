@@ -4,7 +4,7 @@ description: "Report the active agenthouse version, apply approved updates and h
 license: MIT
 ---
 
-Generated from ah-engineering 1.12.1.
+Generated from ah-engineering 1.12.2.
 
 # agenthouse session
 

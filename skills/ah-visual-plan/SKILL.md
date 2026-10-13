@@ -4,7 +4,7 @@ description: "Draft or validate wireframe HTML fragments and mermaid architectur
 license: MIT
 ---
 
-Generated from ah-engineering 1.12.1.
+Generated from ah-engineering 1.12.2.
 
 # agenthouse visual-plan
 

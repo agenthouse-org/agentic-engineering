@@ -183,6 +183,15 @@ test('upstream hook guards abstain from host approval on success and reject unsa
   assert.equal(runtime.guard('git push --force origin main',{protectedBranches:['main']},'feature').status,'denied');
   assert.equal(runtime.guard('git push origin feature',{protectedBranches:['main']},'feature').status,'allowed');
   assert.equal(runtime.guard("python3 -I - <<'EOF'\nprint('hello')\nEOF",{protectedBranches:['develop']},'feature').status,'allowed');
+  const longCommit=`git commit -q -F - <<'EOF'
+AAO-546 - Compile a status whose default lies in none of its states
+The old implementation used \`self::startState($status)['id'] ?? null\`.
+It also documented \\$(date) as a shell example.
+EOF
+git log --oneline -1 && git push -u origin AAO-546`;
+  assert.equal(runtime.guard(longCommit,{protectedBranches:['main']},'feature').status,'allowed');
+  assert.equal(runtime.guard("cat <<EOF\necho $(date)\nEOF",{},'feature').reason,'Dynamic shell expansion requires separate review');
+  assert.equal(runtime.guard("cat <<'EOF'\ngit push --force origin main\nEOF",{protectedBranches:['main']},'feature').status,'denied');
   assert.equal(runtime.guard('echo one\necho two\ngit push --force origin develop',{protectedBranches:['develop']},'feature').status,'denied');
   assert.equal(runtime.guard('echo $(date)',{},'feature').reason,'Dynamic shell expansion requires separate review');
   assert.equal(runtime.guard('echo `date`',{},'feature').reason,'Dynamic shell expansion requires separate review');

@@ -13,10 +13,44 @@ function normalize(vendor, raw) {
   return {vendor,event,tool:raw.tool_name || raw.toolName,command:raw.tool_input?.command || raw.command,
     file:raw.tool_input?.file_path || raw.tool_input?.path || raw.file_path || raw.path || raw.file,cwd:raw.cwd};
 }
+function maskQuotedHeredocBodies(command) {
+  const lines=command.match(/[^\r\n]*(?:\r\n|\n|\r|$)/g)?.filter(Boolean) || [];
+  const pending=[];
+  const output=[];
+  const declaration=/<<-?\s*(?:(['"])([^\r\n]*?)\1|([^\s;|&]+))/g;
+  for(const line of lines) {
+    if(pending.length) {
+      const here=pending[0];
+      const content=line.replace(/\r?\n$/, '').replace(/\r$/, '');
+      const candidate=here.stripTabs ? content.replace(/^\t+/, '') : content;
+      if(candidate===here.delimiter) pending.shift();
+      output.push(here.quoted ? line.replace(/[^\r\n]/g,' ') : line);
+      continue;
+    }
+    output.push(line);
+    declaration.lastIndex=0;
+    let match;
+    while((match=declaration.exec(line))) pending.push({delimiter:match[2] ?? match[3],quoted:Boolean(match[1]),stripTabs:line.slice(match.index,match.index+3)==='<<-'});
+  }
+  return output.join('');
+}
+function hasDynamicExpansion(command) {
+  let single=false,double=false,escaped=false;
+  for(let i=0;i<command.length;i++) {
+    const char=command[i];
+    if(escaped) {escaped=false;continue;}
+    if(char==='\\' && !single) {escaped=true;continue;}
+    if(char==="'" && !double) {single=!single;continue;}
+    if(char==='"' && !single) {double=!double;continue;}
+    if(single) continue;
+    if(char==='`' || (char==='$' && (command[i+1]==='(' || command[i+1]==='{'))) return true;
+  }
+  return false;
+}
 function tokens(command) {
   if (typeof command !== 'string') throw Error('Missing command');
-  // Shell expansion cannot be interpreted safely by a policy matcher.
-  if (/`|\$\(|\$\{/.test(command)) throw Error('Dynamic shell expansion requires separate review');
+  // Ignore literal examples in quoted heredocs, but keep unquoted heredocs dynamic.
+  if (hasDynamicExpansion(maskQuotedHeredocBodies(command))) throw Error('Dynamic shell expansion requires separate review');
   const parts=command.match(/"(?:\\.|[^"\\])*"|'[^']*'|&&|\|\||[;|&\r\n]|[^\s;|&\r\n]+/g) || [];
   return parts.map(t=>t.replace(/^(['"])(.*)\1$/,'$2'));
 }
