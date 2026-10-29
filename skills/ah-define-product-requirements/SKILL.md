@@ -39,4 +39,4 @@ Boundaries:
 - Do not collapse unresolved questions into requirements. Mark blocked or assumption-backed requirements clearly.
 - Preserve traceability from user evidence to requirements and proposed stories; show requirements with no evidence as assumptions or open questions, not facts.
 
-Recommended flow: discover / validate evidence, then ah-define-product-requirements, then ah-validate-scope, then ah-draft-user-story, then ah-assess-story-readiness. For a small single-story request, explain that ah-draft-user-story may be enough.
+Recommended flow: discover / validate evidence, then ah-define-product-requirements, then ah-validate-scope, then ah-draft-user-story, then ah-assess-story-readiness. When user or market evidence is missing for a new product or opportunity, start with ah-define-opportunity, ah-record-market-evidence, and ah-assess-market-fit, and link the opportunity id as fields.marketOpportunity on resulting work items. For a small single-story request, explain that ah-draft-user-story may be enough.

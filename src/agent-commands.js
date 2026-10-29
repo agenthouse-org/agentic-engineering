@@ -111,6 +111,44 @@ Decide (only questions that change the work):
 5. Remaining open choices, each with a recommended option
 
 Then a compact draft: outcome, scope, 3–8 observable criteria, and for bugs reproduction / expected / observed. Distinguish stated requirements from proposed details. More than eight criteria or multiple independent outcomes usually means split; set fields.sizeRisk to oversized on the work record when keeping a draft that is still too large. For UI work read the installed frontend-acceptance skill. Present a draft, not a readiness approval. Use work new only when creation is requested; then offer work branch from a chosen base using git.branchNaming (ask and store the pattern if missing). External writes need authorization. If they pick a visual plan, follow ah-visual-plan and link fields.visualPlan.`],
+  'define-opportunity':['Describe an opportunity and its ideal customer profile: segments, buyer and user, job and pain, value hypothesis, channels, and pre-stated success and stop conditions. Use when starting market validation, defining an ICP, or before collecting customer evidence.', `This is a market-validation workflow, not a CLI subcommand. It records an opportunity; it does not validate it. Use market list to find existing opportunities and market new --id ID to create templates when none exist; never overwrite existing files.
+
+Fill opportunity.md under the configured market path (default .agenthouse/market/ID/). Give every ICP segment a stable id and all required fields: description, firmographics, buyer, user, decisionMaker, job, pain, valueHypothesis, willingnessToPay, channels. Set basis to evidence only when the user supplied a source; otherwise assumption or unresolved. In the body, tag each statement as evidence, assumption, or unresolved. Alternatives and switching cost, trigger events, and qualifiers and disqualifiers are optional sections.
+
+Ask for success and stop conditions before any results are known and record each with statedAt set to the day it was stated. Conditions are optional here, but without them ah-assess-market-fit can only recommend investigate. Never invent segment facts, budgets, or conditions; ask or mark them unresolved.
+
+Reply as Decide / Opportunity / Open. Decide:
+1. Which segments to pursue first
+2. Success and stop conditions, or whether to state them later
+3. Which evidence to collect next (route to ah-record-market-evidence)
+
+Run market check --id ID and report its findings. Do not create work items or tracker records, and do not approve investment.`],
+  'record-market-evidence':['Record interviews, surveys, experiments, analytics, desk research, support feedback, and commercial signals as market evidence with sample and limitations. Use when adding customer or market research results to a market-validation record.', `This is a market-validation workflow, not a CLI subcommand. Append entries to evidence.md for an existing opportunity; create the folder with market new only when the user asks.
+
+Each entry needs id, kind (interview, survey, experiment, analytics, desk, support, commercial, buyer-signal), segment, date, source, sample, context, observation, interpretation, and limitation. Keep observation (what was seen or said) separate from interpretation (what the team thinks it means). State what the sample cannot support. Never upgrade an assumption from opportunity.md into a finding, and never fabricate quotes, counts, or dates.
+
+Store people and accounts only as pseudonymous ids with segment attributes. When names, emails, phone numbers, or company identifiers appear, stop, point to the organization's data policy, and record pseudonymous ids instead. A buyer signal enters evidence only through explicit promotion: kind buyer-signal with promotedFrom set to the signal id, plus sample and limitation.
+
+Reply as Decide / Evidence / Gaps. Run market check --id ID and report findings and warnings. Do not assess fit here; route to ah-assess-market-fit when conditions and evidence exist.`],
+  'capture-buyer-signal':['Capture a buyer conversation as a single-account signal: goals, objections, and unmet needs, kept separate from market evidence. Use when sales or customer-success staff relay prospect feedback for market validation.', `This is a market-validation workflow, not a CLI subcommand. Append signals to buyer-signals.md for an existing opportunity. Each signal needs id, segment, date, account (pseudonymous), scope single-account, goals, objections, and unmetNeeds.
+
+A signal is one account's statement, not market evidence. Do not count signals as validation or claim representativeness. Promote a signal into evidence.md only when the user explicitly asks; then use ah-record-market-evidence with kind buyer-signal, promotedFrom, sample, and limitation.
+
+Represent product capabilities accurately and never promise unshipped capabilities or unauthorized terms. Store accounts and contacts only as pseudonymous ids and follow the organization's data policy.
+
+Reply as Decide / Signal / Follow-up. Decide: promote to evidence now, keep as a signal, or ask a follow-up question. Run market check --id ID and report findings and warnings.`],
+  'assess-market-fit':['Compare market evidence with pre-stated success and stop conditions and recommend proceed, revise, investigate, or stop with an explicit claim level. Use when asking whether an ICP or opportunity is validated, or whether product-market fit evidence supports building.', `This is a market-validation assessment, not a CLI subcommand and not an approval. Read opportunity.md, evidence.md, buyer-signals.md, and fit-assessment.md for the opportunity, then write fit-assessment.md.
+
+Choose one claim level: problem-exists, segment-fits, or product-market-fit. Choose one recommendation: proceed, revise, investigate, or stop. Record conditionResults with condition, met, and the evidence ids that support the result. Claim product-market-fit only when pre-stated conditions about fit are met by linked evidence. If no success and stop conditions were stated before results, recommend investigate and ask the user to state them; never proceed. Single-account buyer signals that were not promoted do not count. Report conditions stated after the evidence they judge.
+
+Leave decision.decidedBy, decision.date, and decision.reference empty. A person records the go decision; never fill those fields, imply approval, or transition work.
+
+Reply as Decide / Recommendation / Missing. Decide:
+1. Recommendation and claim level
+2. Which condition results support them, with evidence ids
+3. What would change the recommendation
+
+Run market check --id ID and report findings. Only after proceed and a recorded human decision, hand off to ah-define-product-requirements with the opportunity id so the work item can link fields.marketOpportunity. Keep it short unless the user asks for more.`],
   'define-product-requirements':['Define product requirements and a story map from user evidence, assumptions, constraints, and missing information. Use when a request spans multiple stories or needs a PRD before story drafting.', `This is a define-stage product workflow, not a generator and not a CLI subcommand. Do not run define-product-requirements or infer a CLI exists. Use supplied discovery, validation, customer, support, sales, analytics, research, policy, and stakeholder evidence as inputs. If evidence is missing, say so; never present an assumption, preference, or agent inference as customer evidence.
 
 Reply with a product requirements and story map artifact. Keep each requirement traceable to the evidence, assumption, constraint, risk, or unresolved question that supports it. Use stable local IDs for evidence items, requirements, success measures, and proposed stories so ah-validate-scope and ah-draft-user-story can refer to them later.
@@ -136,7 +174,7 @@ Boundaries:
 - Do not collapse unresolved questions into requirements. Mark blocked or assumption-backed requirements clearly.
 - Preserve traceability from user evidence to requirements and proposed stories; show requirements with no evidence as assumptions or open questions, not facts.
 
-Recommended flow: discover / validate evidence, then ah-define-product-requirements, then ah-validate-scope, then ah-draft-user-story, then ah-assess-story-readiness. For a small single-story request, explain that ah-draft-user-story may be enough.`],
+Recommended flow: discover / validate evidence, then ah-define-product-requirements, then ah-validate-scope, then ah-draft-user-story, then ah-assess-story-readiness. When user or market evidence is missing for a new product or opportunity, start with ah-define-opportunity, ah-record-market-evidence, and ah-assess-market-fit, and link the opportunity id as fields.marketOpportunity on resulting work items. For a small single-story request, explain that ah-draft-user-story may be enough.`],
   'assess-story-readiness':['Assess whether one existing work item is complete enough to implement. Use when asking if a story is ready, blocked, or missing facts.', `Run gate --item FILE --phase ready against the actual item and policy; use its findings as the completeness baseline, including ticketSize when present.
 
 Reply as Decide / Ready or Blocked / Missing. Cite each missing fact with suggested wording. Evaluate completeness separately from truth. Disclose authorship.
