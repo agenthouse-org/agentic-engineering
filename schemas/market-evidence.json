@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "opportunity", "entries"],
+  "properties": {
+    "schemaVersion": {"enum": [1]},
+    "kind": {"enum": ["market-evidence"]},
+    "opportunity": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$"},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "segment", "date", "source", "sample", "context", "observation", "interpretation", "limitation"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$"},
+          "kind": {"enum": ["interview", "survey", "experiment", "analytics", "desk", "support", "commercial", "buyer-signal"]},
+          "segment": {"type": "string", "minLength": 1},
+          "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+          "source": {"type": "string", "minLength": 1},
+          "sample": {"type": "string", "minLength": 1},
+          "context": {"type": "string", "minLength": 1},
+          "observation": {"type": "string", "minLength": 1},
+          "interpretation": {"type": "string", "minLength": 1},
+          "limitation": {"type": "string", "minLength": 1},
+          "promotedFrom": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "opportunity", "signals"],
+  "properties": {
+    "schemaVersion": {"enum": [1]},
+    "kind": {"enum": ["market-buyer-signals"]},
+    "opportunity": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$"},
+    "signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "segment", "date", "account", "scope", "goals", "objections", "unmetNeeds"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$"},
+          "segment": {"type": "string", "minLength": 1},
+          "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+          "account": {"type": "string", "minLength": 1},
+          "scope": {"enum": ["single-account"]},
+          "goals": {"type": "string", "minLength": 1},
+          "objections": {"type": "string", "minLength": 1},
+          "unmetNeeds": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}
