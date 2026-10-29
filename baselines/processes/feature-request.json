@@ -6,7 +6,7 @@
   "entryConditions": ["A request, user problem, or opportunity is captured"],
   "steps": [
     "Clarify actor, problem, and desired outcome",
-    "Check user and market evidence",
+    "Check user and market evidence; when it is missing for a new product or opportunity, run market validation and ah-assess-market-fit first",
     "When the request spans multiple stories, define product requirements and a story map before story drafting",
     "Define scope, exclusions, and acceptance examples",
     "Assess product and technical options; record architecture and coding-standard catalogs when design choices apply",
@@ -15,5 +15,5 @@
   ],
   "outputs": ["Outcome and acceptance","Product requirements and story map","Decision record","Architecture and coding-standard catalogs when applicable","Verification and acceptance evidence","Outcome follow-up"],
   "roles": ["product-manager","architect","engineer","test-manager"],
-  "skills": ["ah-engineering-guidelines","ah-define-product-requirements","ah-validate-scope","ah-draft-user-story","ah-assess-story-readiness","ah-architecture","ah-coding-standards","ah-assess-tech-feasibility","ah-work","ah-test-plan","ah-write-tests","ah-review-change"]
+  "skills": ["ah-engineering-guidelines","ah-assess-market-fit","ah-define-product-requirements","ah-validate-scope","ah-draft-user-story","ah-assess-story-readiness","ah-architecture","ah-coding-standards","ah-assess-tech-feasibility","ah-work","ah-test-plan","ah-write-tests","ah-review-change"]
 }
