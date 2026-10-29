@@ -12,7 +12,7 @@ import {BROWSER_EPHEMERA,removeLocalFrontendEphemera} from '../src/housekeep.js'
 const temp=t=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'ah-commands-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;};
 test('all CLI topics and engineering workflow roles have installed agent entry points',t=>{
   const root=temp(t);install(root,{agents:['claude','codex','cursor','opencode','windsurf','openclaw']});
-  for(const command of ['help',...Object.keys(topics),'review-change','define-product-requirements','draft-user-story','assess-story-readiness','validate-scope','check-commit','enroll-repository','frontend-acceptance']) {
+  for(const command of ['help',...Object.keys(topics),'review-change','define-product-requirements','draft-user-story','assess-story-readiness','validate-scope','check-commit','enroll-repository','frontend-acceptance','define-opportunity','record-market-evidence','capture-buyer-signal','assess-market-fit']) {
     const name=`ah-${command}`,canonical=path.join(root,'.agents/skills',name,'SKILL.md');assert.ok(fs.existsSync(canonical));
     for(const folder of ['.claude/commands','.opencode/commands','.windsurf/workflows']) {
       const body=fs.readFileSync(path.join(root,folder,`${name}.md`),'utf8');
@@ -81,6 +81,37 @@ test('define-product-requirements preserves evidence boundaries and lifecycle sc
   const routed=spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),'help','product requirements for multiple stories'],{encoding:'utf8'});
   assert.equal(routed.status,0,routed.stderr);
   assert.match(routed.stdout,/Primary: ah-define-product-requirements/);
+});
+test('market-validation workflows keep evidence, privacy, and decision boundaries',()=>{
+  const skills=agentSkills();
+  for(const name of ['ah-define-opportunity','ah-record-market-evidence','ah-capture-buyer-signal','ah-assess-market-fit']) {
+    assert.match(skills[name],/not a CLI subcommand/,name);
+    assert.match(skills[name],/market check --id ID/,name);
+  }
+  assert.match(skills['ah-define-opportunity'],/statedAt/);
+  assert.match(skills['ah-define-opportunity'],/never overwrite existing files/);
+  assert.match(skills['ah-record-market-evidence'],/Keep observation .* separate from interpretation/);
+  assert.match(skills['ah-record-market-evidence'],/pseudonymous ids/);
+  assert.match(skills['ah-record-market-evidence'],/Never upgrade an assumption/);
+  assert.match(skills['ah-capture-buyer-signal'],/only when the user explicitly asks/);
+  assert.match(skills['ah-capture-buyer-signal'],/never promise unshipped capabilities/);
+  assert.match(skills['ah-assess-market-fit'],/problem-exists, segment-fits, or product-market-fit/);
+  assert.match(skills['ah-assess-market-fit'],/recommend investigate .*never proceed/);
+  assert.match(skills['ah-assess-market-fit'],/never fill those fields/);
+  assert.match(skills['ah-market'],/Never fill in the decision fields/);
+  assert.match(skills['ah-define-product-requirements'],/start with ah-define-opportunity/);
+});
+test('help routes ICP, evidence, buyer-signal, and fit goals to the discover phase',()=>{
+  const help=goal=>spawnSync(process.execPath,[path.join(PACKAGE,'bin/ah-engineering.js'),'help',goal],{encoding:'utf8'});
+  for(const [goal,primary] of [['define our ICP','define-opportunity'],['record interview notes','record-market-evidence'],['buyer signal from a sales call','capture-buyer-signal'],['do we have product-market fit','assess-market-fit']]) {
+    const routed=help(goal);
+    assert.equal(routed.status,0,routed.stderr);
+    assert.match(routed.stdout,/Phase: discover/,goal);
+    assert.match(routed.stdout,new RegExp(`Primary: ah-${primary}\\n`),goal);
+    assert.match(routed.stdout,/does not invent customer evidence or approve investment/,goal);
+  }
+  const map=help('').stdout;
+  assert.match(map,/discover: ah-define-opportunity, ah-record-market-evidence, ah-capture-buyer-signal, ah-assess-market-fit, ah-market/);
 });
 test('enrollment ignores frontend inspection captures',t=>{
   const root=temp(t);install(root,{agents:[]});
