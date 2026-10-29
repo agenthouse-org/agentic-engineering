@@ -11,6 +11,7 @@ import {run} from './process.js';
 import {reports} from './reports.js';
 import {visual} from './visual.js';
 import {readiness} from './lifecycle.js';
+import {evaluateMarket} from './market.js';
 
 export function subject(root, explicit) {
   if(explicit) return explicit;
@@ -58,6 +59,7 @@ async function execute(root,e,context) {
   if(e.kind==='policy-channel'){const status=policyStatus(root,{required:true});return {status:{0:'passed',1:'failed',4:'incomplete'}[status.exitCode],reason:'Organization policy permission from signed channel metadata',findings:[status]};}
   if(e.kind==='visual') return visual(root,e,context);
   if(e.kind==='work-item') return readiness(read(inside(root,e.file)),e.stage);
+  if(e.kind==='market') return evaluateMarket(root,e);
   if(e.kind==='evidence') {
     const file=inside(root,e.file);
     if(!fs.existsSync(file)) return {status:'incomplete',reason:`Missing assessment: ${e.file}`};

@@ -53,6 +53,16 @@
         }
       }
     },
+    "market": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "testing": {
       "type": "object",
       "additionalProperties": false,
@@ -119,8 +129,13 @@
               "approval",
               "visual",
               "work-item",
-              "policy-channel"
+              "policy-channel",
+              "market"
             ]
+          },
+          "opportunity": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$"
           },
           "executable": {
             "type": "string",

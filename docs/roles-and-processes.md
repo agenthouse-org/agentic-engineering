@@ -60,6 +60,8 @@ Roles: product manager, market researcher, architect, engineer, test manager, de
 
 Processes: product lifecycle, market validation, feature request, bug, change, release, and incident response.
 
+Market validation runs before product requirements. Its steps map to `ah-define-opportunity`, `ah-record-market-evidence`, `ah-capture-buyer-signal`, `ah-assess-market-fit`, and `ah-market`; the product manager, market researcher, and sales specialist roles list the skills they use. `process where` suggests `market-validation` when a description mentions customer interviews, an ICP, segments, or product-market fit. The fit assessment recommends a next step; the go decision remains with the people named in the record. See [ADR-0024](adr/0024-market-validation-artifacts.md).
+
 Discover them as Markdown without running list/show first:
 
 ```text

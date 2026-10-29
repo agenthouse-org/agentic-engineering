@@ -1,5 +1,6 @@
 export const phases={
   understand:['survey','inspect','controls'],
+  discover:['define-opportunity','record-market-evidence','capture-buyer-signal','assess-market-fit','market'],
   shape:['define-product-requirements','draft-user-story','assess-story-readiness','validate-scope','assess-tech-feasibility','architecture','engineering-guidelines','coding-standards','visual-plan','test-plan'],
   build:['work','write-tests','spec','check-commit'],
   verify:['evaluate','review','review-change','review-mr','frontend-acceptance','usability'],
@@ -10,6 +11,10 @@ export const phases={
 export function commandMap(){return Object.entries(phases).map(([phase,names])=>`${phase}: ${names.map(n=>'ah-'+n).join(', ')}`).join('\n');}
 export function goalHelp(goal) {
   const routes=[
+    [/product.market.fit|\bPMF\b|market fit|validate (?:the |our |this )?(?:market|opportunity|idea|ICP)|go.no.go/i,'discover','assess-market-fit','define-product-requirements','It does not invent customer evidence or approve investment; a person records the go decision.'],
+    [/buyer signal|sales feedback|prospect feedback|sales call|objection/i,'discover','capture-buyer-signal','record-market-evidence','It does not invent customer evidence or approve investment; single-account signals are not market evidence.'],
+    [/interview|survey result|customer research|market research|market evidence|experiment result/i,'discover','record-market-evidence','assess-market-fit','It does not invent customer evidence or approve investment.'],
+    [/\bICP\b|ideal customer|customer segment|target segment|target market|opportunity/i,'discover','define-opportunity','record-market-evidence','It does not invent customer evidence or approve investment.'],
     [/feasib|blast radius|migration|architecture decision|impact/i,'shape','assess-tech-feasibility','architecture','It does not run project checks or approve a decision.'],
     [/architecture guideline|ADR catalog|foundational ADR|architecture catalog/i,'shape','architecture','assess-tech-feasibility','It does not approve exceptions or invent governance authority.'],
     [/engineering guideline|engineering standard/i,'shape','engineering-guidelines','controls','Catalog validation does not assess compliance; read the guidance and run applicable checks.'],

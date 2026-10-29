@@ -56,6 +56,12 @@ When configured, ready runs before Implement and done before Accept. `work advan
 
 `visual-plan check --plan FILE` (or `--item` when `fields.visualPlan` is set) validates a local visual-plan JSON: hashed semantic HTML wireframes and mermaid architecture diagrams. Exit 0 passed, 1 failed, 4 incomplete. It does not render or host a review UI. Ready gates check a linked plan when the field is present; they do not require one for every change. Copy `templates/visual-plan/` as a starting layout.
 
+## Market validation
+
+`market new --id ID --title TITLE` writes templates for `opportunity.md`, `evidence.md`, `buyer-signals.md`, and `fit-assessment.md` under `.agenthouse/market/<id>/`, or under the repository-relative `market.path` from project configuration. It refuses to overwrite an existing record and writes nothing on conflict. `market list` reports each record's status, recommendation, and claim level. `market check --id ID` validates frontmatter, required sections, segment/condition/evidence references, buyer-signal promotion, dates, and whether a proceed recommendation or product-market-fit claim rests on a met, pre-stated success condition with linked evidence. Exit 0 passed (warnings allowed), 1 failed, 4 incomplete. Warnings cover conditions stated after the evidence, a met stop condition with proceed, possible personal data, and partially filled decision fields.
+
+A passing check shows the record is complete and consistent; it does not show that the evidence is true or that investment is approved. The human decision fields stay empty until a person fills them. An optional evaluator `{"id":"market","kind":"market","opportunity":"ID"}` maps the same check into `evaluate`; it is never part of a default profile. See [ADR-0024](adr/0024-market-validation-artifacts.md).
+
 ## npm provenance
 
 `npm-provenance status` inspects `package.json`, git origin, and GitHub Actions / GitLab CI files for a public npm publish. Exit 0 ready or inapplicable, 1 failed, 4 incomplete. `npm-provenance apply --provider github|gitlab` writes a new publish workflow only when that file is missing and reports required edits otherwise. Default `--publish trusted` uses OIDC; `--publish token` adds `--provenance` and an `NPM_TOKEN` reference. Neither action publishes or writes credentials. See [npm provenance](npm-provenance.md).

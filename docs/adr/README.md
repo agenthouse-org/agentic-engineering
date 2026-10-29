@@ -35,3 +35,4 @@ Proposed implementation details live in the linked design documents until implem
 | [0021](0021-target-branch-integration-guidance.md) | Advisory target-branch integration before MR/PR creation |
 | [0022](0022-engineering-guidelines.md) | Engineering guidelines interface and assessment before changes, with coding-standards compatibility |
 | [0023](0023-author-unavailable-review-governance.md) | Consumer-owned procedure for an unavailable MR/PR author during review |
+| [0024](0024-market-validation-artifacts.md) | Market validation records, claim levels, and the human go decision before requirements |

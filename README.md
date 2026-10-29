@@ -110,7 +110,7 @@ Product requirements definition, story drafting, readiness, scope validation, vi
 
 ### Included skills
 
-The framework ships **56 agent-facing skills** (55 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
+The framework ships **61 agent-facing skills** (60 generated commands plus the lifecycle skill), plus pinned upstream **frontend-acceptance 0.2.0** and **web-usability-conformity 0.1.0** skills.
 
 | Skill | Purpose |
 | --- | --- |

@@ -33,6 +33,7 @@ import {listArchitecture, showArchitecture, checkArchitecture, writeArchitecture
 import {showCodingStandards, checkCodingStandards, writeCodingStandards} from './coding-standards.js';
 import {planModule,applyModulePlan} from './module-plan.js';
 import {roleProcessList,roleProcessShow,roleProcessAdopt,roleProcessCheck,roleProcessMerge,roleProcessIgnore,processOrientation} from './roles-processes.js';
+import {listMarket,newMarket,checkMarket} from './market.js';
 
 const boolean=new Set(['install','remove','offline','ci','frozen','check','allow-breaking','help','non-interactive','ignore-generated','central','clean','preview','latest','list','propose-criteria','required']);
 function parse(args) {
@@ -62,6 +63,7 @@ allowed.architecture=['item','catalog','path','id','output','entries','owner-rol
 allowed['engineering-guidelines']=allowed['coding-standards']=['item','catalog','module','output','entries','owner-role','standard-ref'];
 allowed.dependencies.push('name','source','repository','revision','path','publisher','key','output');
 allowed.housekeep=['check','clean'];
+allowed.market=['id','title','output'];
 allowed.onboard.push('branch-pattern','branch-example','branch-base');
 export async function main(args) {
   const {o,pos}=parse(args),command=pos.shift();
@@ -71,7 +73,7 @@ export async function main(args) {
     console.log(help(topic));return 0;
   }
   assert(Object.hasOwn(allowed,command),`Unknown command ${command}`);
-  assert(['policy','work','dependencies','usability','visual-plan','npm-provenance','roles','process','test-plan','write-tests','pipeline','architecture','coding-standards','engineering-guidelines'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
+  assert(['policy','work','dependencies','usability','visual-plan','npm-provenance','roles','process','test-plan','write-tests','pipeline','architecture','coding-standards','engineering-guidelines','market'].includes(command) ? pos.length===1 : pos.length===0,'Unexpected positional arguments');
   for(const key of Object.keys(o))assert(['root','help',...allowed[command]].includes(key),`Unknown option --${key} for ${command}`);
   const root=path.resolve(o.root || process.cwd());
   let result,outputHandled=false;
@@ -151,6 +153,14 @@ export async function main(args) {
         result=writeCodingStandards(root,{item:o.item,catalog:o.catalog,output:o.output,ownerRole:o['owner-role'],standardRef:o['standard-ref'],module:o.module,entries:JSON.parse(o.entries)});
         outputHandled=true;
       }
+      break;
+    }
+    case 'market': {
+      const action=pos.shift();
+      assert(['list','new','check'].includes(action),'Choose market list, new, or check');
+      if(action==='list')result=listMarket(root);
+      else if(action==='new')result=newMarket(root,{id:o.id,title:o.title});
+      else result=checkMarket(root,{id:o.id});
       break;
     }
     case 'assessment':result=o.summary?validateAssessment(root,o.summary):assessmentInventory(root,{item:o.item,selectors:o.selectors,ref:o.ref});break;
@@ -282,6 +292,6 @@ export async function main(args) {
       break;
     }
   }
-  if(!outputHandled && ['survey','inspect','review','gate','spec','backlog','visual-plan','npm-provenance','test-plan','write-tests','pipeline','architecture','coding-standards','engineering-guidelines'].includes(command) && o.output)write(inside(root,o.output),result);
+  if(!outputHandled && ['survey','inspect','review','gate','spec','backlog','visual-plan','npm-provenance','test-plan','write-tests','pipeline','architecture','coding-standards','engineering-guidelines','market'].includes(command) && o.output)write(inside(root,o.output),result);
   console.log(JSON.stringify(result,null,2));return result.exitCode || 0;
 }

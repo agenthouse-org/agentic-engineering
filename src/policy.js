@@ -26,6 +26,7 @@ export function loadConfig(root) {
     if(['evidence','approval','work-item'].includes(e.kind))assert(e.file,`${e.kind} evaluator requires file`);
     if(e.kind==='approval')assert(e.action,'Approval evaluator requires action');
     if(e.kind==='visual')assert(e.contract && e.assessment,'Visual evaluator requires contract and assessment');
+    if(e.kind==='market')assert(e.opportunity,'Market evaluator requires opportunity');
   }
   for(const profile of Object.values(config.profiles))assert(new Set(profile.checks.map(c=>c.evaluator)).size===profile.checks.length,'Duplicate check in profile');
   return config;

@@ -1,6 +1,6 @@
 # Agent commands
 
-This checkout provides 54 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
+This checkout provides 60 generated agent-facing commands plus the lifecycle skill. Central enrollment stores them once per exact runtime identity on the machine. Every CLI command has an `ah-` skill; grouped CLI operations retain their subcommands (for example, `ah-dependencies update`, `ah-roles`, and `ah-process`). Agents select arguments from the conversation and call the same CLI implementation.
 
 `context` returns this file's path alongside lifecycle and skills. Skim the overview, then open only the section you need.
 
@@ -36,6 +36,7 @@ Reload the host or start a fresh session after first enrollment if the command i
 ## Default command map
 
 Understand: ah-survey, ah-inspect, ah-controls.
+Discover: ah-define-opportunity, ah-record-market-evidence, ah-capture-buyer-signal, ah-assess-market-fit, ah-market.
 Shape: ah-define-product-requirements, ah-draft-user-story, ah-assess-story-readiness, ah-validate-scope, ah-assess-tech-feasibility, ah-architecture, ah-engineering-guidelines, ah-coding-standards, ah-visual-plan, ah-test-plan.
 Build: ah-work, ah-write-tests, ah-spec, ah-check-commit.
 Verify: ah-evaluate, ah-review, ah-review-change, ah-review-mr, ah-frontend-acceptance, ah-usability.
@@ -57,6 +58,7 @@ Assess judges a story, scope or feasibility; evaluate runs checks on a build; ga
 | `ah-demo` | `demo` in a new/empty directory |
 | `ah-init` | `init` |
 | `ah-work` | `work new`, `show`, `advance`, `branch` |
+| `ah-market` | `market list`, `new`, `check` — market-validation record completeness and consistency |
 | `ah-visual-plan` | `visual-plan check` |
 | `ah-test-plan` | `test-plan check`, `write` |
 | `ah-write-tests` | `write-tests prepare`, `mark-written` |
@@ -85,6 +87,10 @@ Assess judges a story, scope or feasibility; evaluate runs checks on a build; ga
 The framework includes these engineering workflows:
 
 - `ah-enroll-repository`: conversational enrollment through onboarding.
+- `ah-define-opportunity`: drafts `opportunity.md` with the problem, ICP segments, pre-stated success and stop conditions, assumptions, and unresolved questions. It is not a CLI subcommand; `market check --id ID` verifies the record.
+- `ah-record-market-evidence`: records interviews, surveys, experiments, analytics, desk research, and promoted buyer signals in `evidence.md` with pseudonymous sources. It does not invent customer evidence.
+- `ah-capture-buyer-signal`: records single-account sales or support signals in `buyer-signals.md`. Signals become evidence only through explicit promotion.
+- `ah-assess-market-fit`: recommends proceed, revise, investigate, or stop with a claim level (problem-exists, segment-fits, product-market-fit) in `fit-assessment.md`. The human decision fields are filled by a person; a passing check is not a go decision.
 - `ah-define-product-requirements`: define-stage product requirements and a story map from evidence, assumptions, constraints, and unresolved questions. It does not create work items, choose architecture, or present assumptions as customer evidence.
 - `ah-draft-user-story`: outcomes, criteria, proposed details, and open questions. Offers a visual plan (wireframe, mermaid, both, neither) as a scoping option.
 - `ah-assess-story-readiness`: an evidence-based readiness assessment.

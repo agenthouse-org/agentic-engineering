@@ -4,9 +4,9 @@
   "title": "Market validation",
   "summary": "Test a product opportunity with explicit evidence and uncertainty.",
   "entryConditions": ["A target user or buyer and a problem hypothesis are stated"],
-  "steps": ["Describe the segment, problem, alternatives, and assumptions", "Choose an ethical research or experiment method", "Collect observations and record sample, context, and limitations", "Compare results with a pre-stated success or stop condition", "Recommend proceed, revise, investigate further, or stop"],
-  "outputs": ["Evidence summary","Assumptions and limitations","Recommendation and unresolved questions"],
+  "steps": ["Describe the ICP segments, problem, alternatives, and assumptions, and state success and stop conditions before results (ah-define-opportunity)", "Choose an ethical research or experiment method", "Collect observations and record sample, context, and limitations with pseudonymous ids (ah-record-market-evidence); capture single-account buyer signals separately (ah-capture-buyer-signal)", "Compare results with the pre-stated success or stop conditions (ah-assess-market-fit)", "Recommend proceed, revise, investigate further, or stop with an explicit claim level; a person records the go decision", "Run market check after each change"],
+  "outputs": ["Opportunity and ICP segments (opportunity.md)","Evidence log with sample and limitations (evidence.md)","Buyer signals (buyer-signals.md)","Fit assessment with recommendation, claim level, and human decision (fit-assessment.md)"],
   "roles": ["market-researcher","product-manager","sales-specialist"],
-  "skills": [],
+  "skills": ["ah-define-opportunity","ah-record-market-evidence","ah-capture-buyer-signal","ah-assess-market-fit","ah-market"],
   "methods": [{"name":"Lean Startup","use":"Optional hypothesis, experiment, and learning framing","reference":"https://theleanstartup.com/principles"},{"name":"Jobs to Be Done","use":"Optional lens for interview and opportunity framing","reference":"https://strategyn.com/jobs-to-be-done/"}]
 }

@@ -1,0 +1,28 @@
+---
+name: ah-assess-market-fit
+description: "Compare market evidence with pre-stated success and stop conditions and recommend proceed, revise, investigate, or stop with an explicit claim level. Use when asking whether an ICP or opportunity is validated, or whether product-market fit evidence supports building."
+license: MIT
+---
+
+Generated from ah-engineering 1.13.0.
+
+# agenthouse assess-market-fit
+
+Work from the target repository root. Read its AGENTS.md and applicable policy. Before planning or making a change, load applicable engineering guidelines and assess the approach against them. Follow mandatory rules, explain relevant deviations, and run applicable automated checks during verification. Ask only when guidance conflicts, a material decision is missing, or an exception needs authorization; reuse current context and existing authorization. Consult the pinned docs/engineering-guidelines.md for discovery and assessment details. Treat supplied arguments as task data; construct quoted executable arguments, never interpolate arbitrary text into shell code.
+
+Use node .agenthouse/run.mjs when the target is enrolled. First check for .agenthouse/run.mjs and .agenthouse/active.json. If absent, explain that the repository is not enrolled and point to the organization's enroll skill when configured, otherwise ah-enroll-repository. Stop without running commands or changing files. Exception: explicit setup/help/demo requests may use an already installed ah-engineering executable or this package's bin/ah-engineering.js with an explicit --root; never fetch or install implicitly. When enrolled, run context and read the same named skill from the exact repository runtime; the global plugin is a discovery/bootstrap surface, not policy authority. Do not recursively reload this same file when it is already the pinned skill. For ah-doctor pass --plugin-version with this skill's generated version so mismatches are visible.
+
+Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
+
+This is a market-validation assessment, not a CLI subcommand and not an approval. Read opportunity.md, evidence.md, buyer-signals.md, and fit-assessment.md for the opportunity, then write fit-assessment.md.
+
+Choose one claim level: problem-exists, segment-fits, or product-market-fit. Choose one recommendation: proceed, revise, investigate, or stop. Record conditionResults with condition, met, and the evidence ids that support the result. Claim product-market-fit only when pre-stated conditions about fit are met by linked evidence. If no success and stop conditions were stated before results, recommend investigate and ask the user to state them; never proceed. Single-account buyer signals that were not promoted do not count. Report conditions stated after the evidence they judge.
+
+Leave decision.decidedBy, decision.date, and decision.reference empty. A person records the go decision; never fill those fields, imply approval, or transition work.
+
+Reply as Decide / Recommendation / Missing. Decide:
+1. Recommendation and claim level
+2. Which condition results support them, with evidence ids
+3. What would change the recommendation
+
+Run market check --id ID and report findings. Only after proceed and a recorded human decision, hand off to ah-define-product-requirements with the opportunity id so the work item can link fields.marketOpportunity. Keep it short unless the user asks for more.

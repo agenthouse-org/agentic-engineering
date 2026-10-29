@@ -59,6 +59,33 @@ test('process orientation is an advisory prompt and never workflow state',()=>{
   assert.equal(processOrientation('Unclear what happens next').status,'needs-human-orientation');
 });
 
+test('process orientation suggests market validation for ICP, interview, and fit wording',()=>{
+  for(const text of ['We need to define our ICP','We interviewed six nurses in the clinic segment','Do we have product-market fit yet?']) {
+    const result=processOrientation(text);
+    assert.equal(result.suggestedProcess,'market-validation',text);
+    assert.equal(result.advisory,true);
+    assert.equal(result.authoritativeStatusSource,null);
+  }
+  assert.equal(processOrientation('We are coding the implementation now').suggestedProcess,null);
+});
+
+test('market validation, its roles, and feature requests map the market-validation skills',()=>{
+  const market=roleProcessShow('processes','market-validation');
+  assert.equal(market.skillCoverage.status,'mapped');
+  assert.deepEqual(market.skillCoverage.available,['ah-define-opportunity','ah-record-market-evidence','ah-capture-buyer-signal','ah-assess-market-fit','ah-market']);
+  assert.deepEqual(market.skillCoverage.missing,[]);
+  const researcher=roleProcessShow('roles','market-researcher'),product=roleProcessShow('roles','product-manager'),sales=roleProcessShow('roles','sales-specialist');
+  for(const role of [researcher,product])for(const id of ['ah-define-opportunity','ah-record-market-evidence','ah-assess-market-fit'])assert.ok(role.skillCoverage.available.includes(id),`${role.definition.id} ${id}`);
+  assert.ok(product.definition.processes.includes('market-validation'));
+  assert.deepEqual(sales.skillCoverage.available,['ah-capture-buyer-signal']);
+  const feature=roleProcessShow('processes','feature-request').definition;
+  assert.ok(feature.skills.includes('ah-assess-market-fit'));
+  assert.match(feature.steps.join(' '),/ah-assess-market-fit/);
+  const validate=roleProcessShow('processes','product-lifecycle').definition.stages.find(stage=>stage.id==='validate');
+  assert.ok(validate.outputs.some(output=>/Fit assessment/.test(output)));
+  assert.ok(validate.outputs.some(output=>/Human go decision/.test(output)));
+});
+
 test('ignore defers one baseline revision without editing the consumer copy',t=>{
   const root=temp(t),id=roleProcessList('processes')[0].id;
   roleProcessAdopt('processes',id,root);

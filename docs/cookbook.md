@@ -148,6 +148,21 @@ node .agenthouse/run.mjs resolve
 node .agenthouse/run.mjs evaluate --profile pull-request --ci
 ```
 
+## Recipe: validate the market before requirements
+
+When the problem, segment, or demand is uncertain, create a market record and work through it with the four workflow skills:
+
+```text
+node .agenthouse/run.mjs market new --id clinic-handover --title "Clinic shift handover"
+$ah-define-opportunity Draft the opportunity for clinic-handover from the discovery notes. State success and stop conditions before we look at the interview results.
+$ah-record-market-evidence Add the five clinic interviews to clinic-handover with pseudonymous sources.
+$ah-capture-buyer-signal Record the renewal call feedback from one account; do not promote it yet.
+$ah-assess-market-fit Recommend the next step for clinic-handover and the claim level the evidence supports.
+node .agenthouse/run.mjs market check --id clinic-handover
+```
+
+`tests/fixtures/market/example-opportunity/` is a fictional complete record to compare against. The assessment recommends; a person fills the decision fields. Link the record from later work with `fields.marketOpportunity` and continue with `ah-define-product-requirements`.
+
 ## Recipe: assess scope before implementation
 
 For a request that spans multiple stories, first define product requirements and a story map from available evidence, assumptions, constraints, and unresolved questions:

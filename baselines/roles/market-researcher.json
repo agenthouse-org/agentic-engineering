@@ -8,6 +8,6 @@
   "boundaries": ["Do not overstate representativeness", "Do not claim market validation from unverified assumptions"],
   "decisionRights": ["Recommend further research or opportunity validation"],
   "processes": ["market-validation", "product-lifecycle"],
-  "skills": [],
+  "skills": [{"id":"ah-define-opportunity","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},{"id":"ah-record-market-evidence","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"},{"id":"ah-assess-market-fit","source":"agenthouse-agentic-engineering","versionPolicy":"project-runtime-pin"}],
   "methods": [{"name":"Lean Startup","use":"Optional experiment and learning loop","reference":"https://theleanstartup.com/principles"}]
 }

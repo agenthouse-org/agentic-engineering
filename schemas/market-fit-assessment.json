@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "opportunity", "claimLevel", "recommendation", "segments", "conditionResults", "decision"],
+  "properties": {
+    "schemaVersion": {"enum": [1]},
+    "kind": {"enum": ["market-fit-assessment"]},
+    "opportunity": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,100}$"},
+    "assessedAt": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "claimLevel": {"enum": ["none", "problem-exists", "segment-fits", "product-market-fit"]},
+    "recommendation": {"enum": ["pending", "proceed", "revise", "investigate", "stop"]},
+    "segments": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "conditionResults": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["condition", "met", "evidence"],
+        "properties": {
+          "condition": {"type": "string", "minLength": 1},
+          "met": {"type": "boolean"},
+          "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decidedBy", "date", "reference"],
+      "properties": {
+        "decidedBy": {"type": "string"},
+        "date": {"type": "string"},
+        "reference": {"type": "string"}
+      }
+    }
+  }
+}
