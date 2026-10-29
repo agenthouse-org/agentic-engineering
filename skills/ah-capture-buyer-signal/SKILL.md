@@ -4,7 +4,7 @@ description: "Capture a buyer conversation as a single-account signal: goals, ob
 license: MIT
 ---
 
-Generated from ah-engineering 1.12.2.
+Generated from ah-engineering 1.13.0.
 
 # agenthouse capture-buyer-signal
 

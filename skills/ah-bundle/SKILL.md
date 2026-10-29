@@ -4,7 +4,7 @@ description: "Build an offline install package of this framework and required sk
 license: MIT
 ---
 
-Generated from ah-engineering 1.12.2.
+Generated from ah-engineering 1.13.0.
 
 # agenthouse bundle
 

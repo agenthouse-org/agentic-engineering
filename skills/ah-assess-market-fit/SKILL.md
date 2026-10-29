@@ -4,7 +4,7 @@ description: "Compare market evidence with pre-stated success and stop condition
 license: MIT
 ---
 
-Generated from ah-engineering 1.12.2.
+Generated from ah-engineering 1.13.0.
 
 # agenthouse assess-market-fit
 
