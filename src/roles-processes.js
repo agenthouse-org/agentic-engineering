@@ -260,7 +260,7 @@ export function processOrientation(description) {
   assert(typeof description==='string'&&description.trim(),'Provide --description with current evidence or situation');
   const text=description.toLowerCase();
   const signals=[
-    ['discover',/market|customer|user interview|problem|opportunity|validation/],
+    ['discover',/market|customer|interview|problem|opportunity|validation|\bicp\b|segment/],
     ['define',/requirement|acceptance|scope|feature request/],
     ['design',/architecture|design|interface|risk/],
     ['plan',/estimate|priority|plan|ready/],
@@ -271,5 +271,6 @@ export function processOrientation(description) {
     ['learn',/feedback|outcome|retrospective|improvement/]
   ];
   const matches=signals.filter(([,pattern])=>pattern.test(text)).map(([stage])=>stage);
-  return {status:matches.length===1?'possible-match':matches.length?'ambiguous':'needs-human-orientation',candidateStages:matches,providedEvidence:description,authoritativeStatusSource:null,advisory:true,nextPrompt:'Compare this description with your authoritative work item or team process. Confirm the current stage and where that status is recorded; this assessment does not update it.'};
+  const suggestedProcess=/\bicp\b|ideal customer|customer segment|target segment|segments?\b|interview|product.market.fit|\bpmf\b|market fit|market validation|validate (?:the )?(?:market|opportunity|idea)|buyer signal/.test(text)?'market-validation':null;
+  return {status:matches.length===1?'possible-match':matches.length?'ambiguous':'needs-human-orientation',candidateStages:matches,suggestedProcess,providedEvidence:description,authoritativeStatusSource:null,advisory:true,nextPrompt:'Compare this description with your authoritative work item or team process. Confirm the current stage and where that status is recorded; this assessment does not update it.'};
 }
