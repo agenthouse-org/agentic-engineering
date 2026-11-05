@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "package": "@agenthouse-org/hooks",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "contractVersion": 1,
   "sourcePath": "src/engineering.js",
   "files": {
-    "engineering.cjs": "76c822fb2e8d68fd399538cb662107b412cad407573e2ec0101255248563f258",
+    "engineering.cjs": "09c5503d5e222932c5c7023986c74f624e94b40e9aafde166adff9bb56625360",
     "LICENSE": "1de93a99cb83dcd09cfabd61e2452bfb821f6f8d42f3b523b1eeaf7da28e1812"
   }
 }

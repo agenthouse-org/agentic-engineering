@@ -197,7 +197,7 @@ git log --oneline -1 && git push -u origin AAO-546`;
   assert.equal(runtime.guard('echo `date`',{},'feature').reason,'Dynamic shell expansion requires separate review');
   assert.deepEqual(JSON.parse(runtime.render('claude','before-command',{status:'allowed'}).stdout),{});
   const root=setup(t);write(path.join(root,'event.json'),{event:'after-edit',file:'../outside'});
-  await assert.rejects(hook(root,{input:'event.json'}),/outside/);
+  const outside=await hook(root,{input:'event.json'});assert.equal(outside.exitCode,0);assert.equal(JSON.parse(outside.stdout).status,'allowed');
   write(path.join(root,'event.json'),'malformed');await assert.rejects(hook(root,{input:'event.json'}));
 });
 test('touched-file checks run only selected extensions with bounded execution',async t=>{

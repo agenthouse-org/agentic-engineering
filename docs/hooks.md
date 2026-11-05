@@ -8,7 +8,7 @@ The framework consumes a content-pinned export of `@agenthouse-org/hooks` engine
 
 Configure `hooks.blockNoVerify`, `hooks.protectedBranches` and `hooks.checks`. An inherited mandatory `hooks` rule can protect the definition. Command checks flag recognized Git verification bypasses and force pushes that may affect protected branches. This conservative matcher is not a shell sandbox: aliases and arbitrary programs require platform permissions and server-side branch rules. Successful Claude checks abstain from granting permission.
 
-Touched-file checks select extensions and invoke an executable with an argument array. `{file}` becomes the relative path, optional `available` skips absent tools, and `timeoutSeconds` bounds execution. Stack modules include examples. Nothing installs or auto-fixes tools. Symlink and out-of-root edit targets are rejected. Whole-project checks remain in CI.
+Touched-file checks select extensions and invoke an executable with an argument array. `{file}` becomes the relative path, optional `available` skips absent tools, and `timeoutSeconds` bounds execution. Stack modules include examples. Nothing installs or auto-fixes tools. Symlink edit targets inside the repository are rejected. Out-of-repository edits are ignored because touched-file checks apply only to repository files. Whole-project checks remain in CI.
 
 Claude, Cursor and CI payload translation are fixture-tested. Native activation is not certified for every host/version; other agents use the CLI through skills. Malformed events return errors, not passing checks.
 

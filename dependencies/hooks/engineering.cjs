@@ -82,7 +82,7 @@ async function handle(event, policy, context) {
   }
   if(!event.file)return {status:'allowed'};
   const root=path.resolve(context.root),file=path.resolve(root,event.file),relative=path.relative(root,file);
-  if(relative.startsWith('..')||path.isAbsolute(relative))throw Error('Edited path outside repository');
+  if(relative.startsWith('..')||path.isAbsolute(relative))return {status:'allowed'};
   let current=root;
   for(const part of relative.split(path.sep)){current=path.join(current,part);if(fs.existsSync(current)&&fs.lstatSync(current).isSymbolicLink())throw Error('Symlink edit target is unsupported');}
   if(!fs.existsSync(file)||!fs.statSync(file).isFile())return {status:'allowed'};
