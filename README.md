@@ -2,6 +2,8 @@
 
 **Give your coding agent a repeatable path from an idea to a verified, reviewable change.**
 
+[![agenthouse agentic engineering on StartupScores](https://startupscores.com/badge/agenthouse-agentic-engineering.svg?style=shield&v=combo&theme=dark)](https://startupscores.com/open-source/agenthouse-agentic-engineering)
+
 agenthouse connects requirements, architecture decisions, implementation, acceptance evidence, and release governance. Developers keep their preferred coding agent; teams keep their repositories, policies, and CI tools. The framework is MIT-licensed and works without a paid account or hosted service.
 
 Current package version is in `package.json`. What's new by release: [changelog](docs/CHANGELOG.md). Shipped behavior and verification: [implementation status](docs/implementation-status.md).
