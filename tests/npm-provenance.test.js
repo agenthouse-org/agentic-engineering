@@ -104,6 +104,17 @@ test('release workflow creates, attests, and uploads the GitHub update bundle',(
   assert.match(workflow,/attestations:\s*write/);assert.match(workflow,/actions\/attest-build-provenance@v3/);
   assert.match(workflow,/\.bundle\.json/);assert.match(workflow,/gh release upload/);
 });
+
+test('npm deployment follows successful publishing without changing its OIDC environment',()=>{
+  const workflow=fs.readFileSync(path.join(PACKAGE,'.github/workflows/publish.yml'),'utf8');
+  const [publishing,deployment]=workflow.split('\n  deployment:');
+  assert.doesNotMatch(publishing,/^    environment:/m);
+  assert.match(deployment,/needs: publish/);
+  assert.match(deployment,/if: github.event_name == 'release'/);
+  assert.match(deployment,/environment:\s*name: npm\s*url: https:\/\/www.npmjs.com\/package\/@agenthouse\/engineering/);
+  assert.match(deployment,/response.ok && \(await response.json\(\)\).version === version/);
+  assert.match(deployment,/throw new Error/);
+});
 test('CLI status and apply share the same contract',t=>{
   const root=temp(t);
   write(path.join(root,'package.json'),{name:'app',repository:'https://github.com/example/app.git'});

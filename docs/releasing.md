@@ -17,6 +17,8 @@ Manual **Run workflow** runs all verification and a publishing dry run without p
 
 The npm package's trusted publisher must authorize GitHub organization `agenthouse-org`, repository `agentic-engineering`, and workflow filename `publish.yml`, with direct publishing allowed. No GitHub environment name is configured. No npm token secret is required. Restrict who can change workflows and publish releases through the repository's access controls.
 
+After a successful release publish, a separate job records a GitHub deployment in the `npm` environment, linked to the npm package page. It waits for the exact version to become visible in the registry before reporting success. Registry errors or exhausted retries fail the deployment job. Manual dry runs skip this job. The publishing job itself has no environment, preserving the existing npm trusted-publisher identity; the deployment environment does not add a pre-publication approval gate.
+
 See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/). npm automatically includes provenance with trusted publishing. The GitHub repository and npm scope do not need matching names.
 
 Consumer packages can inspect or add the same local setup with `npm-provenance status` and `npm-provenance apply`. That command does not publish and cannot prove the npmjs.com trusted-publisher row is configured. See [npm provenance](npm-provenance.md).
