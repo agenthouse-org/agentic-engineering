@@ -36,3 +36,4 @@ Proposed implementation details live in the linked design documents until implem
 | [0022](0022-engineering-guidelines.md) | Engineering guidelines interface and assessment before changes, with coding-standards compatibility |
 | [0023](0023-author-unavailable-review-governance.md) | Consumer-owned procedure for an unavailable MR/PR author during review |
 | [0024](0024-market-validation-artifacts.md) | Market validation records, claim levels, and the human go decision before requirements |
+| [0025](0025-dynamic-shell-review.md) | Dynamic shell analysis requests host review; unresolved CI review does not pass |

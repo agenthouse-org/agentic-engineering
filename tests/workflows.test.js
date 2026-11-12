@@ -190,11 +190,23 @@ It also documented \\$(date) as a shell example.
 EOF
 git log --oneline -1 && git push -u origin AAO-546`;
   assert.equal(runtime.guard(longCommit,{protectedBranches:['main']},'feature').status,'allowed');
-  assert.equal(runtime.guard("cat <<EOF\necho $(date)\nEOF",{},'feature').reason,'Dynamic shell expansion requires separate review');
+  assert.equal(runtime.guard("cat <<EOF\necho $(date)\nEOF",{},'feature').status,'review-required');
   assert.equal(runtime.guard("cat <<'EOF'\ngit push --force origin main\nEOF",{protectedBranches:['main']},'feature').status,'denied');
   assert.equal(runtime.guard('echo one\necho two\ngit push --force origin develop',{protectedBranches:['develop']},'feature').status,'denied');
-  assert.equal(runtime.guard('echo $(date)',{},'feature').reason,'Dynamic shell expansion requires separate review');
-  assert.equal(runtime.guard('echo `date`',{},'feature').reason,'Dynamic shell expansion requires separate review');
+  assert.equal(runtime.guard('echo $(date)',{},'feature').status,'review-required');
+  assert.equal(runtime.guard('echo `date`',{},'feature').status,'review-required');
+  const search = 'cd /tmp/example && f=$(grep -rln "class ObjectProcessingCompiler" app); echo $f; grep -n "input|Input|mapping|Mapping|process.references|derived|authored" $f | head -80';
+  const review=runtime.guard(search,{},'feature');
+  assert.equal(review.status,'review-required');
+  assert.equal(JSON.parse(runtime.render('claude','before-command',review).stdout).hookSpecificOutput.permissionDecision,'ask');
+  const cursorReview=JSON.parse(runtime.render('cursor','before-command',review).stdout);
+  assert.equal(cursorReview.permission,'ask');
+  assert.equal(cursorReview.continue,true);
+  assert.equal(runtime.render('ci','before-command',review).exitCode,3);
+  assert.equal(runtime.guard('echo $(date); git commit --no-verify',{},'feature').status,'denied');
+  assert.equal(runtime.guard('echo $(git commit --no-verify)',{},'feature').status,'review-required');
+  assert.equal(runtime.guard('echo '+String.fromCharCode(36)+'{HOME}',{},'feature').status,'review-required');
+  assert.equal(runtime.guard(undefined,{},'feature').status,'denied');
   assert.deepEqual(JSON.parse(runtime.render('claude','before-command',{status:'allowed'}).stdout),{});
   const root=setup(t);write(path.join(root,'event.json'),{event:'after-edit',file:'../outside'});
   const outside=await hook(root,{input:'event.json'});assert.equal(outside.exitCode,0);assert.equal(JSON.parse(outside.stdout).status,'allowed');

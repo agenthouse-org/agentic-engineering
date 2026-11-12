@@ -50,7 +50,7 @@ function hasDynamicExpansion(command) {
 function tokens(command) {
   if (typeof command !== 'string') throw Error('Missing command');
   // Ignore literal examples in quoted heredocs, but keep unquoted heredocs dynamic.
-  if (hasDynamicExpansion(maskQuotedHeredocBodies(command))) throw Error('Dynamic shell expansion requires separate review');
+  // Dynamic syntax is reviewed by the host; it is not itself a policy violation.
   const parts=command.match(/"(?:\\.|[^"\\])*"|'[^']*'|&&|\|\||[;|&\r\n]|[^\s;|&\r\n]+/g) || [];
   return parts.map(t=>t.replace(/^(['"])(.*)\1$/,'$2'));
 }
@@ -72,6 +72,7 @@ function guard(command, policy, branch) {
       }
     }
   }
+  if (hasDynamicExpansion(maskQuotedHeredocBodies(command))) return {status:'review-required',reason:'Dynamic shell expansion needs host permission review; the engineering matcher cannot determine the expanded command'};
   return {status:'allowed',reason:'No configured command restriction matched'};
 }
 async function handle(event, policy, context) {
@@ -101,12 +102,12 @@ function render(vendor,event,result) {
   const message=result.message || result.reason || result.checks?.filter(c=>c.status!=='passed').map(c=>`${c.id}: ${c.error || c.stderr || c.stdout}`).join('\n') || '';
   if(vendor==='claude') {
     if(event==='before-command' && result.status==='allowed')return {exitCode:0,stdout:'{}'};
-    if(event==='before-command')return {exitCode:0,stdout:JSON.stringify({hookSpecificOutput:{hookEventName:'PreToolUse',permissionDecision:result.status==='allowed'?'allow':'deny',permissionDecisionReason:message}})};
+    if(event==='before-command')return {exitCode:0,stdout:JSON.stringify({hookSpecificOutput:{hookEventName:'PreToolUse',permissionDecision:result.status==='review-required'?'ask':result.status==='allowed'?'allow':'deny',permissionDecisionReason:message}})};
     if(event==='after-edit'&&result.status!=='allowed')return {exitCode:2,stderr:message};
     return {exitCode:0,stdout:message};
   }
-  if(vendor==='ci')return {exitCode:result.status==='allowed'?0:result.status==='error'?2:1,stdout:JSON.stringify(result)};
-  if(vendor==='cursor')return {exitCode:0,stdout:JSON.stringify({continue:result.status==='allowed',permission:result.status==='allowed'?'allow':'deny',user_message:message,agent_message:message})};
+  if(vendor==='ci')return {exitCode:result.status==='allowed'?0:result.status==='error'?2:result.status==='review-required'?3:1,stdout:JSON.stringify(result)};
+  if(vendor==='cursor')return {exitCode:0,stdout:JSON.stringify({continue:result.status==='allowed'||result.status==='review-required',permission:result.status==='review-required'?'ask':result.status==='allowed'?'allow':'deny',user_message:message,agent_message:message})};
   throw Error('Unsupported engineering hook vendor');
 }
 module.exports={contractVersion:1,normalize,guard,handle,render};
