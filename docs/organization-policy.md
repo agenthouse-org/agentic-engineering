@@ -29,6 +29,14 @@ An adopted policy may contain the `standard-documents` rule. Its value is a none
 ]}
 ```
 
+To use a local clone outside the consuming repository, set `"root":"guidance"` on an entry with a `path` relative to that root. The name is a portable identifier, not a filesystem path. Each developer configures the absolute clone directory in the ignored file `.agenthouse/local/standard-roots.json`:
+
+```json
+{"schemaVersion":1,"roots":{"guidance":"/absolute/path/to/local/guidance"}}
+```
+
+Use the platform's absolute path syntax (and JSON-escaped backslashes on Windows). A named root is resolved only through this machine-local mapping; an entry without `root` uses the consuming repository. If the mapping or file is missing, the URL is returned and `localMissing` is true. Invalid mappings and unsafe paths are errors. Relative paths cannot escape the root; symlinks within the resolved path are rejected. No clone or download is performed. The mapping is not included in the policy snapshot or digest, so developers can use different clone locations. Root directories and document contents are local inputs, not pinned or verified policy evidence.
+
 This is one policy rule: ordinary mandatory/default resolution applies to the whole list, including conflict detection and provenance. Resolved policy pins the references, not document contents. Distribute local files or use stable URLs when revisions matter. `context` and hooks do not download them. Loading guidance is not compliance evidence or governance approval. Repository instructions add local facts and rules within applicable organisation authority; conflicts require the authorized exception process. Without the rule, existing behavior remains unchanged.
 
 ## Publish a policy channel

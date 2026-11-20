@@ -4,7 +4,7 @@ description: "Show, pin, unpin, or update bundled skills such as frontend-accept
 license: MIT
 ---
 
-Generated from ah-engineering 1.15.0.
+Generated from ah-engineering 1.16.0.
 
 # agenthouse dependencies
 

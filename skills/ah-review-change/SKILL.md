@@ -4,7 +4,7 @@ description: "Review a change against its requirements, policy, and available ev
 license: MIT
 ---
 
-Generated from ah-engineering 1.15.0.
+Generated from ah-engineering 1.16.0.
 
 # agenthouse review-change
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Run context and inspect standardDocuments when present. Determine the changed files and relevant topics; read each matching organisation document. Match repository-relative globs, explicit stack names, or all, and exact topics or all. Organisation guidance takes precedence within its scope and topics; use bundled guidance for uncovered topics. If a local file is missing use its URL and report the gap. If binding guidance cannot be read, report it and pause dependent assessment. Never invent rules, evidence, or approval.
+Run context and inspect standardDocuments when present. Determine the changed files and relevant topics; read each matching organisation document. Match repository-relative globs, explicit stack names, or all, and exact topics or all. Organisation guidance takes precedence within its scope and topics; use bundled guidance for uncovered topics. A local reference may be an absolute path resolved from a machine-local named root; read it as returned. If the root or local file is missing use its URL and report the gap. If binding guidance cannot be read, report it and pause dependent assessment. Never invent rules, evidence, or approval.
 
 Use survey and inspect to establish repository facts. Run review with the actual item, change ref and evidence paths when available. Resolve requirements from local records or configured tools. Read the diff and applicable policy.
 

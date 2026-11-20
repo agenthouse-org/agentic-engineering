@@ -4,7 +4,7 @@ description: "Review a PR or MR URL against its ticket in an isolated local envi
 license: MIT
 ---
 
-Generated from ah-engineering 1.15.0.
+Generated from ah-engineering 1.16.0.
 
 # agenthouse review-mr
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Run context and inspect standardDocuments when present. Determine the changed files and relevant topics; read each matching organisation document. Match repository-relative globs, explicit stack names, or all, and exact topics or all. Organisation guidance takes precedence within its scope and topics; use bundled guidance for uncovered topics. If a local file is missing use its URL and report the gap. If binding guidance cannot be read, report it and pause dependent assessment. Never invent rules, evidence, or approval.
+Run context and inspect standardDocuments when present. Determine the changed files and relevant topics; read each matching organisation document. Match repository-relative globs, explicit stack names, or all, and exact topics or all. Organisation guidance takes precedence within its scope and topics; use bundled guidance for uncovered topics. A local reference may be an absolute path resolved from a machine-local named root; read it as returned. If the root or local file is missing use its URL and report the gap. If binding guidance cannot be read, report it and pause dependent assessment. Never invent rules, evidence, or approval.
 
 Read docs/review-mr.md from the pinned runtime. This is an agent orchestration skill; there is no review-mr CLI subcommand. Keep the remote read-only: read metadata and fetch objects; never push, post comments, alter ticket/MR state or merge without an explicit separate instruction. Local tests execute untrusted change code; inspect the project-owned environment recipe before execution.
 

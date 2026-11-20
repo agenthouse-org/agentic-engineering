@@ -38,3 +38,4 @@ Proposed implementation details live in the linked design documents until implem
 | [0024](0024-market-validation-artifacts.md) | Market validation records, claim levels, and the human go decision before requirements |
 | [0025](0025-dynamic-shell-review.md) | Dynamic shell analysis requests host review; unresolved CI review does not pass |
 | [0026](0026-organisation-standards.md) | Organisation standard discovery and scoped precedence |
+| [0027](0027-standard-roots.md) | Machine-local roots for organisation standard documents |

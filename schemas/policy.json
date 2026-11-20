@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false,
   "required": ["schemaVersion", "id", "revision", "rules"],
   "$defs": {
-    "standardDocuments": {"type":"array", "minItems":1, "items":{"type":"object", "additionalProperties":false, "required":["id","title","url","appliesTo","topics"], "properties": {"id":{"type":"string","minLength":1}, "title":{"type":"string","minLength":1}, "url":{"type":"string","minLength":1}, "path":{"type":"string","minLength":1}, "appliesTo":{"type":"object","additionalProperties":false,"properties":{"all":{"const":true},"stacks":{"type":"array","minItems":1,"items":{"type":"string","minLength":1}},"globs":{"type":"array","minItems":1,"items":{"type":"string","minLength":1}}}}, "topics":{"type":"array","minItems":1,"items":{"type":"string","minLength":1}}}}},
+    "standardDocuments": {"type":"array", "minItems":1, "items":{"type":"object", "additionalProperties":false, "required":["id","title","url","appliesTo","topics"], "properties": {"id":{"type":"string","minLength":1}, "title":{"type":"string","minLength":1}, "url":{"type":"string","minLength":1}, "path":{"type":"string","minLength":1}, "root":{"type":"string","minLength":1}, "appliesTo":{"type":"object","additionalProperties":false,"properties":{"all":{"const":true},"stacks":{"type":"array","minItems":1,"items":{"type":"string","minLength":1}},"globs":{"type":"array","minItems":1,"items":{"type":"string","minLength":1}}}}, "topics":{"type":"array","minItems":1,"items":{"type":"string","minLength":1}}}}},
     "branchNaming": {
       "type": "object", "additionalProperties": false, "required": ["pattern"],
       "properties": {

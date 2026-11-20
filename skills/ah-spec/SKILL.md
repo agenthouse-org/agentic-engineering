@@ -4,7 +4,7 @@ description: "Capture a failing (red) then passing (green) run of the same confi
 license: MIT
 ---
 
-Generated from ah-engineering 1.15.0.
+Generated from ah-engineering 1.16.0.
 
 # agenthouse spec
 

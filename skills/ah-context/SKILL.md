@@ -4,7 +4,7 @@ description: "Locate this project’s lifecycle and skills in central storage. U
 license: MIT
 ---
 
-Generated from ah-engineering 1.15.0.
+Generated from ah-engineering 1.16.0.
 
 # agenthouse context
 

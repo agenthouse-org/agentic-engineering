@@ -4,7 +4,7 @@ description: "Manage and consult engineering guidelines for architecture, testin
 license: MIT
 ---
 
-Generated from ah-engineering 1.15.0.
+Generated from ah-engineering 1.16.0.
 
 # agenthouse engineering-guidelines
 
@@ -14,7 +14,7 @@ Use node .agenthouse/run.mjs when the target is enrolled. First check for .agent
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
 
-Run context and inspect standardDocuments when present. Determine the changed files and relevant topics; read each matching organisation document. Match repository-relative globs, explicit stack names, or all, and exact topics or all. Organisation guidance takes precedence within its scope and topics; use bundled guidance for uncovered topics. If a local file is missing use its URL and report the gap. If binding guidance cannot be read, report it and pause dependent assessment. Never invent rules, evidence, or approval.
+Run context and inspect standardDocuments when present. Determine the changed files and relevant topics; read each matching organisation document. Match repository-relative globs, explicit stack names, or all, and exact topics or all. Organisation guidance takes precedence within its scope and topics; use bundled guidance for uncovered topics. A local reference may be an absolute path resolved from a machine-local named root; read it as returned. If the root or local file is missing use its URL and report the gap. If binding guidance cannot be read, report it and pause dependent assessment. Never invent rules, evidence, or approval.
 
 Manage engineering guidelines covering architecture, testing, security, Git workflows, delivery, and coding conventions. Read docs/engineering-guidelines.md from the pinned runtime. Use engineering-guidelines show/check/write; the existing coding-standards catalog format and fields.codingStandards link remain compatible. Load referenced documents and applicable policy, assess the proposed approach against relevant rule IDs, and report conflicts or missing guidance. Catalog check validates structure only; use controls for check mappings and evaluate for configured checks. Do not invent compliance evidence or approval.
 

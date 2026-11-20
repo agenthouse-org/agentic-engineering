@@ -6,6 +6,7 @@ commands and verification detail.
 
 | Release | Summary |
 | --- | --- |
+| [1.16.0](releases/1.16.0.md) | Resolve organisation standards from machine-local named roots |
 | [1.15.0](releases/1.15.0.md) | Organisation standard discovery and scoped guidance precedence |
 | [1.14.1](releases/1.14.1.md) | Route dynamic shell commands to host permission review; keep unresolved CI review non-passing |
 | [1.14.0](releases/1.14.0.md) | Ignore hook edit events for session scratchpad files outside the repository |

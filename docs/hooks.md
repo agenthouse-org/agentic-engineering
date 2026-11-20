@@ -33,3 +33,5 @@ Claude, Cursor and CI payload translation are fixture-tested. Native activation 
 Restoring a framework version without the engineering hook runtime removes owned hook registrations in the same transaction. Modified hooks or a pin on the hook export block that change until reconciled.
 
 For adopted `standard-documents` policy, the session message lists organisation documents and their scopes and topics first, including missing-local-file gaps. Bundled stack modules remain listed unless an organisation document explicitly covers the entire stack and all topics. Organisation guidance takes precedence within its scope and topics. No document is downloaded by the hook.
+
+A document may name a machine-local root configured in `.agenthouse/local/standard-roots.json`; the hook prints the resolved absolute local file when present, otherwise its URL and the missing-local gap. The mapping is not part of the frozen policy digest. See [organisation policy](organization-policy.md#organisation-standard-documents).
