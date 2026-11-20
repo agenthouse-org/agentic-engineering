@@ -4,7 +4,7 @@ description: "Define product requirements and a story map from user evidence, as
 license: MIT
 ---
 
-Generated from ah-engineering 1.14.1.
+Generated from ah-engineering 1.15.0.
 
 # agenthouse define-product-requirements
 

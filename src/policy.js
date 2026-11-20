@@ -1,3 +1,4 @@
+import {validateStandards} from './standards.js';
 import {originPins} from './policy-channel.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -68,6 +69,8 @@ export function resolve(root, {frozen = false, policyFile, frameworkVersion=VERS
     rules.set(id,{id,value,mode:rule?.mode || 'default'});
     provenance[id] = {source:'project',file:'.agenthouse/config.json'};
   }
+  const standardRule=rules.get('standard-documents');
+  if(standardRule)validateStandards(root,standardRule.value);
   const branchRule=rules.get('branch-naming');
   if(branchRule) {
     const value=branchRule.value;

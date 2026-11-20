@@ -18,6 +18,19 @@ policy adoption. See the [changelog](CHANGELOG.md) for when channels shipped.
 - [Agent-loaded Markdown for overlays](#agent-loaded-markdown-for-overlays) — keep session-loaded files short; overview or externalise long prose. *Both* (overlay authors)
 - [Enforcement boundary and current limits](#enforcement-boundary-and-current-limits) — what signatures authenticate and what the framework does not claim. *Both*
 
+## Organisation standard documents
+
+An adopted policy may contain the `standard-documents` rule. Its value is a nonempty array. Each document has a stable `id`, `title`, HTTP(S) `url`, optional repository-relative `path`, `appliesTo` (`all: true`, or `stacks` and/or repository-relative `globs`) and a nonempty `topics` array. Use stack names such as `node-typescript`; topic names are lowercase identifiers such as `coding`, `testing`, and `security`, or `all` alone. Organisations define their own topic vocabulary consistently. Globs use forward slashes and common glob syntax; agents must report ambiguous applicability rather than assume exclusion.
+
+```json
+{"id":"standard-documents","mode":"mandatory","value":[
+  {"id":"backend","title":"Backend standard","url":"https://example.org/backend","path":"docs/backend.md","appliesTo":{"globs":["src/**/*.ts"]},"topics":["coding","security"]},
+  {"id":"tests","title":"Testing standard","url":"https://example.org/tests","appliesTo":{"stacks":["node-typescript"]},"topics":["testing"]}
+]}
+```
+
+This is one policy rule: ordinary mandatory/default resolution applies to the whole list, including conflict detection and provenance. Resolved policy pins the references, not document contents. Distribute local files or use stable URLs when revisions matter. `context` and hooks do not download them. Loading guidance is not compliance evidence or governance approval. Repository instructions add local facts and rules within applicable organisation authority; conflicts require the authorized exception process. Without the rule, existing behavior remains unchanged.
+
 ## Publish a policy channel
 
 The organization owns its policy, distribution process and signing key. Create
@@ -211,6 +224,8 @@ do not reuse versions. Run `dependencies restore` to reconstruct missing organiz
 
 ## Agent-loaded Markdown for overlays
 
+An overlay names its standards in policy; a consumer’s AGENTS.md holds routing and repository-specific facts, never a restated rule.
+
 Organization governance overlays often add prose standards, enroll skills, and
 session entry files that agents load together with this engine. Agents follow
 long Markdown badly once a file grows past a screen or two: they skip headings,
@@ -254,8 +269,7 @@ themselves need overviews.
 ### How the engine supports this
 
 - `context` returns the pinned `lifecycle` path, `commands` (`docs/agent-commands.md`),
-  and each skill's `SKILL.md` path. It does not automatically hand every
-  organization prose file to the agent. Overlay entry points (for example
+  and each skill's `SKILL.md` path. It also returns references to policy-named standard documents when configured; it does not download their contents. Overlay entry points (for example
   `AGENTS.md`, enroll skills, or host instruction bridges) decide what else is
   loaded at session start.
 - Skill directories may include sibling resources. Context instructions tell

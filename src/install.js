@@ -1,3 +1,4 @@
+import {standardDocuments} from './standards.js';
 import {commandMap} from './command-map.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -44,8 +45,12 @@ export function projectContext(root) {
   for(const {lock} of bundledDependencies(data))ids.add(lock.id);
   const imports=inside(root,'.agenthouse/skills.json');
   if(fs.existsSync(imports))for(const id of Object.keys(read(imports)))ids.add(id);
+  const snapshot=read(inside(root,'.agenthouse/resolved.json'));
+  const documents=standardDocuments(root,snapshot);
+  if(documents)resolve(root,{frozen:true});
   return {root,version:state.version,storage:state.storage || 'project',integration:state.integration || 'shared',
     instructions:'Read the lifecycle and applicable skills at the paths below. Run the project launcher from the target repository root. Use roles/process commands to load role behavior and product-process guidance; process orientation is advisory and role descriptions do not grant approval. Review consumer baseline changes explicitly. Resolve relative skill resources against the containing skill directory; central files are immutable. Use usability setup/run for the bundled audit tool instead of installing dependencies into a skill directory. Repository policy takes precedence over personal preferences. Skills are advisory; never invent evidence or governance approval.',
+    ...(documents?{standardDocuments:documents}:{}),
     lifecycle:inside(runtime,'docs/lifecycle.md'),commands:inside(runtime,'docs/agent-commands.md'),
     skills:Object.fromEntries([...ids].sort().map(id=>[id,inside(skillDirectory(root,id),'SKILL.md')]))};
 }

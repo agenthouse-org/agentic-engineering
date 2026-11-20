@@ -4,7 +4,7 @@ description: "Rebuild or freeze-check the merged policy file at .agenthouse/reso
 license: MIT
 ---
 
-Generated from ah-engineering 1.14.1.
+Generated from ah-engineering 1.15.0.
 
 # agenthouse resolve
 

@@ -1,3 +1,4 @@
+import {standardDocuments} from './standards.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
@@ -19,9 +20,12 @@ export async function hook(root,{vendor='ci',input}={}) {
   const raw=JSON.parse(input?fs.readFileSync(inside(root,input),'utf8'):fs.readFileSync(0,'utf8'));
   const event=runtime.normalize(vendor,raw),enrolled=fs.existsSync(inside(root,'.agenthouse/config.json'));
   assert(enrolled || event.event==='session','Enroll this repository before using engineering hooks');
-  const config=enrolled?resolve(root,{frozen:true}).config:{};
+  const resolved=enrolled?resolve(root,{frozen:true}):null;
+  const config=resolved?.config || {};
   const info=survey(root);
-  const standards=[...(info.stacks.includes('node')?['node-typescript']:[]),...(info.stacks.includes('php')?['php-laravel']:[])].map(name=>`node .agenthouse/run.mjs module --name ${name}`);
+  const documents=resolved && standardDocuments(root,resolved.snapshot);
+  const modules=[...(info.stacks.includes('node')?['node-typescript']:[]),...(info.stacks.includes('php')?['php-laravel']:[])];
+  const standards=documents ? [...documents.map(d=>`${d.title}: ${d.reference} (applies: ${JSON.stringify(d.appliesTo)}; topics: ${d.topics.join(', ')}${d.localMissing?'; local file missing':''})`), ...modules.filter(name=>!documents.some(d=>(d.appliesTo.all || d.appliesTo.stacks?.includes(name)) && d.topics.includes('all'))).map(name=>`node .agenthouse/run.mjs module --name ${name}`), 'Organisation documents take precedence within their declared scope and topics; bundled guidance fills uncovered topics'] : modules.map(name=>`node .agenthouse/run.mjs module --name ${name}`);
   const result=await runtime.handle(event,config.hooks || {},{root,enrolled,branch:info.branch,stacks:info.stacks,standards,
     run:(executable,args,options)=>run(executable==='node'?process.execPath:executable,args,options)});
   return runtime.render(vendor,event.event,result);

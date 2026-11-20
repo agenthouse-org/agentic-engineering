@@ -4,7 +4,7 @@ description: "Describe an opportunity and its ideal customer profile: segments, 
 license: MIT
 ---
 
-Generated from ah-engineering 1.14.1.
+Generated from ah-engineering 1.15.0.
 
 # agenthouse define-opportunity
 

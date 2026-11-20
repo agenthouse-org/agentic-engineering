@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "frameworkVersion": "1.12.0",
+  "frameworkVersion": "1.14.1",
   "configDigest": "25587a3b46762776be9edfbe21637cf5a9d79eeb8e0a79ba8e03433a602eccc5",
   "sources": [
     {
@@ -26,5 +26,5 @@
       "action": "The project owner must record the applicability, SOP, authorized trigger roles, and required MR traceability. See docs/author-unavailable-during-review.md for consumer-selectable reference SOPs."
     }
   ],
-  "digest": "f9323ea5d7d72328e3a8955351ce100843ca777686e0165cf386a75a59d45cca"
+  "digest": "7e9be76f3fa5c0e485fb7e2dd04216ecd1eb3085641c5c28ae7ffd0bc7f68294"
 }

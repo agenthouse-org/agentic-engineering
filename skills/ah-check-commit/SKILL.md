@@ -4,7 +4,7 @@ description: "Check the behavior affected by a commit or change range against it
 license: MIT
 ---
 
-Generated from ah-engineering 1.14.1.
+Generated from ah-engineering 1.15.0.
 
 # agenthouse check-commit
 
@@ -13,5 +13,7 @@ Work from the target repository root. Read its AGENTS.md and applicable policy. 
 Use node .agenthouse/run.mjs when the target is enrolled. First check for .agenthouse/run.mjs and .agenthouse/active.json. If absent, explain that the repository is not enrolled and point to the organization's enroll skill when configured, otherwise ah-enroll-repository. Stop without running commands or changing files. Exception: explicit setup/help/demo requests may use an already installed ah-engineering executable or this package's bin/ah-engineering.js with an explicit --root; never fetch or install implicitly. When enrolled, run context and read the same named skill from the exact repository runtime; the global plugin is a discovery/bootstrap surface, not policy authority. Do not recursively reload this same file when it is already the pinned skill. For ah-doctor pass --plugin-version with this skill's generated version so mismatches are visible.
 
 Use CLI help to confirm supported options. Ask only for required information missing from context. Existing user authorization persists; do not request it again. Skill invocation does not bypass host permissions or governance. Report actual output and unresolved limitations; do not claim a command ran if tools are unavailable.
+
+Run context and inspect standardDocuments when present. Determine the changed files and relevant topics; read each matching organisation document. Match repository-relative globs, explicit stack names, or all, and exact topics or all. Organisation guidance takes precedence within its scope and topics; use bundled guidance for uncovered topics. If a local file is missing use its URL and report the gap. If binding guidance cannot be read, report it and pause dependent assessment. Never invent rules, evidence, or approval.
 
 Run inspect for the requested ref/base, then compare the changed behavior to its intended outcome. Inspect the repository’s actual tooling, select relevant checks, and execute those supported in the environment. For a bugfix seek a regression test that fails before the fix and passes after it, using an isolated checkout if needed; preserve the user’s working tree. Distinguish inherited failures and unrun checks. Use the configured CLI evaluation when applicable and report evidence without committing, pushing, or approving. Lead with pass / fail / incomplete and the checks that matter; do not narrate the whole diff unless asked.

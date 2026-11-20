@@ -4,7 +4,7 @@ description: "Compatibility alias for engineering-guidelines. Show, check, or wr
 license: MIT
 ---
 
-Generated from ah-engineering 1.14.1.
+Generated from ah-engineering 1.15.0.
 
 # agenthouse coding-standards
 
